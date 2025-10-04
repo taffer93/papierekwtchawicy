@@ -309,6 +309,15 @@
             font-style: italic;
         }
         
+        .debug-info {
+            background: #fff3cd;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-size: 12px;
+            border: 1px solid #ffeaa7;
+        }
+        
         @media (max-width: 768px) {
             .main-container {
                 flex-direction: column;
@@ -389,6 +398,12 @@
             <div id="usersList" class="users-list">
                 <!-- Lista użytkowników -->
             </div>
+            
+            <!-- Debug info -->
+            <div id="debugInfo" class="debug-info">
+                <div><strong>Status:</strong> <span id="debugStatus">Nie wybrano użytkownika</span></div>
+                <div><strong>Aktualny chat:</strong> <span id="debugCurrentUser">-</span></div>
+            </div>
         </div>
         
         <!-- Obszar czatu -->
@@ -432,177 +447,12 @@
         </div>
     </div>
 
-    <!-- Firebase -->
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
-        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, where, doc, setDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
-
-        // WSTAW SWOJĄ KONFIGURACJĘ FIREBASE TUTAJ
-const firebaseConfig = {
-  apiKey: "AIzaSyCJeQEnsEDDnGvKoVzKkjRmnOIsmv7HPJs",
-  authDomain: "pensei-b3058.firebaseapp.com",
-  projectId: "pensei-b3058",
-  storageBucket: "pensei-b3058.firebasestorage.app",
-  messagingSenderId: "341036858535",
-  appId: "1:341036858535:web:43d4f98625abd9ff406f82",
-  measurementId: "G-MR8G2GNY5P"
-};
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        
-        window.auth = auth;
-        window.db = db;
-        window.addDoc = addDoc;
-        window.collection = collection;
-        window.serverTimestamp = serverTimestamp;
-        window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
-        window.signInWithEmailAndPassword = signInWithEmailAndPassword;
-        window.signOut = signOut;
-        window.query = query;
-        window.where = where;
-        window.orderBy = orderBy;
-        window.onSnapshot = onSnapshot;
-        window.doc = doc;
-        window.setDoc = setDoc;
-        window.deleteDoc = deleteDoc;
-        
+    <script>
+        // GLOBALNE ZMIENNE - dostępne wszędzie
         let currentChatUser = null;
         let unsubscribeMessages = null;
-        
-        // Nasłuchiwanie zmian autoryzacji
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                document.getElementById('loginContainer').classList.add('hidden');
-                document.getElementById('registerContainer').classList.add('hidden');
-                document.getElementById('mainContainer').classList.remove('hidden');
-                document.getElementById('userEmail').textContent = user.email;
-                
-                updateUserStatus(true);
-                loadUsers();
-            } else {
-                document.getElementById('loginContainer').classList.remove('hidden');
-                document.getElementById('registerContainer').classList.add('hidden');
-                document.getElementById('mainContainer').classList.add('hidden');
-                if (auth.currentUser) {
-                    updateUserStatus(false);
-                }
-            }
-        });
-        
-        // Reszta kodu Firebase...
-        async function updateUserStatus(isOnline) {
-            if (!auth.currentUser) return;
-            
-            const userRef = doc(db, 'activeUsers', auth.currentUser.uid);
-            
-            if (isOnline) {
-                await setDoc(userRef, {
-                    email: auth.currentUser.email,
-                    lastSeen: serverTimestamp(),
-                    isOnline: true
-                });
-            } else {
-                await deleteDoc(userRef);
-            }
-        }
-        
-        function loadUsers() {
-            const usersQuery = query(collection(db, 'activeUsers'));
-            onSnapshot(usersQuery, (snapshot) => {
-                const usersList = document.getElementById('usersList');
-                usersList.innerHTML = '';
-                
-                snapshot.forEach((doc) => {
-                    const userData = doc.data();
-                    if (userData.email !== auth.currentUser.email) {
-                        displayUser(userData, doc.id);
-                    }
-                });
-            });
-        }
-        
-        function displayUser(userData, userId) {
-            const usersList = document.getElementById('usersList');
-            const userDiv = document.createElement('div');
-            userDiv.className = `user-item online`;
-            userDiv.dataset.userId = userId;
-            userDiv.dataset.userEmail = userData.email;
-            
-            userDiv.innerHTML = `
-                <div style="font-weight: bold;">${userData.email}</div>
-                <div style="font-size: 12px; color: #666;">🟢 Online</div>
-            `;
-            
-            userDiv.onclick = () => selectUser(userData.email, userId);
-            usersList.appendChild(userDiv);
-        }
-        
-        window.selectUser = function(userEmail, userId) {
-            document.querySelectorAll('.user-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            document.querySelector(`[data-user-id="${userId}"]`).classList.add('active');
-            
-            currentChatUser = userEmail;
-            document.getElementById('chatHeader').textContent = `💬 Rozmowa z ${userEmail}`;
-            document.getElementById('inputSection').classList.remove('hidden');
-            document.getElementById('messagesContainer').innerHTML = '';
-            
-            if (unsubscribeMessages) {
-                unsubscribeMessages();
-            }
-            
-            loadPrivateMessages(userEmail);
-        }
-        
-        function loadPrivateMessages(otherUserEmail) {
-            const chatId = createChatId(auth.currentUser.email, otherUserEmail);
-            const messagesQuery = query(
-                collection(db, 'privateMessages'), 
-                where('chatId', '==', chatId),
-                orderBy('timestamp', 'asc')
-            );
-            
-            unsubscribeMessages = onSnapshot(messagesQuery, (snapshot) => {
-                const messagesContainer = document.getElementById('messagesContainer');
-                messagesContainer.innerHTML = '';
-                
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    displayMessage(data);
-                });
-                
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            });
-        }
-        
-        function createChatId(email1, email2) {
-            return [email1, email2].sort().join('_');
-        }
-        
-        window.currentChatUser = null;
-        window.updateUserStatus = updateUserStatus;
-        
-        window.addEventListener('beforeunload', () => {
-            updateUserStatus(false);
-        });
-    </script>
-    
-    <script>
-        // Przełączanie między formularzami
-        function showRegister() {
-            document.getElementById('loginContainer').classList.add('hidden');
-            document.getElementById('registerContainer').classList.remove('hidden');
-        }
-        
-        function showLogin() {
-            document.getElementById('registerContainer').classList.add('hidden');
-            document.getElementById('loginContainer').classList.remove('hidden');
-        }
+        let auth = null;
+        let db = null;
         
         // Funkcje kodowania/dekodowania
         function rot13(str) {
@@ -639,101 +489,94 @@ const firebaseConfig = {
             }
         }
         
-        // Funkcje autoryzacji
-        async function register() {
-            const email = document.getElementById('registerEmail').value;
-            const password = document.getElementById('registerPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            const errorDiv = document.getElementById('registerError');
+        // Przełączanie między formularzami
+        function showRegister() {
+            document.getElementById('loginContainer').classList.add('hidden');
+            document.getElementById('registerContainer').classList.remove('hidden');
+        }
+        
+        function showLogin() {
+            document.getElementById('registerContainer').classList.add('hidden');
+            document.getElementById('loginContainer').classList.remove('hidden');
+        }
+        
+        // Funkcja wyboru użytkownika - NAPRAWIONA
+        function selectUser(userEmail, userId) {
+            console.log('🎯 Wybieranie użytkownika:', userEmail, userId);
             
-            // Walidacja
-            if (!email || !password) {
-                errorDiv.innerHTML = '<div class="error-message">Wypełnij wszystkie pola!</div>';
-                return;
+            // Odznacz poprzedniego użytkownika
+            document.querySelectorAll('.user-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Zaznacz nowego użytkownika
+            const userElement = document.querySelector(`[data-user-id="${userId}"]`);
+            if (userElement) {
+                userElement.classList.add('active');
             }
             
-            if (password.length < 6) {
-                errorDiv.innerHTML = '<div class="error-message">Hasło musi mieć minimum 6 znaków!</div>';
-                return;
+            // Ustaw globalną zmienną
+            currentChatUser = userEmail;
+            
+            // Update debug info
+            updateDebugInfo();
+            
+            // Zmień nagłówek
+            document.getElementById('chatHeader').textContent = `💬 Rozmowa z ${userEmail}`;
+            document.getElementById('inputSection').classList.remove('hidden');
+            document.getElementById('messagesContainer').innerHTML = '';
+            
+            // Zatrzymaj poprzednie nasłuchiwanie
+            if (unsubscribeMessages) {
+                unsubscribeMessages();
             }
             
-            if (password !== confirmPassword) {
-                errorDiv.innerHTML = '<div class="error-message">Hasła nie są identyczne!</div>';
-                return;
-            }
+            // Załaduj wiadomości
+            loadPrivateMessages(userEmail);
             
-            try {
-                await createUserWithEmailAndPassword(auth, email, password);
-                errorDiv.innerHTML = '<div class="success-message">✅ Konto utworzone pomyślnie!</div>';
-            } catch (error) {
-                let errorMessage = 'Błąd rejestracji: ';
-                switch(error.code) {
-                    case 'auth/email-already-in-use':
-                        errorMessage += 'Ten email jest już używany!';
-                        break;
-                    case 'auth/invalid-email':
-                        errorMessage += 'Nieprawidłowy format email!';
-                        break;
-                    case 'auth/weak-password':
-                        errorMessage += 'Hasło jest za słabe!';
-                        break;
-                    default:
-                        errorMessage += error.message;
-                }
-                errorDiv.innerHTML = `<div class="error-message">${errorMessage}</div>`;
+            console.log('✅ Użytkownik wybrany:', currentChatUser);
+        }
+        
+        // Update debug info
+        function updateDebugInfo() {
+            const statusElement = document.getElementById('debugStatus');
+            const currentUserElement = document.getElementById('debugCurrentUser');
+            
+            if (currentChatUser) {
+                statusElement.textContent = 'Użytkownik wybrany ✅';
+                statusElement.style.color = 'green';
+                currentUserElement.textContent = currentChatUser;
+            } else {
+                statusElement.textContent = 'Nie wybrano użytkownika ❌';
+                statusElement.style.color = 'red';
+                currentUserElement.textContent = '-';
             }
         }
         
-        async function login() {
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            const errorDiv = document.getElementById('loginError');
-            
-            if (!email || !password) {
-                errorDiv.innerHTML = '<div class="error-message">Wypełnij wszystkie pola!</div>';
-                return;
-            }
-            
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-                errorDiv.innerHTML = '';
-            } catch (error) {
-                let errorMessage = 'Błąd logowania: ';
-                switch(error.code) {
-                    case 'auth/user-not-found':
-                        errorMessage += 'Nie ma użytkownika z tym emailem!';
-                        break;
-                    case 'auth/wrong-password':
-                        errorMessage += 'Nieprawidłowe hasło!';
-                        break;
-                    case 'auth/invalid-email':
-                        errorMessage += 'Nieprawidłowy format email!';
-                        break;
-                    default:
-                        errorMessage += error.message;
-                }
-                errorDiv.innerHTML = `<div class="error-message">${errorMessage}</div>`;
-            }
+        // Tworzenie ID czatu
+        function createChatId(email1, email2) {
+            return [email1, email2].sort().join('_');
         }
         
-        async function logout() {
-            await updateUserStatus(false);
-            await signOut(auth);
-        }
-        
-        // Wysyłanie wiadomości
+        // Wysyłanie wiadomości - NAPRAWIONE
         async function sendMessage() {
+            console.log('📤 Próba wysłania wiadomości. currentChatUser:', currentChatUser);
+            
             if (!currentChatUser) {
-                alert('Wybierz użytkownika do rozmowy!');
+                alert('❌ Wybierz użytkownika do rozmowy!\n\nDebug: currentChatUser = ' + currentChatUser);
                 return;
             }
             
             const messageInput = document.getElementById('messageInput');
             const text = messageInput.value.trim();
             
-            if (!text) return;
+            if (!text) {
+                alert('Wpisz jakąś wiadomość!');
+                return;
+            }
             
             const chatId = createChatId(auth.currentUser.email, currentChatUser);
+            console.log('💬 Chat ID:', chatId);
             
             const encodings = [];
             if (document.getElementById('sendNormal').checked) {
@@ -756,25 +599,164 @@ const firebaseConfig = {
             
             try {
                 for (const encoding of encodings) {
-                    await addDoc(collection(db, 'privateMessages'), {
+                    await window.addDoc(window.collection(db, 'privateMessages'), {
                         chatId: chatId,
                         text: encoding.text,
                         originalText: text,
                         encoding: encoding.type,
                         sender: auth.currentUser.email,
                         recipient: currentChatUser,
-                        timestamp: serverTimestamp()
+                        timestamp: window.serverTimestamp()
                     });
                 }
                 
                 messageInput.value = '';
+                console.log('✅ Wiadomości wysłane pomyślnie');
             } catch (error) {
-                console.error('Błąd wysyłania:', error);
-                alert('Błąd wysyłania wiadomości!');
+                console.error('❌ Błąd wysyłania:', error);
+                alert('Błąd wysyłania wiadomości: ' + error.message);
+            }
+        }
+    </script>
+
+    <!-- Firebase -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, where, doc, setDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
+
+        // WSTAW SWOJĄ KONFIGURACJĘ FIREBASE TUTAJ
+const firebaseConfig = {
+  apiKey: "AIzaSyCJeQEnsEDDnGvKoVzKkjRmnOIsmv7HPJs",
+  authDomain: "pensei-b3058.firebaseapp.com",
+  projectId: "pensei-b3058",
+  storageBucket: "pensei-b3058.firebasestorage.app",
+  messagingSenderId: "341036858535",
+  appId: "1:341036858535:web:43d4f98625abd9ff406f82",
+  measurementId: "G-MR8G2GNY5P"
+};
+
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+        
+        // Eksportuj do window dla dostępu globalnego
+        window.auth = auth;
+        window.db = db;
+        window.addDoc = addDoc;
+        window.collection = collection;
+        window.serverTimestamp = serverTimestamp;
+        window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+        window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+        window.signOut = signOut;
+        window.query = query;
+        window.where = where;
+        window.orderBy = orderBy;
+        window.onSnapshot = onSnapshot;
+        window.doc = doc;
+        window.setDoc = setDoc;
+        window.deleteDoc = deleteDoc;
+        
+        // Nasłuchiwanie zmian autoryzacji
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('loginContainer').classList.add('hidden');
+                document.getElementById('registerContainer').classList.add('hidden');
+                document.getElementById('mainContainer').classList.remove('hidden');
+                document.getElementById('userEmail').textContent = user.email;
+                
+                updateUserStatus(true);
+                loadUsers();
+                updateDebugInfo();
+            } else {
+                document.getElementById('loginContainer').classList.remove('hidden');
+                document.getElementById('registerContainer').classList.add('hidden');
+                document.getElementById('mainContainer').classList.add('hidden');
+                if (auth.currentUser) {
+                    updateUserStatus(false);
+                }
+            }
+        });
+        
+        // Aktualizacja statusu użytkownika
+        async function updateUserStatus(isOnline) {
+            if (!auth.currentUser) return;
+            
+            const userRef = doc(db, 'activeUsers', auth.currentUser.uid);
+            
+            if (isOnline) {
+                await setDoc(userRef, {
+                    email: auth.currentUser.email,
+                    lastSeen: serverTimestamp(),
+                    isOnline: true
+                });
+            } else {
+                await deleteDoc(userRef);
             }
         }
         
-        function displayMessage(data) {
+        // Ładowanie listy użytkowników
+        function loadUsers() {
+            const usersQuery = query(collection(db, 'activeUsers'));
+            onSnapshot(usersQuery, (snapshot) => {
+                const usersList = document.getElementById('usersList');
+                usersList.innerHTML = '';
+                
+                snapshot.forEach((doc) => {
+                    const userData = doc.data();
+                    if (userData.email !== auth.currentUser.email) {
+                        displayUser(userData, doc.id);
+                    }
+                });
+            });
+        }
+        
+        // Wyświetlanie użytkownika na liście
+        function displayUser(userData, userId) {
+            const usersList = document.getElementById('usersList');
+            const userDiv = document.createElement('div');
+            userDiv.className = `user-item online`;
+            userDiv.dataset.userId = userId;
+            userDiv.dataset.userEmail = userData.email;
+            
+            userDiv.innerHTML = `
+                <div style="font-weight: bold;">${userData.email}</div>
+                <div style="font-size: 12px; color: #666;">🟢 Online</div>
+            `;
+            
+            // WAŻNE: Onclick wywołuje globalną funkcję
+            userDiv.onclick = () => {
+                console.log('🖱️ Kliknięto użytkownika:', userData.email);
+                selectUser(userData.email, userId);
+            };
+            
+            usersList.appendChild(userDiv);
+        }
+        
+        // Ładowanie prywatnych wiadomości
+        window.loadPrivateMessages = function(otherUserEmail) {
+            const chatId = createChatId(auth.currentUser.email, otherUserEmail);
+            const messagesQuery = query(
+                collection(db, 'privateMessages'), 
+                where('chatId', '==', chatId),
+                orderBy('timestamp', 'asc')
+            );
+            
+            unsubscribeMessages = onSnapshot(messagesQuery, (snapshot) => {
+                const messagesContainer = document.getElementById('messagesContainer');
+                messagesContainer.innerHTML = '';
+                
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    displayMessage(data);
+                });
+                
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            });
+        }
+        
+        // Wyświetlanie wiadomości
+        window.displayMessage = function(data) {
             const messagesContainer = document.getElementById('messagesContainer');
             const messageDiv = document.createElement('div');
             
@@ -806,28 +788,130 @@ const firebaseConfig = {
             messagesContainer.appendChild(messageDiv);
         }
         
-        function createChatId(email1, email2) {
-            return [email1, email2].sort().join('_');
+        // Eksportuj funkcje
+        window.updateUserStatus = updateUserStatus;
+        
+        // Przy zamknięciu okna - ustaw offline
+        window.addEventListener('beforeunload', () => {
+            updateUserStatus(false);
+        });
+    </script>
+    
+    <script>
+        // Funkcje autoryzacji
+        async function register() {
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const errorDiv = document.getElementById('registerError');
+            
+            // Walidacja
+            if (!email || !password) {
+                errorDiv.innerHTML = '<div class="error-message">Wypełnij wszystkie pola!</div>';
+                return;
+            }
+            
+            if (password.length < 6) {
+                errorDiv.innerHTML = '<div class="error-message">Hasło musi mieć minimum 6 znaków!</div>';
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                errorDiv.innerHTML = '<div class="error-message">Hasła nie są identyczne!</div>';
+                return;
+            }
+            
+            try {
+                await window.createUserWithEmailAndPassword(auth, email, password);
+                errorDiv.innerHTML = '<div class="success-message">✅ Konto utworzone pomyślnie!</div>';
+            } catch (error) {
+                let errorMessage = 'Błąd rejestracji: ';
+                switch(error.code) {
+                    case 'auth/email-already-in-use':
+                        errorMessage += 'Ten email jest już używany!';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage += 'Nieprawidłowy format email!';
+                        break;
+                    case 'auth/weak-password':
+                        errorMessage += 'Hasło jest za słabe!';
+                        break;
+                    default:
+                        errorMessage += error.message;
+                }
+                errorDiv.innerHTML = `<div class="error-message">${errorMessage}</div>`;
+            }
+        }
+        
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+            
+            if (!email || !password) {
+                errorDiv.innerHTML = '<div class="error-message">Wypełnij wszystkie pola!</div>';
+                return;
+            }
+            
+            try {
+                await window.signInWithEmailAndPassword(auth, email, password);
+                errorDiv.innerHTML = '';
+            } catch (error) {
+                let errorMessage = 'Błąd logowania: ';
+                switch(error.code) {
+                    case 'auth/user-not-found':
+                        errorMessage += 'Nie ma użytkownika z tym emailem!';
+                        break;
+                    case 'auth/wrong-password':
+                        errorMessage += 'Nieprawidłowe hasło!';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage += 'Nieprawidłowy format email!';
+                        break;
+                    default:
+                        errorMessage += error.message;
+                }
+                errorDiv.innerHTML = `<div class="error-message">${errorMessage}</div>`;
+            }
+        }
+        
+        async function logout() {
+            await window.updateUserStatus(false);
+            await window.signOut(auth);
+            currentChatUser = null;
+            updateDebugInfo();
         }
         
         // Enter wysyła wiadomość
-        document.getElementById('messageInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
+        document.addEventListener('DOMContentLoaded', function() {
+            // Enter w formularzu wiadomości
+            const messageInput = document.getElementById('messageInput');
+            if (messageInput) {
+                messageInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        sendMessage();
+                    }
+                });
             }
-        });
-        
-        // Enter w formularzach
-        document.getElementById('loginPassword').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                login();
+            
+            // Enter w formularzach logowania
+            const loginPassword = document.getElementById('loginPassword');
+            if (loginPassword) {
+                loginPassword.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        login();
+                    }
+                });
             }
-        });
-        
-        document.getElementById('confirmPassword').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                register();
+            
+            const confirmPassword = document.getElementById('confirmPassword');
+            if (confirmPassword) {
+                confirmPassword.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        register();
+                    }
+                });
             }
         });
     </script>
