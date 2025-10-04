@@ -573,14 +573,15 @@
         import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, where, doc, setDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
 
         // ⚠️ WSTAW SWOJĄ KONFIGURACJĘ FIREBASE!
-        const firebaseConfig = {
-            apiKey: "TWÓJ_API_KEY",
-            authDomain: "TWÓJ_PROJECT.firebaseapp.com", 
-            projectId: "TWÓJ_PROJECT_ID",
-            storageBucket: "TWÓJ_PROJECT.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "TWOJA_APP_ID"
-        };
+const firebaseConfig = {
+  apiKey: "AIzaSyCJeQEnsEDDnGvKoVzKkjRmnOIsmv7HPJs",
+  authDomain: "pensei-b3058.firebaseapp.com",
+  projectId: "pensei-b3058",
+  storageBucket: "pensei-b3058.firebasestorage.app",
+  messagingSenderId: "341036858535",
+  appId: "1:341036858535:web:43d4f98625abd9ff406f82",
+  measurementId: "G-MR8G2GNY5P"
+};
 
         const app = initializeApp(firebaseConfig);
         auth = getAuth(app);
