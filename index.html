@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Komunikator - Multi-kodowanie</title>
+    <title>Komunikator - Ukryte szyfrowanie</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -69,21 +69,20 @@
             padding: 15px;
             margin: 15px 0;
             border-radius: 12px;
-            border-left: 4px solid #007bff;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         
         .message.own {
             background: linear-gradient(135deg, #007bff, #0056b3);
             color: white;
+            margin-left: 20%;
             border-left: 4px solid #0056b3;
-            margin-left: 15%;
         }
         
         .message.other {
             background: #e9ecef;
+            margin-right: 20%;
             border-left: 4px solid #28a745;
-            margin-right: 15%;
         }
         
         .message-header {
@@ -96,31 +95,6 @@
         .message-content {
             font-size: 16px;
             line-height: 1.4;
-            margin-bottom: 10px;
-        }
-        
-        .encoded-versions {
-            background: rgba(255,255,255,0.1);
-            padding: 10px;
-            border-radius: 6px;
-            margin-top: 10px;
-            font-size: 12px;
-        }
-        
-        .encoded-versions.other {
-            background: rgba(0,0,0,0.05);
-        }
-        
-        .encoded-item {
-            margin: 5px 0;
-            padding: 5px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 4px;
-            font-family: monospace;
-        }
-        
-        .encoded-item.other {
-            background: rgba(0,0,0,0.03);
         }
         
         .input-group {
@@ -162,38 +136,46 @@
             display: none;
         }
         
-        .encoding-preview {
+        /* Debug panel - można ukryć w produkcji */
+        .debug-panel {
             background: #fff3cd;
             padding: 15px;
             border-radius: 6px;
             margin: 10px 0;
             border: 1px solid #ffeaa7;
-        }
-        
-        .encoding-preview h4 {
-            margin: 0 0 10px 0;
-            color: #856404;
-        }
-        
-        .preview-item {
-            margin: 8px 0;
-            padding: 8px;
-            background: white;
-            border-radius: 4px;
             font-family: monospace;
-            font-size: 12px;
+            font-size: 11px;
+        }
+        
+        .encryption-step {
+            margin: 3px 0;
+            padding: 3px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 3px;
         }
     </style>
 </head>
 <body>
-    <h1>🔐 Komunikator - Multi-kodowanie</h1>
+    <h1>🔒 Komunikator - Ukryte szyfrowanie łańcuchowe</h1>
     
     <!-- Status -->
     <div class="container">
         <h3>📊 Status systemu</h3>
         <div class="status" id="systemStatus">Ładowanie...</div>
         <div class="status" id="userStatus">Nie zalogowany</div>
-        <div class="status" id="messagesStatus">Brak danych</div>
+        <div class="status" id="encryptionStatus">🔐 Szyfrowanie aktywne (niewidoczne dla użytkowników)</div>
+    </div>
+    
+    <!-- Debug panel (opcjonalny - można ukryć) -->
+    <div class="container">
+        <h3>🛠️ Debug szyfrowania (ukryj w produkcji)</h3>
+        <div class="debug-panel" id="debugPanel">
+            <div><strong>Ostatnie szyfrowanie:</strong></div>
+            <div id="encryptionSteps"></div>
+            <div><strong>Ostatnie deszyfrowanie:</strong></div>
+            <div id="decryptionSteps"></div>
+        </div>
+        <button class="btn" onclick="toggleDebug()">👁️ Pokaż/ukryj debug</button>
     </div>
     
     <!-- Logowanie -->
@@ -232,15 +214,12 @@
                 </div>
                 
                 <div id="messageInputSection" class="hidden">
-                    <!-- Podgląd kodowań -->
-                    <div id="encodingPreview" class="encoding-preview hidden">
-                        <h4>🔍 Podgląd kodowań:</h4>
-                        <div id="previewContent"></div>
-                    </div>
-                    
                     <div class="input-group">
-                        <input type="text" id="messageInput" placeholder="Wpisz wiadomość..." oninput="showPreview()">
-                        <button class="btn btn-success" onclick="sendMultiEncodedMessage()">🚀 Wyślij (wszystkie kodowania)</button>
+                        <input type="text" id="messageInput" placeholder="Wpisz wiadomość... (będzie automatycznie zaszyfrowana)">
+                        <button class="btn btn-success" onclick="sendEncryptedMessage()">📤 Wyślij</button>
+                    </div>
+                    <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                        🔒 Wiadomości są automatycznie szyfrowane 7-poziomowym algorytmem
                     </div>
                 </div>
             </div>
@@ -252,8 +231,96 @@
         let currentUser = null;
         let selectedChatUser = null;
         let unsubscribeMessages = null;
+        let debugVisible = true;
         
-        // Funkcje kodowania/dekodowania
+        // ŁAŃCUCH SZYFROWANIA - każda funkcja używa wyniku poprzedniej
+        function encryptChain(text) {
+            const steps = [];
+            let result = text;
+            
+            // Krok 1: ROT13
+            result = rot13(result);
+            steps.push(`1. ROT13: "${result}"`);
+            
+            // Krok 2: Reverse
+            result = reverseText(result);
+            steps.push(`2. Reverse: "${result}"`);
+            
+            // Krok 3: Caesar (shift 5)
+            result = caesar(result, 5);
+            steps.push(`3. Caesar+5: "${result}"`);
+            
+            // Krok 4: Base64
+            result = base64Encode(result);
+            steps.push(`4. Base64: "${result}"`);
+            
+            // Krok 5: Reverse ponownie
+            result = reverseText(result);
+            steps.push(`5. Reverse2: "${result}"`);
+            
+            // Krok 6: ROT13 ponownie
+            result = rot13(result);
+            steps.push(`6. ROT13-2: "${result}"`);
+            
+            // Krok 7: Caesar (shift 7)
+            result = caesar(result, 7);
+            steps.push(`7. Caesar+7: "${result}"`);
+            
+            // Debug info
+            if (debugVisible) {
+                document.getElementById('encryptionSteps').innerHTML = 
+                    `<div class="encryption-step">Oryginał: "${text}"</div>` +
+                    steps.map(step => `<div class="encryption-step">${step}</div>`).join('');
+            }
+            
+            return result;
+        }
+        
+        // ŁAŃCUCH DESZYFROWANIA - odwrotność szyfrowania
+        function decryptChain(encryptedText) {
+            const steps = [];
+            let result = encryptedText;
+            
+            // Odwrotność kroku 7: Caesar (shift -7)
+            result = caesar(result, -7);
+            steps.push(`7→1. Caesar-7: "${result}"`);
+            
+            // Odwrotność kroku 6: ROT13
+            result = rot13(result);
+            steps.push(`6→2. ROT13: "${result}"`);
+            
+            // Odwrotność kroku 5: Reverse
+            result = reverseText(result);
+            steps.push(`5→3. Reverse: "${result}"`);
+            
+            // Odwrotność kroku 4: Base64
+            result = base64Decode(result);
+            steps.push(`4→4. Base64 decode: "${result}"`);
+            
+            // Odwrotność kroku 3: Caesar (shift -5)
+            result = caesar(result, -5);
+            steps.push(`3→5. Caesar-5: "${result}"`);
+            
+            // Odwrotność kroku 2: Reverse
+            result = reverseText(result);
+            steps.push(`2→6. Reverse: "${result}"`);
+            
+            // Odwrotność kroku 1: ROT13
+            result = rot13(result);
+            steps.push(`1→7. ROT13: "${result}"`);
+            
+            // Debug info
+            if (debugVisible) {
+                document.getElementById('decryptionSteps').innerHTML = 
+                    `<div class="encryption-step">Zaszyfrowane: "${encryptedText}"</div>` +
+                    steps.map(step => `<div class="encryption-step">${step}</div>`).join('') +
+                    `<div class="encryption-step"><strong>WYNIK: "${result}"</strong></div>`;
+            }
+            
+            return result;
+        }
+        
+        // Podstawowe funkcje szyfrowania
         function rot13(str) {
             return str.replace(/[a-zA-Z]/g, function(c) {
                 return String.fromCharCode(
@@ -262,31 +329,14 @@
             });
         }
         
-        function toBinary(str) {
-            return str.split('').map(char => 
-                char.charCodeAt(0).toString(2).padStart(8, '0')
-            ).join(' ');
-        }
-        
-        function fromBinary(binaryStr) {
-            try {
-                return binaryStr.split(' ')
-                    .filter(binary => binary.length === 8)
-                    .map(binary => String.fromCharCode(parseInt(binary, 2)))
-                    .join('');
-            } catch (e) {
-                return '[Błąd dekodowania binarnego]';
-            }
-        }
-        
         function reverseText(str) {
             return str.split('').reverse().join('');
         }
         
-        function caesar(str, shift = 3) {
+        function caesar(str, shift) {
             return str.replace(/[a-zA-Z]/g, function(c) {
                 const start = c <= 'Z' ? 65 : 97;
-                return String.fromCharCode(((c.charCodeAt(0) - start + shift) % 26) + start);
+                return String.fromCharCode(((c.charCodeAt(0) - start + shift + 26) % 26) + start);
             });
         }
         
@@ -294,7 +344,7 @@
             try {
                 return btoa(unescape(encodeURIComponent(str)));
             } catch (e) {
-                return '[Błąd kodowania Base64]';
+                return str; // Fallback jeśli błąd
             }
         }
         
@@ -302,62 +352,14 @@
             try {
                 return decodeURIComponent(escape(atob(str)));
             } catch (e) {
-                return '[Błąd dekodowania Base64]';
+                return str; // Fallback jeśli błąd
             }
         }
         
-        // Tworzenie wszystkich kodowań
-        function createAllEncodings(originalText) {
-            return {
-                original: originalText,
-                rot13: rot13(originalText),
-                reverse: reverseText(originalText),
-                binary: toBinary(originalText),
-                caesar: caesar(originalText),
-                base64: base64Encode(originalText),
-                mix1: rot13(reverseText(originalText)), // ROT13 + Reverse
-                mix2: caesar(reverseText(originalText), 5) // Caesar(5) + Reverse
-            };
-        }
-        
-        // Dekodowanie wszystkich formatów
-        function decodeAllFormats(encodings) {
-            return {
-                original: encodings.original,
-                'ROT13 → dekodowany': rot13(encodings.rot13),
-                'Odwrócony → dekodowany': reverseText(encodings.reverse),
-                'Binarny → dekodowany': fromBinary(encodings.binary),
-                'Caesar → dekodowany': caesar(encodings.caesar, -3),
-                'Base64 → dekodowany': base64Decode(encodings.base64),
-                'ROT13+Reverse → dekodowany': reverseText(rot13(encodings.mix1)),
-                'Caesar+Reverse → dekodowany': reverseText(caesar(encodings.mix2, -5))
-            };
-        }
-        
-        // Podgląd kodowań podczas pisania
-        function showPreview() {
-            const text = document.getElementById('messageInput').value.trim();
-            const preview = document.getElementById('encodingPreview');
-            const content = document.getElementById('previewContent');
-            
-            if (!text) {
-                preview.classList.add('hidden');
-                return;
-            }
-            
-            preview.classList.remove('hidden');
-            const encodings = createAllEncodings(text);
-            
-            content.innerHTML = `
-                <div class="preview-item"><strong>Oryginał:</strong> ${encodings.original}</div>
-                <div class="preview-item"><strong>ROT13:</strong> ${encodings.rot13}</div>
-                <div class="preview-item"><strong>Odwrócony:</strong> ${encodings.reverse}</div>
-                <div class="preview-item"><strong>Binarny:</strong> ${encodings.binary}</div>
-                <div class="preview-item"><strong>Caesar:</strong> ${encodings.caesar}</div>
-                <div class="preview-item"><strong>Base64:</strong> ${encodings.base64}</div>
-                <div class="preview-item"><strong>ROT13+Reverse:</strong> ${encodings.mix1}</div>
-                <div class="preview-item"><strong>Caesar+Reverse:</strong> ${encodings.mix2}</div>
-            `;
+        function toggleDebug() {
+            debugVisible = !debugVisible;
+            const panel = document.getElementById('debugPanel');
+            panel.style.display = debugVisible ? 'block' : 'none';
         }
         
         function updateStatus(id, message, color = '#0c5460') {
@@ -429,15 +431,11 @@
             }
             
             const chatId = createChatId(currentUser.email, otherUserEmail);
-            console.log('🔗 Chat ID:', chatId);
             
-            const messagesRef = collection(db, 'multiEncodedMessages');
+            const messagesRef = collection(db, 'encryptedMessages');
             const q = query(messagesRef, where('chatId', '==', chatId));
             
             unsubscribeMessages = onSnapshot(q, (snapshot) => {
-                console.log('📨 Otrzymano wiadomości:', snapshot.size);
-                updateStatus('messagesStatus', `Otrzymano ${snapshot.size} wiadomości`, 'green');
-                
                 const messagesDiv = document.getElementById('messages');
                 messagesDiv.innerHTML = '';
                 
@@ -456,19 +454,18 @@
                 if (messages.length === 0) {
                     messagesDiv.innerHTML = '<div style="text-align: center; padding: 50px; color: #666;">Brak wiadomości. Napisz pierwszą!</div>';
                 } else {
-                    messages.forEach(data => displayMultiEncodedMessage(data));
+                    messages.forEach(data => displayDecryptedMessage(data));
                 }
                 
                 messagesDiv.scrollTop = messagesDiv.scrollHeight;
                 
             }, (error) => {
                 console.error('❌ Błąd ładowania wiadomości:', error);
-                updateStatus('messagesStatus', 'Błąd: ' + error.message, 'red');
             });
         }
         
-        // Wyświetlanie wiadomości z automatycznym dekodowaniem
-        function displayMultiEncodedMessage(data) {
+        // Wyświetlanie wiadomości (automatyczne deszyfrowanie)
+        function displayDecryptedMessage(data) {
             const messagesDiv = document.getElementById('messages');
             const messageDiv = document.createElement('div');
             
@@ -479,72 +476,41 @@
                 new Date(data.timestamp.toDate()).toLocaleTimeString() : 
                 'Teraz';
             
-            // Dekodowanie automatyczne dla odbiorcy
-            let displayContent = '';
-            
-            if (isOwn) {
-                // Nadawca widzi oryginał + zakodowane wersje
-                displayContent = `
-                    <div class="message-content">📤 ${data.encodings.original}</div>
-                    <div class="encoded-versions">
-                        <strong>📊 Wysłane kodowania:</strong><br>
-                        <div class="encoded-item">🔄 ROT13: ${data.encodings.rot13}</div>
-                        <div class="encoded-item">↩️ Odwrócony: ${data.encodings.reverse}</div>
-                        <div class="encoded-item">💻 Binarny: ${data.encodings.binary}</div>
-                        <div class="encoded-item">🏛️ Caesar: ${data.encodings.caesar}</div>
-                        <div class="encoded-item">📦 Base64: ${data.encodings.base64}</div>
-                        <div class="encoded-item">🎭 ROT13+Reverse: ${data.encodings.mix1}</div>
-                        <div class="encoded-item">🌀 Caesar+Reverse: ${data.encodings.mix2}</div>
-                    </div>
-                `;
-            } else {
-                // Odbiorca widzi oryginał + automatycznie odkodowane wersje
-                const decoded = decodeAllFormats(data.encodings);
-                displayContent = `
-                    <div class="message-content">📥 ${data.encodings.original}</div>
-                    <div class="encoded-versions other">
-                        <strong>🔓 Automatycznie odkodowane z:</strong><br>
-                        <div class="encoded-item other">🔄 ${decoded['ROT13 → dekodowany']}</div>
-                        <div class="encoded-item other">↩️ ${decoded['Odwrócony → dekodowany']}</div>
-                        <div class="encoded-item other">💻 ${decoded['Binarny → dekodowany']}</div>
-                        <div class="encoded-item other">🏛️ ${decoded['Caesar → dekodowany']}</div>
-                        <div class="encoded-item other">📦 ${decoded['Base64 → dekodowany']}</div>
-                        <div class="encoded-item other">🎭 ${decoded['ROT13+Reverse → dekodowany']}</div>
-                        <div class="encoded-item other">🌀 ${decoded['Caesar+Reverse → dekodowany']}</div>
-                    </div>
-                `;
-            }
+            // AUTOMATYCZNE DESZYFROWANIE - użytkownik widzi tylko normalny tekst
+            const decryptedText = decryptChain(data.encryptedText);
             
             messageDiv.innerHTML = `
-                <div class="message-header">${data.sender} • ${time} • Multi-kodowanie</div>
-                ${displayContent}
+                <div class="message-header">${data.sender} • ${time}</div>
+                <div class="message-content">${decryptedText}</div>
             `;
             
             messagesDiv.appendChild(messageDiv);
         }
         
-        // Wysyłanie wiadomości z wszystkimi kodowaniami
-        async function sendMultiEncodedMessage() {
+        // Wysyłanie wiadomości (automatyczne szyfrowanie)
+        async function sendEncryptedMessage() {
             const input = document.getElementById('messageInput');
-            const text = input.value.trim();
+            const originalText = input.value.trim();
             
-            if (!text || !selectedChatUser) return;
+            if (!originalText || !selectedChatUser) return;
+            
+            // AUTOMATYCZNE SZYFROWANIE - użytkownik nie widzi tego procesu
+            const encryptedText = encryptChain(originalText);
             
             const chatId = createChatId(currentUser.email, selectedChatUser);
-            const encodings = createAllEncodings(text);
             
             try {
-                await addDoc(collection(db, 'multiEncodedMessages'), {
+                // Zapisz TYLKO zaszyfrowaną wersję w bazie
+                await addDoc(collection(db, 'encryptedMessages'), {
                     chatId: chatId,
-                    encodings: encodings,
+                    encryptedText: encryptedText, // To jest głęboko zaszyfrowane
                     sender: currentUser.email,
                     recipient: selectedChatUser,
                     timestamp: serverTimestamp()
                 });
                 
                 input.value = '';
-                document.getElementById('encodingPreview').classList.add('hidden');
-                console.log('✅ Multi-kodowana wiadomość wysłana');
+                console.log('✅ Zaszyfrowana wiadomość wysłana');
             } catch (error) {
                 console.error('❌ Błąd wysyłania:', error);
                 alert('Błąd wysyłania: ' + error.message);
@@ -560,7 +526,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('messageInput').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
-                    sendMultiEncodedMessage();
+                    sendEncryptedMessage();
                 }
             });
         });
@@ -602,7 +568,7 @@ const firebaseConfig = {
         window.setDoc = setDoc;
         window.deleteDoc = deleteDoc;
         
-        updateStatus('systemStatus', 'Firebase połączony', 'green');
+        updateStatus('systemStatus', 'Firebase połączony - szyfrowanie aktywne', 'green');
         
         // Autoryzacja
         onAuthStateChanged(auth, (user) => {
