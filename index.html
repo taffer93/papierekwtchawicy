@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Komunikator z Kodowaniem</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            background: #007bff;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .auth-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            max-width: 400px;
+            margin: 0 auto;
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .auth-form {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .auth-form h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        
+        .form-group input:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        
+        .btn {
+            background: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin: 10px 0;
+        }
+        
+        .btn:hover {
+            background: #0056b3;
+        }
+        
+        .btn-success {
+            background: #28a745;
+        }
+        
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+        
+        .switch-form {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+        
+        .switch-form a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .switch-form a:hover {
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .main-container {
+            flex: 1;
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            gap: 10px;
+            padding: 10px;
+        }
+        
+        .sidebar {
+            width: 300px;
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .user-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .users-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .users-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 5px;
+        }
+        
+        .user-item {
+            padding: 12px;
+            margin: 5px 0;
+            background: #f8f9fa;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .user-item:hover {
+            background: #e9ecef;
+        }
+        
+        .user-item.active {
+            background: #007bff;
+            color: white;
+            border-color: #0056b3;
+        }
+        
+        .user-item.online {
+            border-left: 4px solid #28a745;
+        }
+        
+        .chat-header {
+            background: #f8f9fa;
+            padding: 15px;
+            border-bottom: 2px solid #dee2e6;
+            border-radius: 10px 10px 0 0;
+            font-weight: bold;
+        }
+        
+        .messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 400px;
+        }
+        
+        .message {
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 12px;
+            word-wrap: break-word;
+            max-width: 80%;
+        }
+        
+        .message.own {
+            background: #007bff;
+            color: white;
+            margin-left: auto;
+            margin-right: 0;
+        }
+        
+        .message.other {
+            background: #e9ecef;
+            margin-right: auto;
+            margin-left: 0;
+        }
+        
+        .message-info {
+            font-size: 11px;
+            opacity: 0.8;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        .message-content {
+            margin: 5px 0;
+        }
+        
+        .encoding-label {
+            font-size: 10px;
+            opacity: 0.7;
+            font-style: italic;
+            margin-top: 3px;
+        }
+        
+        .input-section {
+            padding: 20px;
+            border-top: 2px solid #dee2e6;
+            border-radius: 0 0 10px 10px;
+        }
+        
+        .message-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            resize: vertical;
+        }
+        
+        .send-options {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .encoding-checkboxes {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .no-chat {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #666;
+            font-style: italic;
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                max-height: 200px;
+            }
+            
+            .encoding-checkboxes {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔐 Komunikator z Automatycznym Kodowaniem</h1>
+    </div>
+
+    <!-- Formularz logowania -->
+    <div id="loginContainer" class="auth-container">
+        <div class="auth-form">
+            <h2>🔑 Logowanie</h2>
+            <div class="form-group">
+                <label for="loginEmail">Email:</label>
+                <input type="email" id="loginEmail" placeholder="Wpisz swój email">
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Hasło:</label>
+                <input type="password" id="loginPassword" placeholder="Wpisz hasło">
+            </div>
+            <button class="btn" onclick="login()">🚀 Zaloguj się</button>
+            <div id="loginError"></div>
+            <div class="switch-form">
+                Nie masz konta? <a href="#" onclick="showRegister()">Zarejestruj się tutaj</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formularz rejestracji -->
+    <div id="registerContainer" class="auth-container hidden">
+        <div class="auth-form">
+            <h2>📝 Rejestracja</h2>
+            <div class="form-group">
+                <label for="registerEmail">Email:</label>
+                <input type="email" id="registerEmail" placeholder="Wpisz swój email">
+            </div>
+            <div class="form-group">
+                <label for="registerPassword">Hasło:</label>
+                <input type="password" id="registerPassword" placeholder="Minimum 6 znaków">
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Potwierdź hasło:</label>
+                <input type="password" id="confirmPassword" placeholder="Powtórz hasło">
+            </div>
+            <button class="btn btn-success" onclick="register()">✨ Utwórz konto</button>
+            <div id="registerError"></div>
+            <div class="switch-form">
+                Masz już konto? <a href="#" onclick="showLogin()">Zaloguj się tutaj</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Główny interfejs -->
+    <div id="mainContainer" class="main-container hidden">
+        <!-- Sidebar z użytkownikami -->
+        <div class="sidebar">
+            <div class="user-info">
+                <div>Zalogowany jako:</div>
+                <strong id="userEmail"></strong>
+                <button class="btn" onclick="logout()" style="margin-top: 10px; padding: 5px 15px; font-size: 14px;">Wyloguj</button>
+            </div>
+            
+            <div class="users-title">👥 Aktywni użytkownicy</div>
+            <div id="usersList" class="users-list">
+                <!-- Lista użytkowników -->
+            </div>
+        </div>
+        
+        <!-- Obszar czatu -->
+        <div class="chat-area">
+            <div id="chatHeader" class="chat-header">
+                Wybierz użytkownika aby rozpocząć rozmowę
+            </div>
+            
+            <div id="messagesContainer" class="messages">
+                <div class="no-chat">
+                    👈 Wybierz użytkownika z listy po lewej
+                </div>
+            </div>
+            
+            <div id="inputSection" class="input-section hidden">
+                <textarea id="messageInput" class="message-input" placeholder="Wpisz wiadomość..." rows="3"></textarea>
+                
+                <div class="send-options">
+                    <div class="encoding-checkboxes">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="sendNormal" checked>
+                            <label for="sendNormal">🔤 Normalny</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="sendRot13" checked>
+                            <label for="sendRot13">🔄 ROT13</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="sendReverse" checked>
+                            <label for="sendReverse">↩️ Odwrócony</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="sendBinary" checked>
+                            <label for="sendBinary">💻 Binarny</label>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-success" onclick="sendMessage()">📤 Wyślij wszystkie</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, where, doc, setDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
+
+        // WSTAW SWOJĄ KONFIGURACJĘ FIREBASE TUTAJ
+const firebaseConfig = {
+  apiKey: "AIzaSyCJeQEnsEDDnGvKoVzKkjRmnOIsmv7HPJs",
+  authDomain: "pensei-b3058.firebaseapp.com",
+  projectId: "pensei-b3058",
+  storageBucket: "pensei-b3058.firebasestorage.app",
+  messagingSenderId: "341036858535",
+  appId: "1:341036858535:web:43d4f98625abd9ff406f82",
+  measurementId: "G-MR8G2GNY5P"
+};
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        window.auth = auth;
+        window.db = db;
+        window.addDoc = addDoc;
+        window.collection = collection;
+        window.serverTimestamp = serverTimestamp;
+        window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+        window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+        window.signOut = signOut;
+        window.query = query;
+        window.where = where;
+        window.orderBy = orderBy;
+        window.onSnapshot = onSnapshot;
+        window.doc = doc;
+        window.setDoc = setDoc;
+        window.deleteDoc = deleteDoc;
+        
+        let currentChatUser = null;
+        let unsubscribeMessages = null;
+        
+        // Nasłuchiwanie zmian autoryzacji
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('loginContainer').classList.add('hidden');
+                document.getElementById('registerContainer').classList.add('hidden');
+                document.getElementById('mainContainer').classList.remove('hidden');
+                document.getElementById('userEmail').textContent = user.email;
+                
+                updateUserStatus(true);
+                loadUsers();
+            } else {
+                document.getElementById('loginContainer').classList.remove('hidden');
+                document.getElementById('registerContainer').classList.add('hidden');
+                document.getElementById('mainContainer').classList.add('hidden');
+                if (auth.currentUser) {
+                    updateUserStatus(false);
+                }
+            }
+        });
+        
+        // Reszta kodu Firebase...
+        async function updateUserStatus(isOnline) {
+            if (!auth.currentUser) return;
+            
+            const userRef = doc(db, 'activeUsers', auth.currentUser.uid);
+            
+            if (isOnline) {
+                await setDoc(userRef, {
+                    email: auth.currentUser.email,
+                    lastSeen: serverTimestamp(),
+                    isOnline: true
+                });
+            } else {
+                await deleteDoc(userRef);
+            }
+        }
+        
+        function loadUsers() {
+            const usersQuery = query(collection(db, 'activeUsers'));
+            onSnapshot(usersQuery, (snapshot) => {
+                const usersList = document.getElementById('usersList');
+                usersList.innerHTML = '';
+                
+                snapshot.forEach((doc) => {
+                    const userData = doc.data();
+                    if (userData.email !== auth.currentUser.email) {
+                        displayUser(userData, doc.id);
+                    }
+                });
+            });
+        }
+        
+        function displayUser(userData, userId) {
+            const usersList = document.getElementById('usersList');
+            const userDiv = document.createElement('div');
+            userDiv.className = `user-item online`;
+            userDiv.dataset.userId = userId;
+            userDiv.dataset.userEmail = userData.email;
+            
+            userDiv.innerHTML = `
+                <div style="font-weight: bold;">${userData.email}</div>
+                <div style="font-size: 12px; color: #666;">🟢 Online</div>
+            `;
+            
+            userDiv.onclick = () => selectUser(userData.email, userId);
+            usersList.appendChild(userDiv);
+        }
+        
+        window.selectUser = function(userEmail, userId) {
+            document.querySelectorAll('.user-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            document.querySelector(`[data-user-id="${userId}"]`).classList.add('active');
+            
+            currentChatUser = userEmail;
+            document.getElementById('chatHeader').textContent = `💬 Rozmowa z ${userEmail}`;
+            document.getElementById('inputSection').classList.remove('hidden');
+            document.getElementById('messagesContainer').innerHTML = '';
+            
+            if (unsubscribeMessages) {
+                unsubscribeMessages();
+            }
+            
+            loadPrivateMessages(userEmail);
+        }
+        
+        function loadPrivateMessages(otherUserEmail) {
+            const chatId = createChatId(auth.currentUser.email, otherUserEmail);
+            const messagesQuery = query(
+                collection(db, 'privateMessages'), 
+                where('chatId', '==', chatId),
+                orderBy('timestamp', 'asc')
+            );
+            
+            unsubscribeMessages = onSnapshot(messagesQuery, (snapshot) => {
+                const messagesContainer = document.getElementById('messagesContainer');
+                messagesContainer.innerHTML = '';
+                
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    displayMessage(data);
+                });
+                
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            });
+        }
+        
+        function createChatId(email1, email2) {
+            return [email1, email2].sort().join('_');
+        }
+        
+        window.currentChatUser = null;
+        window.updateUserStatus = updateUserStatus;
+        
+        window.addEventListener('beforeunload', () => {
+            updateUserStatus(false);
+        });
+    </script>
+    
+    <script>
+        // Przełączanie między formularzami
+        function showRegister() {
+            document.getElementById('loginContainer').classList.add('hidden');
+            document.getElementById('registerContainer').classList.remove('hidden');
+        }
+        
+        function showLogin() {
+            document.getElementById('registerContainer').classList.add('hidden');
+            document.getElementById('loginContainer').classList.remove('hidden');
+        }
+        
+        // Funkcje kodowania/dekodowania
+        function rot13(str) {
+            return str.replace(/[a-zA-Z]/g, function(c) {
+                return String.fromCharCode(
+                    (c <= 'Z' ? 90 : 122) >= (c = c.charCodeAt(0) + 13) ? c : c - 26
+                );
+            });
+        }
+        
+        function toBinary(str) {
+            return str.split('').map(char => 
+                char.charCodeAt(0).toString(2).padStart(8, '0')
+            ).join(' ');
+        }
+        
+        function fromBinary(binaryStr) {
+            return binaryStr.split(' ')
+                .filter(binary => binary.length === 8)
+                .map(binary => String.fromCharCode(parseInt(binary, 2)))
+                .join('');
+        }
+        
+        function decodeMessage(encodedText, encoding) {
+            switch(encoding) {
+                case 'ROT13':
+                    return rot13(encodedText);
+                case 'Odwrócony':
+                    return encodedText.split('').reverse().join('');
+                case 'Binarny':
+                    return fromBinary(encodedText);
+                default:
+                    return encodedText;
+            }
+        }
+        
+        // Funkcje autoryzacji
+        async function register() {
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const errorDiv = document.getElementById('registerError');
+            
+            // Walidacja
+            if (!email || !password) {
+                errorDiv.innerHTML = '<div class="error-message">Wypełnij wszystkie pola!</div>';
+                return;
+            }
+            
+            if (password.length < 6) {
+                errorDiv.innerHTML = '<div class="error-message">Hasło musi mieć minimum 6 znaków!</div>';
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                errorDiv.innerHTML = '<div class="error-message">Hasła nie są identyczne!</div>';
+                return;
+            }
+            
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+                errorDiv.innerHTML = '<div class="success-message">✅ Konto utworzone pomyślnie!</div>';
+            } catch (error) {
+                let errorMessage = 'Błąd rejestracji: ';
+                switch(error.code) {
+                    case 'auth/email-already-in-use':
+                        errorMessage += 'Ten email jest już używany!';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage += 'Nieprawidłowy format email!';
+                        break;
+                    case 'auth/weak-password':
+                        errorMessage += 'Hasło jest za słabe!';
+                        break;
+                    default:
+                        errorMessage += error.message;
+                }
+                errorDiv.innerHTML = `<div class="error-message">${errorMessage}</div>`;
+            }
+        }
+        
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+            
+            if (!email || !password) {
+                errorDiv.innerHTML = '<div class="error-message">Wypełnij wszystkie pola!</div>';
+                return;
+            }
+            
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                errorDiv.innerHTML = '';
+            } catch (error) {
+                let errorMessage = 'Błąd logowania: ';
+                switch(error.code) {
+                    case 'auth/user-not-found':
+                        errorMessage += 'Nie ma użytkownika z tym emailem!';
+                        break;
+                    case 'auth/wrong-password':
+                        errorMessage += 'Nieprawidłowe hasło!';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage += 'Nieprawidłowy format email!';
+                        break;
+                    default:
+                        errorMessage += error.message;
+                }
+                errorDiv.innerHTML = `<div class="error-message">${errorMessage}</div>`;
+            }
+        }
+        
+        async function logout() {
+            await updateUserStatus(false);
+            await signOut(auth);
+        }
+        
+        // Wysyłanie wiadomości
+        async function sendMessage() {
+            if (!currentChatUser) {
+                alert('Wybierz użytkownika do rozmowy!');
+                return;
+            }
+            
+            const messageInput = document.getElementById('messageInput');
+            const text = messageInput.value.trim();
+            
+            if (!text) return;
+            
+            const chatId = createChatId(auth.currentUser.email, currentChatUser);
+            
+            const encodings = [];
+            if (document.getElementById('sendNormal').checked) {
+                encodings.push({ type: 'Normalny', text: text });
+            }
+            if (document.getElementById('sendRot13').checked) {
+                encodings.push({ type: 'ROT13', text: rot13(text) });
+            }
+            if (document.getElementById('sendReverse').checked) {
+                encodings.push({ type: 'Odwrócony', text: text.split('').reverse().join('') });
+            }
+            if (document.getElementById('sendBinary').checked) {
+                encodings.push({ type: 'Binarny', text: toBinary(text) });
+            }
+            
+            if (encodings.length === 0) {
+                alert('Wybierz co najmniej jeden sposób kodowania!');
+                return;
+            }
+            
+            try {
+                for (const encoding of encodings) {
+                    await addDoc(collection(db, 'privateMessages'), {
+                        chatId: chatId,
+                        text: encoding.text,
+                        originalText: text,
+                        encoding: encoding.type,
+                        sender: auth.currentUser.email,
+                        recipient: currentChatUser,
+                        timestamp: serverTimestamp()
+                    });
+                }
+                
+                messageInput.value = '';
+            } catch (error) {
+                console.error('Błąd wysyłania:', error);
+                alert('Błąd wysyłania wiadomości!');
+            }
+        }
+        
+        function displayMessage(data) {
+            const messagesContainer = document.getElementById('messagesContainer');
+            const messageDiv = document.createElement('div');
+            
+            const isOwn = data.sender === auth.currentUser.email;
+            messageDiv.className = `message ${isOwn ? 'own' : 'other'}`;
+            
+            const time = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleTimeString() : 'Teraz';
+            
+            let displayText = data.text;
+            let decodingInfo = '';
+            
+            if (!isOwn && data.encoding !== 'Normalny') {
+                const decodedText = decodeMessage(data.text, data.encoding);
+                decodingInfo = `
+                    <div style="margin-top: 8px; padding: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; font-size: 12px;">
+                        <strong>🔓 Automatycznie odkodowane:</strong><br>
+                        "${decodedText}"
+                    </div>
+                `;
+            }
+            
+            messageDiv.innerHTML = `
+                <div class="message-info">${data.sender} • ${time}</div>
+                <div class="message-content">${displayText}</div>
+                <div class="encoding-label">📝 ${data.encoding}</div>
+                ${decodingInfo}
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+        }
+        
+        function createChatId(email1, email2) {
+            return [email1, email2].sort().join('_');
+        }
+        
+        // Enter wysyła wiadomość
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        
+        // Enter w formularzach
+        document.getElementById('loginPassword').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                login();
+            }
+        });
+        
+        document.getElementById('confirmPassword').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                register();
+            }
+        });
+    </script>
+</body>
+</html>
