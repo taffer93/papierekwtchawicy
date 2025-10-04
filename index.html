@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Komunikator - Naprawiony</title>
+    <title>Komunikator - Multi-kodowanie</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -56,7 +56,7 @@
         }
         
         .messages {
-            height: 300px;
+            height: 400px;
             overflow-y: auto;
             background: #f8f9fa;
             padding: 15px;
@@ -66,23 +66,61 @@
         
         .message {
             background: white;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 12px;
             border-left: 4px solid #007bff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         
         .message.own {
-            background: #007bff;
+            background: linear-gradient(135deg, #007bff, #0056b3);
             color: white;
             border-left: 4px solid #0056b3;
-            margin-left: 20%;
+            margin-left: 15%;
         }
         
         .message.other {
             background: #e9ecef;
             border-left: 4px solid #28a745;
-            margin-right: 20%;
+            margin-right: 15%;
+        }
+        
+        .message-header {
+            font-size: 11px;
+            opacity: 0.8;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        .message-content {
+            font-size: 16px;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+        
+        .encoded-versions {
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+        
+        .encoded-versions.other {
+            background: rgba(0,0,0,0.05);
+        }
+        
+        .encoded-item {
+            margin: 5px 0;
+            padding: 5px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        
+        .encoded-item.other {
+            background: rgba(0,0,0,0.03);
         }
         
         .input-group {
@@ -92,18 +130,20 @@
         
         .input-group input {
             flex: 1;
-            padding: 10px;
+            padding: 12px;
             border: 2px solid #ddd;
             border-radius: 6px;
+            font-size: 16px;
         }
         
         .btn {
             background: #007bff;
             color: white;
-            padding: 10px 20px;
+            padding: 12px 20px;
             border: none;
             border-radius: 6px;
             cursor: pointer;
+            font-size: 16px;
         }
         
         .btn:hover {
@@ -121,10 +161,32 @@
         .hidden {
             display: none;
         }
+        
+        .encoding-preview {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .encoding-preview h4 {
+            margin: 0 0 10px 0;
+            color: #856404;
+        }
+        
+        .preview-item {
+            margin: 8px 0;
+            padding: 8px;
+            background: white;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
-    <h1>🔧 Komunikator - Wersja naprawiona</h1>
+    <h1>🔐 Komunikator - Multi-kodowanie</h1>
     
     <!-- Status -->
     <div class="container">
@@ -153,13 +215,6 @@
             <button class="btn btn-danger" onclick="logout()">Wyloguj</button>
         </div>
         
-        <!-- Testy -->
-        <div style="margin: 15px 0;">
-            <button class="btn" onclick="refreshUsers()">🔄 Odśwież użytkowników</button>
-            <button class="btn" onclick="loadAllMessages()">📥 Pokaż wszystkie wiadomości</button>
-            <button class="btn" onclick="clearAndReload()">🧹 Wyczyść i przeładuj</button>
-        </div>
-        
         <div class="users-grid">
             <!-- Lista użytkowników -->
             <div>
@@ -177,9 +232,15 @@
                 </div>
                 
                 <div id="messageInputSection" class="hidden">
+                    <!-- Podgląd kodowań -->
+                    <div id="encodingPreview" class="encoding-preview hidden">
+                        <h4>🔍 Podgląd kodowań:</h4>
+                        <div id="previewContent"></div>
+                    </div>
+                    
                     <div class="input-group">
-                        <input type="text" id="messageInput" placeholder="Wpisz wiadomość...">
-                        <button class="btn" onclick="sendMessage()">Wyślij</button>
+                        <input type="text" id="messageInput" placeholder="Wpisz wiadomość..." oninput="showPreview()">
+                        <button class="btn btn-success" onclick="sendMultiEncodedMessage()">🚀 Wyślij (wszystkie kodowania)</button>
                     </div>
                 </div>
             </div>
@@ -191,6 +252,113 @@
         let currentUser = null;
         let selectedChatUser = null;
         let unsubscribeMessages = null;
+        
+        // Funkcje kodowania/dekodowania
+        function rot13(str) {
+            return str.replace(/[a-zA-Z]/g, function(c) {
+                return String.fromCharCode(
+                    (c <= 'Z' ? 90 : 122) >= (c = c.charCodeAt(0) + 13) ? c : c - 26
+                );
+            });
+        }
+        
+        function toBinary(str) {
+            return str.split('').map(char => 
+                char.charCodeAt(0).toString(2).padStart(8, '0')
+            ).join(' ');
+        }
+        
+        function fromBinary(binaryStr) {
+            try {
+                return binaryStr.split(' ')
+                    .filter(binary => binary.length === 8)
+                    .map(binary => String.fromCharCode(parseInt(binary, 2)))
+                    .join('');
+            } catch (e) {
+                return '[Błąd dekodowania binarnego]';
+            }
+        }
+        
+        function reverseText(str) {
+            return str.split('').reverse().join('');
+        }
+        
+        function caesar(str, shift = 3) {
+            return str.replace(/[a-zA-Z]/g, function(c) {
+                const start = c <= 'Z' ? 65 : 97;
+                return String.fromCharCode(((c.charCodeAt(0) - start + shift) % 26) + start);
+            });
+        }
+        
+        function base64Encode(str) {
+            try {
+                return btoa(unescape(encodeURIComponent(str)));
+            } catch (e) {
+                return '[Błąd kodowania Base64]';
+            }
+        }
+        
+        function base64Decode(str) {
+            try {
+                return decodeURIComponent(escape(atob(str)));
+            } catch (e) {
+                return '[Błąd dekodowania Base64]';
+            }
+        }
+        
+        // Tworzenie wszystkich kodowań
+        function createAllEncodings(originalText) {
+            return {
+                original: originalText,
+                rot13: rot13(originalText),
+                reverse: reverseText(originalText),
+                binary: toBinary(originalText),
+                caesar: caesar(originalText),
+                base64: base64Encode(originalText),
+                mix1: rot13(reverseText(originalText)), // ROT13 + Reverse
+                mix2: caesar(reverseText(originalText), 5) // Caesar(5) + Reverse
+            };
+        }
+        
+        // Dekodowanie wszystkich formatów
+        function decodeAllFormats(encodings) {
+            return {
+                original: encodings.original,
+                'ROT13 → dekodowany': rot13(encodings.rot13),
+                'Odwrócony → dekodowany': reverseText(encodings.reverse),
+                'Binarny → dekodowany': fromBinary(encodings.binary),
+                'Caesar → dekodowany': caesar(encodings.caesar, -3),
+                'Base64 → dekodowany': base64Decode(encodings.base64),
+                'ROT13+Reverse → dekodowany': reverseText(rot13(encodings.mix1)),
+                'Caesar+Reverse → dekodowany': reverseText(caesar(encodings.mix2, -5))
+            };
+        }
+        
+        // Podgląd kodowań podczas pisania
+        function showPreview() {
+            const text = document.getElementById('messageInput').value.trim();
+            const preview = document.getElementById('encodingPreview');
+            const content = document.getElementById('previewContent');
+            
+            if (!text) {
+                preview.classList.add('hidden');
+                return;
+            }
+            
+            preview.classList.remove('hidden');
+            const encodings = createAllEncodings(text);
+            
+            content.innerHTML = `
+                <div class="preview-item"><strong>Oryginał:</strong> ${encodings.original}</div>
+                <div class="preview-item"><strong>ROT13:</strong> ${encodings.rot13}</div>
+                <div class="preview-item"><strong>Odwrócony:</strong> ${encodings.reverse}</div>
+                <div class="preview-item"><strong>Binarny:</strong> ${encodings.binary}</div>
+                <div class="preview-item"><strong>Caesar:</strong> ${encodings.caesar}</div>
+                <div class="preview-item"><strong>Base64:</strong> ${encodings.base64}</div>
+                <div class="preview-item"><strong>ROT13+Reverse:</strong> ${encodings.mix1}</div>
+                <div class="preview-item"><strong>Caesar+Reverse:</strong> ${encodings.mix2}</div>
+            `;
+        }
         
         function updateStatus(id, message, color = '#0c5460') {
             const element = document.getElementById(id);
@@ -239,23 +407,20 @@
         function selectUser(userEmail) {
             console.log('🎯 Wybrano użytkownika:', userEmail);
             
-            // Usuń aktywność z poprzednich
             document.querySelectorAll('.user-item').forEach(item => {
                 item.classList.remove('active');
             });
             
-            // Aktywuj wybranego
             document.querySelector(`[data-email="${userEmail}"]`).classList.add('active');
             
             selectedChatUser = userEmail;
             document.getElementById('chatTitle').textContent = '💬 Chat z ' + userEmail;
             document.getElementById('messageInputSection').classList.remove('hidden');
             
-            // Załaduj wiadomości
             loadMessagesForUser(userEmail);
         }
         
-        // Ładowanie wiadomości - UPROSZCZONE
+        // Ładowanie wiadomości
         function loadMessagesForUser(otherUserEmail) {
             console.log('📥 Ładowanie wiadomości z:', otherUserEmail);
             
@@ -266,8 +431,7 @@
             const chatId = createChatId(currentUser.email, otherUserEmail);
             console.log('🔗 Chat ID:', chatId);
             
-            // UPROSZCZONE ZAPYTANIE - bez orderBy
-            const messagesRef = collection(db, 'privateMessages');
+            const messagesRef = collection(db, 'multiEncodedMessages');
             const q = query(messagesRef, where('chatId', '==', chatId));
             
             unsubscribeMessages = onSnapshot(q, (snapshot) => {
@@ -277,7 +441,6 @@
                 const messagesDiv = document.getElementById('messages');
                 messagesDiv.innerHTML = '';
                 
-                // Pobierz wszystkie wiadomości i posortuj lokalnie
                 let messages = [];
                 snapshot.forEach((doc) => {
                     const data = doc.data();
@@ -285,17 +448,15 @@
                     messages.push(data);
                 });
                 
-                // Sortuj lokalnie po timestamp
                 messages.sort((a, b) => {
                     if (!a.timestamp || !b.timestamp) return 0;
                     return a.timestamp.toDate() - b.timestamp.toDate();
                 });
                 
-                // Wyświetl wiadomości
                 if (messages.length === 0) {
                     messagesDiv.innerHTML = '<div style="text-align: center; padding: 50px; color: #666;">Brak wiadomości. Napisz pierwszą!</div>';
                 } else {
-                    messages.forEach(data => displayMessage(data));
+                    messages.forEach(data => displayMultiEncodedMessage(data));
                 }
                 
                 messagesDiv.scrollTop = messagesDiv.scrollHeight;
@@ -306,8 +467,8 @@
             });
         }
         
-        // Wyświetlanie wiadomości
-        function displayMessage(data) {
+        // Wyświetlanie wiadomości z automatycznym dekodowaniem
+        function displayMultiEncodedMessage(data) {
             const messagesDiv = document.getElementById('messages');
             const messageDiv = document.createElement('div');
             
@@ -318,38 +479,72 @@
                 new Date(data.timestamp.toDate()).toLocaleTimeString() : 
                 'Teraz';
             
+            // Dekodowanie automatyczne dla odbiorcy
+            let displayContent = '';
+            
+            if (isOwn) {
+                // Nadawca widzi oryginał + zakodowane wersje
+                displayContent = `
+                    <div class="message-content">📤 ${data.encodings.original}</div>
+                    <div class="encoded-versions">
+                        <strong>📊 Wysłane kodowania:</strong><br>
+                        <div class="encoded-item">🔄 ROT13: ${data.encodings.rot13}</div>
+                        <div class="encoded-item">↩️ Odwrócony: ${data.encodings.reverse}</div>
+                        <div class="encoded-item">💻 Binarny: ${data.encodings.binary}</div>
+                        <div class="encoded-item">🏛️ Caesar: ${data.encodings.caesar}</div>
+                        <div class="encoded-item">📦 Base64: ${data.encodings.base64}</div>
+                        <div class="encoded-item">🎭 ROT13+Reverse: ${data.encodings.mix1}</div>
+                        <div class="encoded-item">🌀 Caesar+Reverse: ${data.encodings.mix2}</div>
+                    </div>
+                `;
+            } else {
+                // Odbiorca widzi oryginał + automatycznie odkodowane wersje
+                const decoded = decodeAllFormats(data.encodings);
+                displayContent = `
+                    <div class="message-content">📥 ${data.encodings.original}</div>
+                    <div class="encoded-versions other">
+                        <strong>🔓 Automatycznie odkodowane z:</strong><br>
+                        <div class="encoded-item other">🔄 ${decoded['ROT13 → dekodowany']}</div>
+                        <div class="encoded-item other">↩️ ${decoded['Odwrócony → dekodowany']}</div>
+                        <div class="encoded-item other">💻 ${decoded['Binarny → dekodowany']}</div>
+                        <div class="encoded-item other">🏛️ ${decoded['Caesar → dekodowany']}</div>
+                        <div class="encoded-item other">📦 ${decoded['Base64 → dekodowany']}</div>
+                        <div class="encoded-item other">🎭 ${decoded['ROT13+Reverse → dekodowany']}</div>
+                        <div class="encoded-item other">🌀 ${decoded['Caesar+Reverse → dekodowany']}</div>
+                    </div>
+                `;
+            }
+            
             messageDiv.innerHTML = `
-                <div style="font-size: 11px; opacity: 0.8; margin-bottom: 5px;">
-                    ${data.sender} • ${time} • ${data.encoding || 'Normalny'}
-                </div>
-                <div>${data.text}</div>
+                <div class="message-header">${data.sender} • ${time} • Multi-kodowanie</div>
+                ${displayContent}
             `;
             
             messagesDiv.appendChild(messageDiv);
         }
         
-        // Wysyłanie wiadomości
-        async function sendMessage() {
+        // Wysyłanie wiadomości z wszystkimi kodowaniami
+        async function sendMultiEncodedMessage() {
             const input = document.getElementById('messageInput');
             const text = input.value.trim();
             
             if (!text || !selectedChatUser) return;
             
             const chatId = createChatId(currentUser.email, selectedChatUser);
+            const encodings = createAllEncodings(text);
             
             try {
-                await addDoc(collection(db, 'privateMessages'), {
+                await addDoc(collection(db, 'multiEncodedMessages'), {
                     chatId: chatId,
-                    text: text,
-                    originalText: text,
-                    encoding: 'Normalny',
+                    encodings: encodings,
                     sender: currentUser.email,
                     recipient: selectedChatUser,
                     timestamp: serverTimestamp()
                 });
                 
                 input.value = '';
-                console.log('✅ Wiadomość wysłana');
+                document.getElementById('encodingPreview').classList.add('hidden');
+                console.log('✅ Multi-kodowana wiadomość wysłana');
             } catch (error) {
                 console.error('❌ Błąd wysyłania:', error);
                 alert('Błąd wysyłania: ' + error.message);
@@ -361,35 +556,11 @@
             return [email1, email2].sort().join('_');
         }
         
-        function refreshUsers() {
-            loadUsers();
-        }
-        
-        function loadAllMessages() {
-            // Załaduj WSZYSTKIE wiadomości dla debugowania
-            const q = query(collection(db, 'privateMessages'));
-            
-            onSnapshot(q, (snapshot) => {
-                console.log('🔍 WSZYSTKIE WIADOMOŚCI W BAZIE:');
-                snapshot.forEach((doc) => {
-                    console.log(doc.id, ':', doc.data());
-                });
-                updateStatus('messagesStatus', `Wszystkich wiadomości: ${snapshot.size}`, 'blue');
-            });
-        }
-        
-        function clearAndReload() {
-            document.getElementById('messages').innerHTML = '<div style="text-align: center; padding: 50px;">Przeładowywanie...</div>';
-            if (selectedChatUser) {
-                setTimeout(() => loadMessagesForUser(selectedChatUser), 1000);
-            }
-        }
-        
         // Enter wysyła wiadomość
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('messageInput').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
-                    sendMessage();
+                    sendMultiEncodedMessage();
                 }
             });
         });
@@ -401,16 +572,15 @@
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
         import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, where, doc, setDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
 
-        // ⚠️ WSTAW SWOJĄ KONFIGURACJĘ!
-const firebaseConfig = {
-  apiKey: "AIzaSyCJeQEnsEDDnGvKoVzKkjRmnOIsmv7HPJs",
-  authDomain: "pensei-b3058.firebaseapp.com",
-  projectId: "pensei-b3058",
-  storageBucket: "pensei-b3058.firebasestorage.app",
-  messagingSenderId: "341036858535",
-  appId: "1:341036858535:web:43d4f98625abd9ff406f82",
-  measurementId: "G-MR8G2GNY5P"
-};
+        // ⚠️ WSTAW SWOJĄ KONFIGURACJĘ FIREBASE!
+        const firebaseConfig = {
+            apiKey: "TWÓJ_API_KEY",
+            authDomain: "TWÓJ_PROJECT.firebaseapp.com", 
+            projectId: "TWÓJ_PROJECT_ID",
+            storageBucket: "TWÓJ_PROJECT.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "TWOJA_APP_ID"
+        };
 
         const app = initializeApp(firebaseConfig);
         auth = getAuth(app);
@@ -442,7 +612,6 @@ const firebaseConfig = {
                 document.getElementById('mainApp').classList.remove('hidden');
                 document.getElementById('welcomeMessage').textContent = `💬 Witaj ${user.email}`;
                 
-                // Ustaw status online
                 setUserOnline(true);
                 loadUsers();
             } else {
@@ -503,7 +672,6 @@ const firebaseConfig = {
         window.setUserOnline = setUserOnline;
         window.loadUsers = loadUsers;
         
-        // Offline przy zamknięciu
         window.addEventListener('beforeunload', () => {
             setUserOnline(false);
         });
