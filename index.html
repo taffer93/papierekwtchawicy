@@ -248,7 +248,7 @@ try {
   }
 }
 
-let cu=null,sc=null,um=null,ht=null,es=false,unread={},ot='Kalkulator',nf=false,lastMessage=null,encryptionKey=null,messageIds=new Set(),audioContext=null,scrollTimeout=null,shouldAutoScroll=true,renderQueue=[],isRendering=false;
+let cu=null,sc=null,um=null,ht=null,es=false,unread={},ot='Kalkulator',nf=false,lastMessage=null,encryptionKey=null,messageIds=new Set(),audioContext=null,scrollTimeout=null,shouldAutoScroll=true,renderQueue=[],isRendering=false,isFirstSnapshot=true;
 
 const emojis=['\uD83D\uDE00','\uD83D\uDE03','\uD83D\uDE04','\uD83D\uDE01','\uD83D\uDE06','\uD83D\uDE05','\uD83E\uDD23','\uD83D\uDE02','\uD83D\uDE42','\uD83D\uDE43','\uD83D\uDE09','\uD83D\uDE0A','\uD83D\uDE07','\uD83E\uDD70','\uD83D\uDE0D','\uD83E\uDD29','\uD83D\uDE18','\uD83D\uDE17','\uD83D\uDE1A','\uD83D\uDE19','\uD83E\uDD72','\uD83D\uDE0B','\uD83D\uDE1B','\uD83D\uDE1C','\uD83E\uDD2A','\uD83D\uDE1D','\uD83E\uDD11','\uD83E\uDD17','\uD83E\uDD2D','\uD83E\uDD2B','\uD83E\uDD14','\uD83E\uDD10','\uD83D\uDE10','\uD83D\uDE11','\uD83D\uDE36','\uD83D\uDE0F','\uD83D\uDE12','\uD83D\uDE44','\uD83D\uDE2C','\uD83D\uDE0C','\uD83D\uDE14','\uD83D\uDE2A','\uD83E\uDD24','\uD83D\uDE34','\uD83D\uDE37','\uD83E\uDD12','\uD83E\uDD15','\uD83E\uDD22','\uD83D\uDC4D','\uD83D\uDC4E','\uD83D\uDC4C','\u270C\uFE0F','\uD83E\uDD1E','\uD83E\uDD1F','\uD83E\uDD18','\uD83D\uDC4F','\uD83D\uDE4C','\uD83D\uDC50','\uD83E\uDD32','\uD83E\uDD1D','\uD83D\uDE4F','\u270D\uFE0F','\uD83D\uDCAA','\uD83E\uDDBE'];
 
@@ -462,6 +462,7 @@ window.lo = async function(){
     messageIds.clear();
     renderQueue=[];
     isRendering=false;
+    isFirstSnapshot=true;
     document.getElementById('ma').classList.add('p');
     document.getElementById('lf').classList.remove('p');
     document.getElementById('em').value='';
@@ -495,6 +496,7 @@ async function lm(oue){
   renderQueue=[];
   isRendering=false;
   shouldAutoScroll=true;
+  isFirstSnapshot=true;
   
   const md=document.getElementById('ms');
   md.innerHTML='<div class="q">\uD83D\uDCAC Ładowanie...</div>';
@@ -504,46 +506,73 @@ async function lm(oue){
   const q=mr.where('chatId','==',ci);
   
   um=q.onSnapshot(function(sn){
-    const newMessages=[];
+    const changes=sn.docChanges();
     
-    sn.forEach(function(doc){
-      const dt=doc.data();
-      dt.id=doc.id;
+    if(isFirstSnapshot){
+      const newMessages=[];
       
-      if(!messageIds.has(dt.id)){
-        messageIds.add(dt.id);
-        newMessages.push(dt);
-      }
-    });
-    
-    if(newMessages.length>0){
-      newMessages.sort(function(a,b){
-        if(!a.timestamp||!b.timestamp)return 0;
-        return a.timestamp.toDate()-b.timestamp.toDate()
+      changes.forEach(function(change){
+        if(change.type==='added'){
+          const dt=change.doc.data();
+          dt.id=change.doc.id;
+          messageIds.add(dt.id);
+          newMessages.push(dt);
+        }
       });
       
-      if(messageIds.size===newMessages.length){
+      if(newMessages.length>0){
+        newMessages.sort(function(a,b){
+          if(!a.timestamp||!b.timestamp)return 0;
+          return a.timestamp.toDate()-b.timestamp.toDate()
+        });
+        
         md.innerHTML='';
+        renderQueue=newMessages;
+        processRenderQueue();
+      }else{
+        md.innerHTML='<div class="q">\uD83D\uDCAC Rozpocznij rozmowę!</div>';
       }
       
-      renderQueue=renderQueue.concat(newMessages);
-      processRenderQueue();
-    }else if(sn.empty){
-      md.innerHTML='<div class="q">\uD83D\uDCAC Rozpocznij rozmowę!</div>';
+      isFirstSnapshot=false;
+    }else{
+      changes.forEach(function(change){
+        if(change.type==='added'){
+          const dt=change.doc.data();
+          dt.id=change.doc.id;
+          
+          if(!messageIds.has(dt.id)){
+            messageIds.add(dt.id);
+            renderQueue.push(dt);
+            processRenderQueue();
+          }
+        }else if(change.type==='modified'){
+          const dt=change.doc.data();
+          dt.id=change.doc.id;
+          updateMessageReadStatus(dt.id,dt);
+        }else if(change.type==='removed'){
+          const msgEl=document.querySelector('[data-msg-id="'+change.doc.id+'"]');
+          if(msgEl)msgEl.remove();
+          messageIds.delete(change.doc.id);
+        }
+      });
     }
   })
 }
 
-async function updateMessageReadStatus(messageId,data){
+function updateMessageReadStatus(messageId,data){
   const msgEl=document.querySelector('[data-msg-id="'+messageId+'"]');
   if(!msgEl)return;
   const receiptEl=msgEl.querySelector('.read-receipt');
   if(!receiptEl)return;
+  
   if(data.readAt&&data.readBy){
     const readDate=data.readAt.toDate();
     const readTime=readDate.toLocaleString('pl-PL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
     receiptEl.innerHTML='<span class="checkmark">\u2713\u2713</span> Odczytano: '+readTime;
-    receiptEl.classList.add('read')
+    receiptEl.classList.add('read');
+  }else{
+    receiptEl.innerHTML='<span class="checkmark">\u2713</span> Wysłano';
+    receiptEl.classList.remove('read');
   }
 }
 
