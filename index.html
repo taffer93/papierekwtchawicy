@@ -248,7 +248,7 @@ try {
   }
 }
 
-let cu=null,sc=null,um=null,ht=null,es=false,unread={},ot='Kalkulator',nf=false,lastMessage=null,messageIds=new Set(),audioContext=null,isFirstLoad=true,scrollTimeout=null,shouldAutoScroll=true;
+let cu=null,sc=null,um=null,ht=null,es=false,unread={},ot='Kalkulator',nf=false,lastMessage=null,encryptionKey=null,messageIds=new Set(),audioContext=null,isFirstLoad=true,scrollTimeout=null,shouldAutoScroll=true;
 
 const emojis=['\uD83D\uDE00','\uD83D\uDE03','\uD83D\uDE04','\uD83D\uDE01','\uD83D\uDE06','\uD83D\uDE05','\uD83E\uDD23','\uD83D\uDE02','\uD83D\uDE42','\uD83D\uDE43','\uD83D\uDE09','\uD83D\uDE0A','\uD83D\uDE07','\uD83E\uDD70','\uD83D\uDE0D','\uD83E\uDD29','\uD83D\uDE18','\uD83D\uDE17','\uD83D\uDE1A','\uD83D\uDE19','\uD83E\uDD72','\uD83D\uDE0B','\uD83D\uDE1B','\uD83D\uDE1C','\uD83E\uDD2A','\uD83D\uDE1D','\uD83E\uDD11','\uD83E\uDD17','\uD83E\uDD2D','\uD83E\uDD2B','\uD83E\uDD14','\uD83E\uDD10','\uD83D\uDE10','\uD83D\uDE11','\uD83D\uDE36','\uD83D\uDE0F','\uD83D\uDE12','\uD83D\uDE44','\uD83D\uDE2C','\uD83D\uDE0C','\uD83D\uDE14','\uD83D\uDE2A','\uD83E\uDD24','\uD83D\uDE34','\uD83D\uDE37','\uD83E\uDD12','\uD83E\uDD15','\uD83E\uDD22','\uD83D\uDC4D','\uD83D\uDC4E','\uD83D\uDC4C','\u270C\uFE0F','\uD83E\uDD1E','\uD83E\uDD1F','\uD83E\uDD18','\uD83D\uDC4F','\uD83D\uDE4C','\uD83D\uDC50','\uD83E\uDD32','\uD83E\uDD1D','\uD83D\uDE4F','\u270D\uFE0F','\uD83D\uDCAA','\uD83E\uDDBE'];
 
@@ -263,6 +263,12 @@ function sn(title,body){if(nf&&'Notification'in window&&Notification.permission=
 function ut(){const total=Object.values(unread).reduce(function(sum,count){return sum+count},0);document.title=total>0?'('+total+') '+ot:ot}
 
 function snt(message,sender){const senderName=sender.split('@')[0];const shortMsg=message.length>50?message.substring(0,50)+'...':message;showToast(senderName,shortMsg,'message');sn('\uD83D\uDCAC '+senderName,message);if(lastMessage!==message){playNotificationSound();lastMessage=message}}
+
+async function generateKey(password){const encoder=new TextEncoder();const keyMaterial=await crypto.subtle.importKey('raw',encoder.encode(password),'PBKDF2',false,['deriveBits','deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt:encoder.encode('salt-2024'),iterations:100000,hash:'SHA-256'},keyMaterial,{name:'AES-GCM',length:256},true,['encrypt','decrypt'])}
+
+async function ec(text){try{if(!encryptionKey)encryptionKey=await generateKey('key-2024');const encoder=new TextEncoder();const data=encoder.encode(text);const iv=crypto.getRandomValues(new Uint8Array(12));const encrypted=await crypto.subtle.encrypt({name:'AES-GCM',iv:iv},encryptionKey,data);const encryptedArray=new Uint8Array(encrypted);const combined=new Uint8Array(iv.length+encryptedArray.length);combined.set(iv);combined.set(encryptedArray,iv.length);return btoa(String.fromCharCode.apply(null,combined))}catch(e){return text}}
+
+async function dc(encryptedText){try{if(!encryptionKey)encryptionKey=await generateKey('key-2024');const combined=Uint8Array.from(atob(encryptedText),function(c){return c.charCodeAt(0)});const iv=combined.slice(0,12);const data=combined.slice(12);const decrypted=await crypto.subtle.decrypt({name:'AES-GCM',iv:iv},encryptionKey,data);const decoder=new TextDecoder();return decoder.decode(decrypted)}catch(e){return encryptedText}}
 
 function escapeHtml(text){const div=document.createElement('div');div.textContent=text;return div.innerHTML}
 
@@ -439,4 +445,244 @@ window.rg = async function(){
     showToast('Błąd',msg,'error')
   }finally{
     regBtn.disabled=false;
+    regBtn.textContent='Utwórz konto'
+  }
+};
+
+window.lo = async function(){
+  try{
+    if(ht)clearInterval(ht);
+    if(um)um();
+    await suo(false);
+    await a.signOut();
+    cu=null;
+    sc=null;
+    unread={};
+    encryptionKey=null;
+    messageIds.clear();
+    document.getElementById('ma').classList.add('p');
+    document.getElementById('lf').classList.remove('p');
+    document.getElementById('em').value='';
+    document.getElementById('pw').value='';
+    showToast('Wylogowano','Do zobaczenia!','success')
+  }catch(error){
+    showToast('Błąd','Błąd wylogowania','error')
+  }
+};
+
+function su(ue,io){document.querySelectorAll('.g').forEach(function(i){i.classList.remove('active')});const userEl=document.querySelector('[data-email="'+ue+'"]');if(userEl)userEl.classList.add('active');sc=ue;unread[ue]=0;uur();const un=ue.split('@')[0];document.getElementById('ct').textContent=un;const cs=document.getElementById('cs');cs.innerHTML=io?'<span style="color:#10b981;display:flex;align-items:center"><span class="j online" style="margin-right:5px"></span>Online</span>':'<span style="color:#6b7280;display:flex;align-items:center"><span class="j offline" style="margin-right:5px"></span>Offline</span>';document.getElementById('mis').classList.remove('p');const kkElements=document.querySelectorAll('.kk');if(kkElements.length>0)kkElements[0].classList.remove('p');lm(ue)}
+
+function uur(){document.querySelectorAll('.ll').forEach(function(badge){badge.remove()});Object.keys(unread).forEach(function(email){if(unread[email]>0){const userEl=document.querySelector('[data-email="'+email+'"]');if(userEl){const badge=document.createElement('div');badge.className='ll';badge.textContent=unread[email]>99?'99+':unread[email];userEl.appendChild(badge)}}});ut()}
+
+async function lm(oue){
+  if(um)um();
+  messageIds.clear();
+  isFirstLoad=true;
+  shouldAutoScroll=true;
+  
+  const ci=cci(cu.email,oue);
+  const mr=d.collection('messages');
+  const q=mr.where('chatId','==',ci);
+  
+  um=q.onSnapshot(async function(sn){
+    const changes=sn.docChanges();
     
+    if(isFirstLoad){
+      const md=document.getElementById('ms');
+      md.innerHTML='';
+      
+      if(sn.empty){
+        md.innerHTML='<div class="q">\uD83D\uDCAC Rozpocznij rozmowę!</div>';
+        isFirstLoad=false;
+        return
+      }
+      
+      let messages=[];
+      sn.forEach(function(doc){
+        const dt=doc.data();
+        dt.id=doc.id;
+        messages.push(dt)
+      });
+      
+      messages.sort(function(a,b){
+        if(!a.timestamp||!b.timestamp)return 0;
+        return a.timestamp.toDate()-b.timestamp.toDate()
+      });
+      
+      for(let i=0;i<messages.length;i++){
+        messageIds.add(messages[i].id);
+        await ddm(messages[i])
+      }
+      
+      scrollToBottom(true);
+      isFirstLoad=false
+    }else{
+      for(let i=0;i<changes.length;i++){
+        const change=changes[i];
+        
+        if(change.type==='added'){
+          const dt=change.doc.data();
+          dt.id=change.doc.id;
+          
+          if(!messageIds.has(dt.id)){
+            messageIds.add(dt.id);
+            await ddm(dt);
+            
+            if(dt.sender!==cu.email){
+              shouldAutoScroll=true
+            }
+            
+            scrollToBottom()
+          }
+        }else if(change.type==='modified'){
+          await updateMessageReadStatus(change.doc.id,change.doc.data())
+        }else if(change.type==='removed'){
+          const msgEl=document.querySelector('[data-msg-id="'+change.doc.id+'"]');
+          if(msgEl)msgEl.remove();
+          messageIds.delete(change.doc.id)
+        }
+      }
+    }
+  })
+}
+
+async function updateMessageReadStatus(messageId,data){
+  const msgEl=document.querySelector('[data-msg-id="'+messageId+'"]');
+  if(!msgEl)return;
+  const receiptEl=msgEl.querySelector('.read-receipt');
+  if(!receiptEl)return;
+  if(data.readAt&&data.readBy){
+    const readDate=data.readAt.toDate();
+    const readTime=readDate.toLocaleString('pl-PL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    receiptEl.innerHTML='<span class="checkmark">\u2713\u2713</span> Odczytano: '+readTime;
+    receiptEl.classList.add('read')
+  }
+}
+
+async function ddm(dt){
+  const md=document.getElementById('ms');
+  
+  if(document.querySelector('[data-msg-id="'+dt.id+'"]'))return;
+  
+  const qElement=md.querySelector('.q');
+  if(qElement)qElement.remove();
+  
+  const mdv=document.createElement('div');
+  mdv.setAttribute('data-msg-id',dt.id);
+  const io=dt.sender===cu.email;
+  mdv.className='k '+(io?'own':'other');
+  const tm=dt.timestamp?new Date(dt.timestamp.toDate()).toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'}):'Teraz';
+  
+  let content;
+  if(dt.image){
+    content='<img src="'+dt.image+'" class="hh" onclick="oi(\''+dt.image+'\')" style="cursor:pointer">'
+  }else{
+    const dct=await dc(dt.text||'');
+    content='<div class="m cc">'+escapeHtml(dct)+'</div>';
+    if(!io){
+      markAsRead(dt.id,dt.sender)
+    }
+  }
+  
+  let readReceipt='';
+  if(io){
+    if(dt.readAt&&dt.readBy){
+      const readDate=dt.readAt.toDate();
+      const readTime=readDate.toLocaleString('pl-PL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+      readReceipt='<div class="read-receipt read"><span class="checkmark">\u2713\u2713</span> Odczytano: '+readTime+'</div>'
+    }else{
+      readReceipt='<div class="read-receipt"><span class="checkmark">\u2713</span> Wysłano</div>'
+    }
+  }
+  
+  const deleteBtn='<button class="delete-msg" onclick="deleteMessage(\''+dt.id+'\')" title="Usuń">&times;</button>';
+  mdv.innerHTML=deleteBtn+'<div class="l">'+escapeHtml(io?'Ty':dt.sender.split('@')[0])+' &bull; '+tm+'</div>'+content+readReceipt;
+  md.appendChild(mdv)
+}
+
+function cci(e1,e2){return[e1,e2].sort().join('_')}
+
+window.sm = async function(){
+  const mi=document.getElementById('mi');
+  const msg=mi.value.trim();
+  const imgs=document.querySelectorAll('.ii img');
+  
+  if(!msg&&imgs.length===0)return;
+  if(!sc){showToast('Błąd','Wybierz rozmówcę','error');return}
+  
+  shouldAutoScroll=true;
+  
+  try{
+    const ci=cci(cu.email,sc);
+    
+    if(msg){
+      const encryptedMsg=await ec(msg);
+      await d.collection('messages').add({
+        chatId:ci,
+        sender:cu.email,
+        text:encryptedMsg,
+        timestamp:firebase.firestore.FieldValue.serverTimestamp(),
+        readAt:null,
+        readBy:null
+      })
+    }
+    
+    for(let i=0;i<imgs.length;i++){
+      await d.collection('messages').add({
+        chatId:ci,
+        sender:cu.email,
+        image:imgs[i].src,
+        timestamp:firebase.firestore.FieldValue.serverTimestamp(),
+        readAt:null,
+        readBy:null
+      })
+    }
+    
+    mi.value='';
+    document.getElementById('imagePreviewContainer').innerHTML='';
+    scrollToBottom(true)
+  }catch(error){
+    showToast('Błąd','Błąd wysyłania','error')
+  }
+};
+
+async function suo(io){if(!cu)return;try{const ur=d.collection('users').doc(cu.uid);await ur.set({email:cu.email,isOnline:io,lastSeen:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})}catch(error){}}
+
+function lu(){const ur=d.collection('users');ur.onSnapshot(function(sn){const onlineUsers=[];const offlineUsers=[];sn.forEach(function(dc){const dt=dc.data();if(dt.email!==cu.email){const userItem={email:dt.email,isOnline:dt.isOnline||false,lastSeen:dt.lastSeen};if(dt.isOnline)onlineUsers.push(userItem);else offlineUsers.push(userItem)}});document.getElementById('onlineCount').textContent=onlineUsers.length;document.getElementById('offlineCount').textContent=offlineUsers.length;const ulOnline=document.getElementById('ulOnline');ulOnline.innerHTML='';if(onlineUsers.length===0){ulOnline.innerHTML='<div style="text-align:center;color:#666;font-size:12px;padding:12px">Brak użytkowników online</div>'}else{onlineUsers.forEach(function(user){const dv=document.createElement('div');dv.className='g';dv.setAttribute('data-email',user.email);dv.onclick=function(){su(user.email,user.isOnline)};dv.innerHTML='<div class="h">'+escapeHtml(user.email.split('@')[0])+'</div><div class="i"><span class="j online"></span>Online</div>';ulOnline.appendChild(dv)})}const ulOffline=document.getElementById('ulOffline');ulOffline.innerHTML='';if(offlineUsers.length===0){ulOffline.innerHTML='<div style="text-align:center;color:#666;font-size:12px;padding:12px">Wszyscy online! \uD83C\uDF89</div>'}else{offlineUsers.forEach(function(user){const dv=document.createElement('div');dv.className='g';dv.setAttribute('data-email',user.email);dv.onclick=function(){su(user.email,user.isOnline)};let lastSeenText='Dawno temu';if(user.lastSeen){const lastSeenDate=user.lastSeen.toDate();const now=new Date();const diffMs=now-lastSeenDate;const diffMins=Math.floor(diffMs/60000);if(diffMins<1)lastSeenText='Przed chwilą';else if(diffMins<60)lastSeenText=diffMins+' min temu';else if(diffMins<1440)lastSeenText=Math.floor(diffMins/60)+' godz. temu';else lastSeenText=Math.floor(diffMins/1440)+' dni temu'}dv.innerHTML='<div class="h">'+escapeHtml(user.email.split('@')[0])+'</div><div class="i"><span class="j offline"></span>'+lastSeenText+'</div>';ulOffline.appendChild(dv)})}uur()})}
+
+const msEl=document.getElementById('ms');
+if(msEl){
+  msEl.addEventListener('scroll',function(){
+    shouldAutoScroll=isUserAtBottom()
+  })
+}
+
+document.getElementById('mi').addEventListener('keypress',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sm()}});
+document.getElementById('em').addEventListener('keypress',function(e){if(e.key==='Enter'){e.preventDefault();lg()}});
+document.getElementById('pw').addEventListener('keypress',function(e){if(e.key==='Enter'){e.preventDefault();lg()}});
+document.addEventListener('click',function(e){if(!e.target.closest('.dd')&&!e.target.closest('.ee')){const ep=document.getElementById('ep');if(ep&&es){ep.classList.add('p');es=false}}});
+
+a.onAuthStateChanged(async function(u){
+  if(u){
+    cu=u;
+    document.getElementById('lf').classList.add('p');
+    document.getElementById('ma').classList.remove('p');
+    document.getElementById('up').textContent=u.email;
+    await suo(true);
+    lu();
+    rn();
+    ht=setInterval(function(){suo(true)},30000);
+    window.addEventListener('beforeunload',function(){suo(false)})
+  }else{
+    cu=null;
+    document.getElementById('ma').classList.add('p');
+    document.getElementById('lf').classList.remove('p');
+    if(ht){clearInterval(ht);ht=null}
+    if(um){um();um=null}
+  }
+});
+
+document.addEventListener('visibilitychange',function(){if(cu){if(document.hidden)suo(false);else{suo(true);if(sc){unread[sc]=0;uur()}}}});
+</script>
+</body>
+</html>
