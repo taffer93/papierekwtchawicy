@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0f0f0f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.png">
 <title>Chat</title>
@@ -58,6 +61,7 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 .u {background:#2563eb;color:#fff;padding:14px 24px;border:none;border-radius:8px;cursor:pointer;font-weight:600;width:100%;margin:8px 0;font-size:15px;transition:all 0.2s}
 .u:hover {background:#3b82f6}
 .u:active {transform:scale(0.98)}
+.u:disabled {background:#4a4a4a;cursor:not-allowed}
 .v {background:#10b981}
 .v:hover {background:#14c992}
 .w {text-align:center;margin-top:20px;color:#888;font-size:13px}
@@ -94,7 +98,6 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 .image-preview-container {display:flex;flex-wrap:wrap;gap:6px;width:100%;margin-bottom:8px}
 .toast-notification {position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#2563eb;color:#fff;padding:16px 24px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.4);z-index:10002;font-size:14px;font-weight:500;animation:toastIn 0.3s ease;max-width:90%;border:1px solid #3b82f6}
 .msg-deleting {animation:fadeOut 0.3s ease;opacity:0;transform:scale(0.8)}
-.debug-console {position:fixed;bottom:10px;left:10px;background:rgba(0,0,0,0.9);color:#0f0;padding:10px;border-radius:8px;font-family:monospace;font-size:11px;max-width:400px;max-height:200px;overflow-y:auto;z-index:10000;display:none}
 .ee::-webkit-scrollbar,.aa::-webkit-scrollbar,.b::-webkit-scrollbar,.e::-webkit-scrollbar{width:6px;height:6px}
 .ee::-webkit-scrollbar-track,.aa::-webkit-scrollbar-track,.b::-webkit-scrollbar-track,.e::-webkit-scrollbar-track{background:#1a1a1a}
 .ee::-webkit-scrollbar-thumb,.aa::-webkit-scrollbar-thumb,.b::-webkit-scrollbar-thumb,.e::-webkit-scrollbar-thumb{background:#3a3a3a;border-radius:3px}
@@ -107,8 +110,6 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 </style>
 </head>
 <body>
-
-<div class="debug-console" id="debugConsole"></div>
 
 <div class="install-prompt" id="installPrompt">
   <strong>&#128242; Zainstaluj aplikacj&#281;</strong>
@@ -127,10 +128,15 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
     <label>Has&#322;o</label>
     <input type="password" id="pw" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;" autocomplete="current-password">
   </div>
-  <button class="u" onclick="lg()">Zaloguj si&#281;</button>
-  <button class="u v" onclick="rg()">Utw&#243;rz konto</button>
+  <button class="u" id="loginBtn" onclick="lg()">Zaloguj si&#281;</button>
+  <button class="u v" id="registerBtn" onclick="rg()">Utw&#243;rz konto</button>
   <div id="am"></div>
   <div class="w">&#128274; Bezpieczny end-to-end</div>
+  <div style="margin-top:15px;text-align:center">
+    <small style="color:#666;font-size:11px">
+      Firebase: <span id="firebaseStatus" style="color:#ef4444">&#10007; Ładowanie...</span>
+    </small>
+  </div>
 </div>
 
 <div class="a p" id="ma">
@@ -184,23 +190,14 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
 <script>
-// DEBUG Console
-function debugLog(msg) {
-  console.log('[DEBUG]', msg);
-  const dc = document.getElementById('debugConsole');
-  if (dc) {
-    dc.style.display = 'block';
-    dc.innerHTML += new Date().toLocaleTimeString() + ': ' + msg + '<br>';
-    dc.scrollTop = dc.scrollHeight;
-  }
-}
+console.log('%c[CHAT] Inicjalizacja...', 'color: #10b981; font-weight: bold');
 
 // PWA Install
 if('serviceWorker'in navigator){
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('sw.js')
-      .then(r=>debugLog('SW zarejestrowany'))
-      .catch(e=>debugLog('SW error: '+e))
+      .then(()=>console.log('[SW] OK'))
+      .catch(e=>console.error('[SW] Error:',e))
   })
 }
 
@@ -237,16 +234,30 @@ const firebaseConfig={
   measurementId:"G-MR8G2GNY5P"
 };
 
-debugLog('Inicjalizacja Firebase...');
-firebase.initializeApp(firebaseConfig);
-const a=firebase.auth();
-const d=firebase.firestore();
-debugLog('Firebase OK');
+console.log('[Firebase] Inicjalizacja...');
+let a, d;
 
-// Enable persistence
-d.enablePersistence()
-  .then(()=>debugLog('Persistence enabled'))
-  .catch(e=>debugLog('Persistence error: '+e.code));
+try {
+  firebase.initializeApp(firebaseConfig);
+  a = firebase.auth();
+  d = firebase.firestore();
+  console.log('%c[Firebase] ✓ Załadowano pomyślnie', 'color: #10b981');
+  
+  // Update status indicator
+  const statusEl = document.getElementById('firebaseStatus');
+  if(statusEl) {
+    statusEl.innerHTML = '&#10003; Połączono';
+    statusEl.style.color = '#10b981';
+  }
+} catch(err) {
+  console.error('%c[Firebase] ✗ BŁĄD:', 'color: #ef4444', err);
+  const statusEl = document.getElementById('firebaseStatus');
+  if(statusEl) {
+    statusEl.innerHTML = '&#10007; Błąd: ' + err.message;
+    statusEl.style.color = '#ef4444';
+  }
+  alert('BŁĄD FIREBASE: ' + err.message);
+}
 
 let cu=null,sc=null,um=null,ht=null,es=false,unread={},ot='Chat',nf=false,lastMessage=null,encryptionKey=null,messageIds=new Set(),audioContext=null,isFirstLoad=true;
 
@@ -256,9 +267,9 @@ function playNotificationSound(){try{if(!audioContext)audioContext=new(window.Au
 
 function showToast(title,message,type){type=type||'info';const toast=document.createElement('div');toast.className='toast-notification';if(type==='success'){toast.style.background='#10b981';toast.style.borderColor='#14c992'}else if(type==='error'){toast.style.background='#ef4444';toast.style.borderColor='#f87171'}else if(type==='message'){toast.style.background='#2563eb';toast.style.borderColor='#3b82f6'}toast.innerHTML='<strong>'+escapeHtml(title)+'</strong><br>'+escapeHtml(message);document.body.appendChild(toast);playNotificationSound();if(navigator.vibrate)navigator.vibrate([100,50,100]);setTimeout(function(){toast.style.opacity='0';toast.style.transform='translate(-50%, -100%)';setTimeout(function(){toast.remove()},300)},4000)}
 
-function rn(){if('Notification'in window&&Notification.permission==='default'){Notification.requestPermission().then(function(permission){nf=permission==='granted';if(nf)showToast('Powiadomienia','Powiadomienia w\u0142\u0105czone!','success')})}}
+function rn(){if('Notification'in window&&Notification.permission==='default'){Notification.requestPermission().then(function(permission){nf=permission==='granted';if(nf)showToast('Powiadomienia','Powiadomienia włączone!','success')})}}
 
-function sn(title,body){if(nf&&'Notification'in window&&Notification.permission==='granted'){try{const notification=new Notification(title,{body:body,icon:'icon.png',tag:'chat-message',requireInteraction:false});notification.onclick=function(){window.focus();notification.close()}}catch(e){}}}
+function sn(title,body){if(nf&&'Notification'in window&&Notification.permission==='granted'){try{const notification=new Notification(title,{body:body,icon:'icon.png',tag:'chat-message',requireInteraction:false});notification.onclick=function(){window.focus();notification.close()}}catch(e){console.log('[Notification] Error:',e)}}}
 
 function ut(){const total=Object.values(unread).reduce(function(sum,count){return sum+count},0);document.title=total>0?'('+total+') '+ot:ot}
 
@@ -266,9 +277,9 @@ function snt(message,sender){const senderName=sender.split('@')[0];const shortMs
 
 async function generateKey(password){const encoder=new TextEncoder();const keyMaterial=await crypto.subtle.importKey('raw',encoder.encode(password),'PBKDF2',false,['deriveBits','deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt:encoder.encode('chat-salt-2024'),iterations:100000,hash:'SHA-256'},keyMaterial,{name:'AES-GCM',length:256},true,['encrypt','decrypt'])}
 
-async function ec(text){try{if(!encryptionKey)encryptionKey=await generateKey('secure-chat-key-2024');const encoder=new TextEncoder();const data=encoder.encode(text);const iv=crypto.getRandomValues(new Uint8Array(12));const encrypted=await crypto.subtle.encrypt({name:'AES-GCM',iv:iv},encryptionKey,data);const encryptedArray=new Uint8Array(encrypted);const combined=new Uint8Array(iv.length+encryptedArray.length);combined.set(iv);combined.set(encryptedArray,iv.length);return btoa(String.fromCharCode.apply(null,combined))}catch(e){debugLog('Encryption error: '+e);return text}}
+async function ec(text){try{if(!encryptionKey)encryptionKey=await generateKey('secure-chat-key-2024');const encoder=new TextEncoder();const data=encoder.encode(text);const iv=crypto.getRandomValues(new Uint8Array(12));const encrypted=await crypto.subtle.encrypt({name:'AES-GCM',iv:iv},encryptionKey,data);const encryptedArray=new Uint8Array(encrypted);const combined=new Uint8Array(iv.length+encryptedArray.length);combined.set(iv);combined.set(encryptedArray,iv.length);return btoa(String.fromCharCode.apply(null,combined))}catch(e){console.error('[Encryption] Error:',e);return text}}
 
-async function dc(encryptedText){try{if(!encryptionKey)encryptionKey=await generateKey('secure-chat-key-2024');const combined=Uint8Array.from(atob(encryptedText),function(c){return c.charCodeAt(0)});const iv=combined.slice(0,12);const data=combined.slice(12);const decrypted=await crypto.subtle.decrypt({name:'AES-GCM',iv:iv},encryptionKey,data);const decoder=new TextDecoder();return decoder.decode(decrypted)}catch(e){return encryptedText}}
+async function dc(encryptedText){try{if(!encryptionKey)encryptionKey=await generateKey('secure-chat-key-2024');const combined=Uint8Array.from(atob(encryptedText),function(c){return c.charCodeAt(0)});const iv=combined.slice(0,12);const data=combined.slice(12);const decrypted=await crypto.subtle.decrypt({name:'AES-GCM',iv:iv},encryptionKey,data);const decoder=new TextDecoder();return decoder.decode(decrypted)}catch(e){console.error('[Decryption] Error:',e);return encryptedText}}
 
 function escapeHtml(text){const div=document.createElement('div');div.textContent=text;return div.innerHTML}
 
@@ -280,41 +291,148 @@ function ie(){const eg=document.getElementById('eg');if(!eg)return;eg.innerHTML=
 
 function ae(emoji){const mi=document.getElementById('mi');if(!mi)return;mi.value+=emoji;mi.focus();const ep=document.getElementById('ep');if(ep)ep.classList.add('p');es=false}
 
-async function markAsRead(messageId,sender){if(!cu||!messageId||sender===cu.email)return;try{await d.collection('messages').doc(messageId).update({readAt:firebase.firestore.FieldValue.serverTimestamp(),readBy:cu.email})}catch(e){debugLog('Mark read error: '+e)}}
+async function markAsRead(messageId,sender){if(!cu||!messageId||sender===cu.email)return;try{await d.collection('messages').doc(messageId).update({readAt:firebase.firestore.FieldValue.serverTimestamp(),readBy:cu.email})}catch(e){console.log('[MarkRead] Error:',e)}}
 
-async function deleteMessage(messageId){if(!messageId)return;if(!confirm('Czy na pewno chcesz usun\u0105\u0107 t\u0119 wiadomo\u015b\u0107?'))return;try{const msgEl=document.querySelector('[data-msg-id="'+messageId+'"]');if(msgEl)msgEl.classList.add('msg-deleting');await d.collection('messages').doc(messageId).delete();setTimeout(function(){if(msgEl&&msgEl.parentNode)msgEl.remove();messageIds.delete(messageId)},300);showToast('Sukces','Wiadomo\u015b\u0107 usuni\u0119ta','success')}catch(error){debugLog('Delete error: '+error);showToast('B\u0142\u0105d','Nie uda\u0142o si\u0119 usun\u0105\u0107','error')}}
+async function deleteMessage(messageId){if(!messageId)return;if(!confirm('Czy na pewno chcesz usunąć tę wiadomość?'))return;try{const msgEl=document.querySelector('[data-msg-id="'+messageId+'"]');if(msgEl)msgEl.classList.add('msg-deleting');await d.collection('messages').doc(messageId).delete();setTimeout(function(){if(msgEl&&msgEl.parentNode)msgEl.remove();messageIds.delete(messageId)},300);showToast('Sukces','Wiadomość usunięta','success')}catch(error){console.error('[Delete] Error:',error);showToast('Błąd','Nie udało się usunąć','error')}}
 
 function ci(file,maxWidth,quality){maxWidth=maxWidth||800;quality=quality||0.8;return new Promise(function(resolve){const canvas=document.createElement('canvas');const ctx=canvas.getContext('2d');const img=new Image();img.onload=function(){let width=img.width;let height=img.height;if(width>height){if(width>maxWidth){height*=maxWidth/width;width=maxWidth}}else{if(height>maxWidth){width*=maxWidth/height;height=maxWidth}}canvas.width=width;canvas.height=height;ctx.drawImage(img,0,0,width,height);canvas.toBlob(resolve,'image/jpeg',quality)};img.src=URL.createObjectURL(file)})}
 
-async function hu(input){const file=input.files[0];if(!file)return;if(!file.type.startsWith('image/')){showToast('B\u0142\u0105d','Wybierz plik obrazu','error');return}try{let compressedFile=file;if(file.size>1024*1024)compressedFile=await ci(file,600,0.7);const reader=new FileReader();reader.onload=function(e){const base64=e.target.result;const img=document.createElement('img');img.src=base64;img.className='hh';img.onclick=function(){oi(base64)};const wrapper=document.createElement('div');wrapper.className='ii';const removeBtn=document.createElement('button');removeBtn.className='jj';removeBtn.innerHTML='&times;';removeBtn.onclick=function(ev){ev.stopPropagation();wrapper.remove()};wrapper.appendChild(img);wrapper.appendChild(removeBtn);const container=document.getElementById('imagePreviewContainer');container.appendChild(wrapper)};reader.readAsDataURL(compressedFile)}catch(error){showToast('B\u0142\u0105d','B\u0142\u0105d przetwarzania','error')}input.value=''}
+async function hu(input){const file=input.files[0];if(!file)return;if(!file.type.startsWith('image/')){showToast('Błąd','Wybierz plik obrazu','error');return}try{let compressedFile=file;if(file.size>1024*1024)compressedFile=await ci(file,600,0.7);const reader=new FileReader();reader.onload=function(e){const base64=e.target.result;const img=document.createElement('img');img.src=base64;img.className='hh';img.onclick=function(){oi(base64)};const wrapper=document.createElement('div');wrapper.className='ii';const removeBtn=document.createElement('button');removeBtn.className='jj';removeBtn.innerHTML='&times;';removeBtn.onclick=function(ev){ev.stopPropagation();wrapper.remove()};wrapper.appendChild(img);wrapper.appendChild(removeBtn);const container=document.getElementById('imagePreviewContainer');container.appendChild(wrapper)};reader.readAsDataURL(compressedFile)}catch(error){showToast('Błąd','Błąd przetwarzania','error')}input.value=''}
 
 function oi(src){const modal=document.createElement('div');modal.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);display:flex;align-items:center;justify-content:center;z-index:10000;cursor:pointer';const img=document.createElement('img');img.src=src;img.style.cssText='max-width:90%;max-height:90%;border-radius:8px';modal.appendChild(img);modal.onclick=function(){modal.remove()};document.body.appendChild(modal)}
 
 function sam(m,ie){const dv=document.getElementById('am');dv.innerHTML=ie?'<div class="x">'+escapeHtml(m)+'</div>':'<div class="y">'+escapeHtml(m)+'</div>';setTimeout(function(){dv.innerHTML=''},5000)}
 
-async function lg(){debugLog('Próba logowania...');const e=document.getElementById('em').value.trim();const p=document.getElementById('pw').value;if(!e||!p){sam('Wype\u0142nij wszystkie pola',true);return}try{debugLog('signInWithEmailAndPassword...');const result=await a.signInWithEmailAndPassword(e,p);debugLog('Zalogowano: '+result.user.email);sam('Zalogowano pomy\u015blnie');showToast('Sukces','Zalogowano!','success')}catch(er){debugLog('Błąd logowania: '+er.code+' - '+er.message);let msg='B\u0142\u0105d logowania: '+er.code;if(er.code==='auth/user-not-found')msg='Nie znaleziono u\u017cytkownika';else if(er.code==='auth/wrong-password')msg='Nieprawid\u0142owe has\u0142o';else if(er.code==='auth/invalid-email')msg='Nieprawid\u0142owy email';else if(er.code==='auth/invalid-credential')msg='Nieprawid\u0142owe dane';else if(er.code==='auth/too-many-requests')msg='Zbyt wiele pr\u00f3b. Spr\u00f3buj p\u00f3\u017aniej';sam(msg,true);showToast('B\u0142\u0105d',msg,'error')}}
+async function lg(){
+  console.log('%c[Login] Rozpoczynam logowanie...', 'color: #2563eb; font-weight: bold');
+  
+  const e=document.getElementById('em').value.trim();
+  const p=document.getElementById('pw').value;
+  const loginBtn=document.getElementById('loginBtn');
+  
+  if(!e||!p){
+    console.warn('[Login] Puste pola');
+    sam('Wypełnij wszystkie pola',true);
+    return
+  }
+  
+  if(!a){
+    console.error('[Login] Firebase Auth nie jest zainicjalizowany!');
+    alert('BŁĄD: Firebase Auth nie jest załadowany. Odśwież stronę.');
+    return
+  }
+  
+  loginBtn.disabled=true;
+  loginBtn.textContent='Logowanie...';
+  
+  try{
+    console.log('[Login] Wywołuję signInWithEmailAndPassword...');
+    console.log('[Login] Email:', e);
+    
+    const result=await a.signInWithEmailAndPassword(e,p);
+    
+    console.log('%c[Login] ✓ Sukces!', 'color: #10b981; font-weight: bold');
+    console.log('[Login] User:', result.user.email);
+    
+    sam('Zalogowano pomyślnie');
+    showToast('Sukces','Zalogowano!','success')
+  }catch(er){
+    console.error('%c[Login] ✗ BŁĄD:', 'color: #ef4444; font-weight: bold');
+    console.error('[Login] Code:', er.code);
+    console.error('[Login] Message:', er.message);
+    console.error('[Login] Full error:', er);
+    
+    let msg='Błąd logowania';
+    
+    if(er.code==='auth/user-not-found'){
+      msg='Nie znaleziono użytkownika'
+    }else if(er.code==='auth/wrong-password'){
+      msg='Nieprawidłowe hasło'
+    }else if(er.code==='auth/invalid-email'){
+      msg='Nieprawidłowy email'
+    }else if(er.code==='auth/invalid-credential'){
+      msg='Nieprawidłowe dane logowania'
+    }else if(er.code==='auth/too-many-requests'){
+      msg='Zbyt wiele prób. Spróbuj później'
+    }else if(er.code==='auth/network-request-failed'){
+      msg='Brak połączenia z internetem'
+    }else{
+      msg='Błąd: '+er.code
+    }
+    
+    sam(msg,true);
+    showToast('Błąd',msg,'error')
+  }finally{
+    loginBtn.disabled=false;
+    loginBtn.textContent='Zaloguj się'
+  }
+}
 
-async function rg(){debugLog('Próba rejestracji...');const e=document.getElementById('em').value.trim();const p=document.getElementById('pw').value;if(!e||!p){sam('Wype\u0142nij wszystkie pola',true);return}if(p.length<6){sam('Has\u0142o musi mie\u0107 minimum 6 znak\u00f3w',true);return}try{debugLog('createUserWithEmailAndPassword...');const result=await a.createUserWithEmailAndPassword(e,p);debugLog('Utworzono konto: '+result.user.email);sam('Konto utworzone');showToast('Sukces','Konto utworzone!','success')}catch(er){debugLog('Błąd rejestracji: '+er.code+' - '+er.message);let msg='B\u0142\u0105d rejestracji: '+er.code;if(er.code==='auth/email-already-in-use')msg='Email ju\u017c u\u017cywany';else if(er.code==='auth/weak-password')msg='Has\u0142o za s\u0142abe';else if(er.code==='auth/invalid-email')msg='Nieprawid\u0142owy email';sam(msg,true);showToast('B\u0142\u0105d',msg,'error')}}
+async function rg(){
+  console.log('[Register] Rozpoczynam rejestrację...');
+  
+  const e=document.getElementById('em').value.trim();
+  const p=document.getElementById('pw').value;
+  const regBtn=document.getElementById('registerBtn');
+  
+  if(!e||!p){
+    sam('Wypełnij wszystkie pola',true);
+    return
+  }
+  
+  if(p.length<6){
+    sam('Hasło musi mieć minimum 6 znaków',true);
+    return
+  }
+  
+  if(!a){
+    alert('BŁĄD: Firebase Auth nie jest załadowany. Odśwież stronę.');
+    return
+  }
+  
+  regBtn.disabled=true;
+  regBtn.textContent='Tworzenie...';
+  
+  try{
+    console.log('[Register] Wywołuję createUserWithEmailAndPassword...');
+    const result=await a.createUserWithEmailAndPassword(e,p);
+    console.log('[Register] ✓ Sukces:', result.user.email);
+    sam('Konto utworzone');
+    showToast('Sukces','Konto utworzone!','success')
+  }catch(er){
+    console.error('[Register] ✗ Błąd:',er);
+    let msg='Błąd rejestracji';
+    if(er.code==='auth/email-already-in-use')msg='Email już używany';
+    else if(er.code==='auth/weak-password')msg='Hasło za słabe';
+    else if(er.code==='auth/invalid-email')msg='Nieprawidłowy email';
+    else msg='Błąd: '+er.code;
+    sam(msg,true);
+    showToast('Błąd',msg,'error')
+  }finally{
+    regBtn.disabled=false;
+    regBtn.textContent='Utwórz konto'
+  }
+}
 
-async function lo(){try{if(ht)clearInterval(ht);if(um)um();await suo(false);await a.signOut();cu=null;sc=null;unread={};encryptionKey=null;messageIds.clear();document.getElementById('ma').classList.add('p');document.getElementById('lf').classList.remove('p');document.getElementById('em').value='';document.getElementById('pw').value='';showToast('Wylogowano','Do zobaczenia!','success')}catch(error){debugLog('Logout error: '+error);showToast('B\u0142\u0105d','B\u0142\u0105d wylogowania','error')}}
+async function lo(){try{if(ht)clearInterval(ht);if(um)um();await suo(false);await a.signOut();cu=null;sc=null;unread={};encryptionKey=null;messageIds.clear();document.getElementById('ma').classList.add('p');document.getElementById('lf').classList.remove('p');document.getElementById('em').value='';document.getElementById('pw').value='';showToast('Wylogowano','Do zobaczenia!','success')}catch(error){console.error('[Logout] Error:',error);showToast('Błąd','Błąd wylogowania','error')}}
 
 function su(ue,io){document.querySelectorAll('.g').forEach(function(i){i.classList.remove('active')});const userEl=document.querySelector('[data-email="'+ue+'"]');if(userEl)userEl.classList.add('active');sc=ue;unread[ue]=0;uur();const un=ue.split('@')[0];document.getElementById('ct').textContent=un;const cs=document.getElementById('cs');cs.innerHTML=io?'<span style="color:#10b981;display:flex;align-items:center"><span class="j online" style="margin-right:5px"></span>Online</span>':'<span style="color:#6b7280;display:flex;align-items:center"><span class="j offline" style="margin-right:5px"></span>Offline</span>';document.getElementById('mis').classList.remove('p');const kkElements=document.querySelectorAll('.kk');if(kkElements.length>0)kkElements[0].classList.remove('p');lm(ue)}
 
 function uur(){document.querySelectorAll('.ll').forEach(function(badge){badge.remove()});Object.keys(unread).forEach(function(email){if(unread[email]>0){const userEl=document.querySelector('[data-email="'+email+'"]');if(userEl){const badge=document.createElement('div');badge.className='ll';badge.textContent=unread[email]>99?'99+':unread[email];userEl.appendChild(badge)}}});ut()}
 
-async function lm(oue){if(um)um();messageIds.clear();isFirstLoad=true;const ci=cci(cu.email,oue);const mr=d.collection('messages');const q=mr.where('chatId','==',ci);debugLog('Loading messages for: '+ci);um=q.onSnapshot(async function(sn){const changes=sn.docChanges();if(isFirstLoad){const md=document.getElementById('ms');md.innerHTML='';if(sn.empty){md.innerHTML='<div class="q">\uD83D\uDCAC Rozpocznij rozmow\u0119!</div>';isFirstLoad=false;return}let messages=[];sn.forEach(function(doc){const dt=doc.data();dt.id=doc.id;messages.push(dt)});messages.sort(function(a,b){if(!a.timestamp||!b.timestamp)return 0;return a.timestamp.toDate()-b.timestamp.toDate()});for(let i=0;i<messages.length;i++){messageIds.add(messages[i].id);await ddm(messages[i])}scrollToBottom();isFirstLoad=false}else{for(let i=0;i<changes.length;i++){const change=changes[i];if(change.type==='added'){const dt=change.doc.data();dt.id=change.doc.id;if(!messageIds.has(dt.id)){messageIds.add(dt.id);await ddm(dt);scrollToBottom()}}else if(change.type==='modified'){await updateMessageReadStatus(change.doc.id,change.doc.data())}else if(change.type==='removed'){const msgEl=document.querySelector('[data-msg-id="'+change.doc.id+'"]');if(msgEl)msgEl.remove();messageIds.delete(change.doc.id)}}}},function(error){debugLog('Snapshot error: '+error)})}
+async function lm(oue){if(um)um();messageIds.clear();isFirstLoad=true;const ci=cci(cu.email,oue);const mr=d.collection('messages');const q=mr.where('chatId','==',ci);um=q.onSnapshot(async function(sn){const changes=sn.docChanges();if(isFirstLoad){const md=document.getElementById('ms');md.innerHTML='';if(sn.empty){md.innerHTML='<div class="q">\uD83D\uDCAC Rozpocznij rozmowę!</div>';isFirstLoad=false;return}let messages=[];sn.forEach(function(doc){const dt=doc.data();dt.id=doc.id;messages.push(dt)});messages.sort(function(a,b){if(!a.timestamp||!b.timestamp)return 0;return a.timestamp.toDate()-b.timestamp.toDate()});for(let i=0;i<messages.length;i++){messageIds.add(messages[i].id);await ddm(messages[i])}scrollToBottom();isFirstLoad=false}else{for(let i=0;i<changes.length;i++){const change=changes[i];if(change.type==='added'){const dt=change.doc.data();dt.id=change.doc.id;if(!messageIds.has(dt.id)){messageIds.add(dt.id);await ddm(dt);scrollToBottom()}}else if(change.type==='modified'){await updateMessageReadStatus(change.doc.id,change.doc.data())}else if(change.type==='removed'){const msgEl=document.querySelector('[data-msg-id="'+change.doc.id+'"]');if(msgEl)msgEl.remove();messageIds.delete(change.doc.id)}}}})}
 
 async function updateMessageReadStatus(messageId,data){const msgEl=document.querySelector('[data-msg-id="'+messageId+'"]');if(!msgEl)return;const receiptEl=msgEl.querySelector('.read-receipt');if(!receiptEl)return;if(data.readAt&&data.readBy){const readDate=data.readAt.toDate();const readTime=readDate.toLocaleString('pl-PL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});receiptEl.innerHTML='<span class="checkmark">\u2713\u2713</span> Odczytano: '+readTime;receiptEl.classList.add('read')}}
 
-async function ddm(dt){const md=document.getElementById('ms');const qElement=md.querySelector('.q');if(qElement)qElement.remove();const mdv=document.createElement('div');mdv.setAttribute('data-msg-id',dt.id);const io=dt.sender===cu.email;mdv.className='k '+(io?'own':'other');const tm=dt.timestamp?new Date(dt.timestamp.toDate()).toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'}):'Teraz';let content;if(dt.image){content='<img src="'+dt.image+'" class="hh" onclick="oi(\''+dt.image+'\')" style="cursor:pointer">'}else{const dct=await dc(dt.text);content='<div class="m cc">'+escapeHtml(dct)+'</div>';if(!io){markAsRead(dt.id,dt.sender)}}let readReceipt='';if(io){if(dt.readAt&&dt.readBy){const readDate=dt.readAt.toDate();const readTime=readDate.toLocaleString('pl-PL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});readReceipt='<div class="read-receipt read"><span class="checkmark">\u2713\u2713</span> Odczytano: '+readTime+'</div>'}else{readReceipt='<div class="read-receipt"><span class="checkmark">\u2713</span> Wys\u0142ano</div>'}}const deleteBtn='<button class="delete-msg" onclick="deleteMessage(\''+dt.id+'\')" title="Usu\u0144">&times;</button>';mdv.innerHTML=deleteBtn+'<div class="l">'+escapeHtml(io?'Ty':dt.sender.split('@')[0])+' &bull; '+tm+'</div>'+content+readReceipt;md.appendChild(mdv)}
+async function ddm(dt){const md=document.getElementById('ms');const qElement=md.querySelector('.q');if(qElement)qElement.remove();const mdv=document.createElement('div');mdv.setAttribute('data-msg-id',dt.id);const io=dt.sender===cu.email;mdv.className='k '+(io?'own':'other');const tm=dt.timestamp?new Date(dt.timestamp.toDate()).toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'}):'Teraz';let content;if(dt.image){content='<img src="'+dt.image+'" class="hh" onclick="oi(\''+dt.image+'\')" style="cursor:pointer">'}else{const dct=await dc(dt.text);content='<div class="m cc">'+escapeHtml(dct)+'</div>';if(!io){markAsRead(dt.id,dt.sender)}}let readReceipt='';if(io){if(dt.readAt&&dt.readBy){const readDate=dt.readAt.toDate();const readTime=readDate.toLocaleString('pl-PL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});readReceipt='<div class="read-receipt read"><span class="checkmark">\u2713\u2713</span> Odczytano: '+readTime+'</div>'}else{readReceipt='<div class="read-receipt"><span class="checkmark">\u2713</span> Wysłano</div>'}}const deleteBtn='<button class="delete-msg" onclick="deleteMessage(\''+dt.id+'\')" title="Usuń">&times;</button>';mdv.innerHTML=deleteBtn+'<div class="l">'+escapeHtml(io?'Ty':dt.sender.split('@')[0])+' &bull; '+tm+'</div>'+content+readReceipt;md.appendChild(mdv)}
 
 function cci(e1,e2){return[e1,e2].sort().join('_')}
 
-async function sm(){const mi=document.getElementById('mi');const msg=mi.value.trim();const imgs=document.querySelectorAll('.ii img');if(!msg&&imgs.length===0)return;if(!sc){showToast('B\u0142\u0105d','Wybierz rozm\u00f3wc\u0119','error');return}try{const ci=cci(cu.email,sc);if(msg){const encryptedMsg=await ec(msg);await d.collection('messages').add({chatId:ci,sender:cu.email,text:encryptedMsg,timestamp:firebase.firestore.FieldValue.serverTimestamp(),readAt:null,readBy:null})}for(let i=0;i<imgs.length;i++){await d.collection('messages').add({chatId:ci,sender:cu.email,image:imgs[i].src,timestamp:firebase.firestore.FieldValue.serverTimestamp(),readAt:null,readBy:null})}mi.value='';document.getElementById('imagePreviewContainer').innerHTML=''}catch(error){debugLog('Send error: '+error);showToast('B\u0142\u0105d','B\u0142\u0105d wysy\u0142ania','error')}}
+async function sm(){const mi=document.getElementById('mi');const msg=mi.value.trim();const imgs=document.querySelectorAll('.ii img');if(!msg&&imgs.length===0)return;if(!sc){showToast('Błąd','Wybierz rozmówcę','error');return}try{const ci=cci(cu.email,sc);if(msg){const encryptedMsg=await ec(msg);await d.collection('messages').add({chatId:ci,sender:cu.email,text:encryptedMsg,timestamp:firebase.firestore.FieldValue.serverTimestamp(),readAt:null,readBy:null})}for(let i=0;i<imgs.length;i++){await d.collection('messages').add({chatId:ci,sender:cu.email,image:imgs[i].src,timestamp:firebase.firestore.FieldValue.serverTimestamp(),readAt:null,readBy:null})}mi.value='';document.getElementById('imagePreviewContainer').innerHTML=''}catch(error){console.error('[Send] Error:',error);showToast('Błąd','Błąd wysyłania','error')}}
 
-async function suo(io){if(!cu)return;try{const ur=d.collection('users').doc(cu.uid);await ur.set({email:cu.email,isOnline:io,lastSeen:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})}catch(error){debugLog('Status update error: '+error)}}
+async function suo(io){if(!cu)return;try{const ur=d.collection('users').doc(cu.uid);await ur.set({email:cu.email,isOnline:io,lastSeen:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})}catch(error){console.error('[Status] Error:',error)}}
 
-function lu(){const ur=d.collection('users');ur.onSnapshot(function(sn){const onlineUsers=[];const offlineUsers=[];sn.forEach(function(dc){const dt=dc.data();if(dt.email!==cu.email){const userItem={email:dt.email,isOnline:dt.isOnline||false,lastSeen:dt.lastSeen};if(dt.isOnline)onlineUsers.push(userItem);else offlineUsers.push(userItem)}});document.getElementById('onlineCount').textContent=onlineUsers.length;document.getElementById('offlineCount').textContent=offlineUsers.length;const ulOnline=document.getElementById('ulOnline');ulOnline.innerHTML='';if(onlineUsers.length===0){ulOnline.innerHTML='<div style="text-align:center;color:#666;font-size:12px;padding:12px">Brak u\u017cytkownik\u00f3w online</div>'}else{onlineUsers.forEach(function(user){const dv=document.createElement('div');dv.className='g';dv.setAttribute('data-email',user.email);dv.onclick=function(){su(user.email,user.isOnline)};dv.innerHTML='<div class="h">'+escapeHtml(user.email.split('@')[0])+'</div><div class="i"><span class="j online"></span>Online</div>';ulOnline.appendChild(dv)})}const ulOffline=document.getElementById('ulOffline');ulOffline.innerHTML='';if(offlineUsers.length===0){ulOffline.innerHTML='<div style="text-align:center;color:#666;font-size:12px;padding:12px">Wszyscy online! \uD83C\uDF89</div>'}else{offlineUsers.forEach(function(user){const dv=document.createElement('div');dv.className='g';dv.setAttribute('data-email',user.email);dv.onclick=function(){su(user.email,user.isOnline)};let lastSeenText='Dawno temu';if(user.lastSeen){const lastSeenDate=user.lastSeen.toDate();const now=new Date();const diffMs=now-lastSeenDate;const diffMins=Math.floor(diffMs/60000);if(diffMins<1)lastSeenText='Przed chwil\u0105';else if(diffMins<60)lastSeenText=diffMins+' min temu';else if(diffMins<1440)lastSeenText=Math.floor(diffMins/60)+' godz. temu';else lastSeenText=Math.floor(diffMins/1440)+' dni temu'}dv.innerHTML='<div class="h">'+escapeHtml(user.email.split('@')[0])+'</div><div class="i"><span class="j offline"></span>'+lastSeenText+'</div>';ulOffline.appendChild(dv)})}uur()})}
+function lu(){const ur=d.collection('users');ur.onSnapshot(function(sn){const onlineUsers=[];const offlineUsers=[];sn.forEach(function(dc){const dt=dc.data();if(dt.email!==cu.email){const userItem={email:dt.email,isOnline:dt.isOnline||false,lastSeen:dt.lastSeen};if(dt.isOnline)onlineUsers.push(userItem);else offlineUsers.push(userItem)}});document.getElementById('onlineCount').textContent=onlineUsers.length;document.getElementById('offlineCount').textContent=offlineUsers.length;const ulOnline=document.getElementById('ulOnline');ulOnline.innerHTML='';if(onlineUsers.length===0){ulOnline.innerHTML='<div style="text-align:center;color:#666;font-size:12px;padding:12px">Brak użytkowników online</div>'}else{onlineUsers.forEach(function(user){const dv=document.createElement('div');dv.className='g';dv.setAttribute('data-email',user.email);dv.onclick=function(){su(user.email,user.isOnline)};dv.innerHTML='<div class="h">'+escapeHtml(user.email.split('@')[0])+'</div><div class="i"><span class="j online"></span>Online</div>';ulOnline.appendChild(dv)})}const ulOffline=document.getElementById('ulOffline');ulOffline.innerHTML='';if(offlineUsers.length===0){ulOffline.innerHTML='<div style="text-align:center;color:#666;font-size:12px;padding:12px">Wszyscy online! \uD83C\uDF89</div>'}else{offlineUsers.forEach(function(user){const dv=document.createElement('div');dv.className='g';dv.setAttribute('data-email',user.email);dv.onclick=function(){su(user.email,user.isOnline)};let lastSeenText='Dawno temu';if(user.lastSeen){const lastSeenDate=user.lastSeen.toDate();const now=new Date();const diffMs=now-lastSeenDate;const diffMins=Math.floor(diffMs/60000);if(diffMins<1)lastSeenText='Przed chwilą';else if(diffMins<60)lastSeenText=diffMins+' min temu';else if(diffMins<1440)lastSeenText=Math.floor(diffMins/60)+' godz. temu';else lastSeenText=Math.floor(diffMins/1440)+' dni temu'}dv.innerHTML='<div class="h">'+escapeHtml(user.email.split('@')[0])+'</div><div class="i"><span class="j offline"></span>'+lastSeenText+'</div>';ulOffline.appendChild(dv)})}uur()})}
 
 document.getElementById('mi').addEventListener('keypress',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sm()}});
 document.getElementById('em').addEventListener('keypress',function(e){if(e.key==='Enter'){e.preventDefault();lg()}});
@@ -322,9 +440,11 @@ document.getElementById('pw').addEventListener('keypress',function(e){if(e.key==
 document.addEventListener('click',function(e){if(!e.target.closest('.dd')&&!e.target.closest('.ee')){const ep=document.getElementById('ep');if(ep&&es){ep.classList.add('p');es=false}}});
 
 a.onAuthStateChanged(async function(u){
-  debugLog('Auth state changed: '+(u?u.email:'null'));
+  console.log('%c[Auth] State changed:', 'color: #2563eb', u ? u.email : 'null');
+  
   if(u){
     cu=u;
+    console.log('[Auth] Zalogowany jako:', u.email);
     document.getElementById('lf').classList.add('p');
     document.getElementById('ma').classList.remove('p');
     document.getElementById('up').textContent=u.email;
@@ -334,6 +454,7 @@ a.onAuthStateChanged(async function(u){
     ht=setInterval(function(){suo(true)},30000);
     window.addEventListener('beforeunload',function(){suo(false)})
   }else{
+    console.log('[Auth] Wylogowany');
     cu=null;
     document.getElementById('ma').classList.add('p');
     document.getElementById('lf').classList.remove('p');
@@ -344,7 +465,7 @@ a.onAuthStateChanged(async function(u){
 
 document.addEventListener('visibilitychange',function(){if(cu){if(document.hidden)suo(false);else{suo(true);if(sc){unread[sc]=0;uur()}}}});
 
-debugLog('Chat zaladowany - v2.0 z raportami odczytu');
+console.log('%c[CHAT] ✓ Załadowano pomyślnie', 'color: #10b981; font-weight: bold');
 </script>
 </body>
 </html>
