@@ -25,7 +25,8 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 .g:hover {background:#252525;border-color:#3a3a3a}
 .g.active {background:#2563eb;border-color:#3b82f6}
 .g.active .h, .g.active .i {color:#fff}
-.h {font-weight:600;margin-bottom:4px;font-size:14px;color:#e0e0e0}
+.h {font-weight:600;margin-bottom:4px;font-size:14px;color:#e0e0e0;display:flex;align-items:center;justify-content:space-between}
+.unread-badge {background:#ef4444;color:#fff;border-radius:12px;padding:2px 8px;font-size:10px;font-weight:700;margin-left:8px;box-shadow:0 2px 8px rgba(239,68,68,0.4);animation:pulse 2s infinite}
 .i {font-size:12px;color:#888;display:flex;align-items:center}
 .j {width:8px;height:8px;border-radius:50%;margin-right:8px}
 .j.online {background:#10b981;box-shadow:0 0 8px #10b981}
@@ -38,9 +39,9 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 .delete-msg:hover {background:#ef4444;transform:scale(1.1)}
 .l {font-size:10px;opacity:0.6;margin-bottom:6px;font-weight:500}
 .m {font-size:15px;line-height:1.5}
-.read-receipt {font-size:9px;opacity:0.5;margin-top:4px;text-align:right;font-style:italic}
-.read-receipt.read {color:#10b981;opacity:0.8}
-.checkmark {font-size:12px;margin-left:4px}
+.read-receipt {font-size:10px;opacity:0.6;margin-top:6px;text-align:right;font-style:italic;display:flex;align-items:center;justify-content:flex-end;gap:4px}
+.read-receipt.read {color:#10b981;opacity:0.9}
+.checkmark {font-size:14px}
 .n {display:flex;gap:8px;align-items:center;position:relative;flex-wrap:wrap}
 .n input {flex:1;padding:12px 16px;border:1px solid #3a3a3a;border-radius:24px;font-size:15px;outline:none;background:#252525;color:#e0e0e0;min-width:200px;transition:all 0.2s}
 .n input:focus {border-color:#3b82f6;background:#2a2a2a}
@@ -106,7 +107,8 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 @keyframes toastIn{from{transform:translate(-50%,-100%);opacity:0}to{transform:translate(-50%,0);opacity:1}}
 @keyframes fadeOut{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(0.8)}}
 @keyframes slideUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
-@media(max-width:768px){body{overflow:hidden;height:100vh;display:block}.a{flex-direction:column;height:100vh;max-width:100%;border-radius:0;position:fixed;top:0;left:0;right:0;bottom:0;border:none}.b{flex:none;height:35%;border-right:none;border-bottom:1px solid #2d2d2d;padding:12px;overflow-y:auto}.c{flex:1;min-height:0;display:flex;flex-direction:column}.d{padding:12px 16px;flex-shrink:0}.d h3{font-size:15px}.d #cs{font-size:11px}.e{flex:1;min-height:0;padding:12px;padding-bottom:240px;overflow-y:auto;-webkit-overflow-scrolling:touch}.f{position:fixed;bottom:0;left:0;right:0;padding:12px;border-top:1px solid #2d2d2d;background:#1e1e1e;z-index:999;box-shadow:0 -4px 16px rgba(0,0,0,0.3)}.bb{padding:12px;margin-bottom:12px}.bb h4{font-size:14px;margin-bottom:4px}.bb span{font-size:12px}.z{padding:10px 16px;font-size:13px;margin-top:10px}.g{padding:10px 12px;margin:4px 0;border-radius:8px}.h{font-size:13px;margin-bottom:3px}.i{font-size:11px}.j{width:7px;height:7px;margin-right:6px}.user-section{margin-bottom:12px}.user-section h3{font-size:10px;margin-bottom:6px;padding:0 4px}.users-online-count,.users-offline-count{padding:2px 6px;font-size:9px;margin-left:4px}.aa{margin-top:8px}.n{gap:6px}.n input{min-width:140px;padding:10px 14px;font-size:15px;min-height:40px}.button-group{gap:6px}.dd{width:34px;height:34px;padding:6px;font-size:16px}.o{width:40px;height:40px;padding:10px;font-size:18px}.kk{padding:8px 12px;font-size:11px;margin:8px 0}.ii{margin:3px}.hh{max-width:100px;max-height:100px;border-radius:8px}.jj{width:20px;height:20px;font-size:13px;top:3px;right:3px}.image-preview-container{gap:4px;margin-bottom:6px}.ee{position:fixed;bottom:200px;right:12px;left:12px;width:auto;max-height:200px}.mm,.toast-notification{position:fixed;top:12px;left:12px;right:12px;width:auto;padding:12px 16px;font-size:12px;transform:none}.toast-notification{left:12px;right:12px;transform:none}.k{padding:12px 14px;margin:8px 0;max-width:80%;border-radius:12px}.k:hover .delete-msg{opacity:1}.delete-msg{opacity:0.7}.m{font-size:14px}.l{font-size:10px}input,textarea{font-size:15px!important}.r{padding:30px 20px;margin:12px;border-radius:12px}.s{font-size:22px;margin-bottom:24px}.t input{font-size:15px;padding:11px 14px}.u{padding:13px 20px;font-size:14px}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.6}}
+@media(max-width:768px){body{overflow:hidden;height:100vh;display:block}.a{flex-direction:column;height:100vh;max-width:100%;border-radius:0;position:fixed;top:0;left:0;right:0;bottom:0;border:none}.b{flex:none;height:35%;border-right:none;border-bottom:1px solid #2d2d2d;padding:12px;overflow-y:auto}.c{flex:1;min-height:0;display:flex;flex-direction:column}.d{padding:12px 16px;flex-shrink:0}.d h3{font-size:15px}.d #cs{font-size:11px}.e{flex:1;min-height:0;padding:12px;padding-bottom:240px;overflow-y:auto;-webkit-overflow-scrolling:touch}.f{position:fixed;bottom:0;left:0;right:0;padding:12px;border-top:1px solid #2d2d2d;background:#1e1e1e;z-index:999;box-shadow:0 -4px 16px rgba(0,0,0,0.3)}.bb{padding:12px;margin-bottom:12px}.bb h4{font-size:14px;margin-bottom:4px}.bb span{font-size:12px}.z{padding:10px 16px;font-size:13px;margin-top:10px}.g{padding:10px 12px;margin:4px 0;border-radius:8px}.h{font-size:13px;margin-bottom:3px}.i{font-size:11px}.j{width:7px;height:7px;margin-right:6px}.user-section{margin-bottom:12px}.user-section h3{font-size:10px;margin-bottom:6px;padding:0 4px}.users-online-count,.users-offline-count{padding:2px 6px;font-size:9px;margin-left:4px}.aa{margin-top:8px}.n{gap:6px}.n input{min-width:140px;padding:10px 14px;font-size:15px;min-height:40px}.button-group{gap:6px}.dd{width:34px;height:34px;padding:6px;font-size:16px}.o{width:40px;height:40px;padding:10px;font-size:18px}.kk{padding:8px 12px;font-size:11px;margin:8px 0}.ii{margin:3px}.hh{max-width:100px;max-height:100px;border-radius:8px}.jj{width:20px;height:20px;font-size:13px;top:3px;right:3px}.image-preview-container{gap:4px;margin-bottom:6px}.ee{position:fixed;bottom:200px;right:12px;left:12px;width:auto;max-height:200px}.mm,.toast-notification{position:fixed;top:12px;left:12px;right:12px;width:auto;padding:12px 16px;font-size:12px;transform:none}.toast-notification{left:12px;right:12px;transform:none}.k{padding:12px 14px;margin:8px 0;max-width:80%;border-radius:12px}.k:hover .delete-msg{opacity:1}.delete-msg{opacity:0.7}.m{font-size:14px}.l{font-size:10px}.read-receipt{font-size:9px;margin-top:4px}input,textarea{font-size:15px!important}.r{padding:30px 20px;margin:12px;border-radius:12px}.s{font-size:22px;margin-bottom:24px}.t input{font-size:15px;padding:11px 14px}.u{padding:13px 20px;font-size:14px}}
 </style>
 </head>
 <body>
@@ -248,7 +250,7 @@ try {
   }
 }
 
-let cu=null,sc=null,um=null,ht=null,es=false,unread={},ot='Kalkulator',nf=false,lastMessage=null,encryptionKey=null,messageIds=new Set(),audioContext=null,scrollTimeout=null,shouldAutoScroll=true,renderQueue=[],isRendering=false,isFirstSnapshot=true;
+let cu=null,sc=null,um=null,ht=null,es=false,unread={},ot='Kalkulator',nf=false,lastMessage=null,encryptionKey=null,messageIds=new Set(),audioContext=null,scrollTimeout=null,shouldAutoScroll=true,renderQueue=[],isRendering=false,isFirstSnapshot=true,allUsersListener=null;
 
 const emojis=['\uD83D\uDE00','\uD83D\uDE03','\uD83D\uDE04','\uD83D\uDE01','\uD83D\uDE06','\uD83D\uDE05','\uD83E\uDD23','\uD83D\uDE02','\uD83D\uDE42','\uD83D\uDE43','\uD83D\uDE09','\uD83D\uDE0A','\uD83D\uDE07','\uD83E\uDD70','\uD83D\uDE0D','\uD83E\uDD29','\uD83D\uDE18','\uD83D\uDE17','\uD83D\uDE1A','\uD83D\uDE19','\uD83E\uDD72','\uD83D\uDE0B','\uD83D\uDE1B','\uD83D\uDE1C','\uD83E\uDD2A','\uD83D\uDE1D','\uD83E\uDD11','\uD83E\uDD17','\uD83E\uDD2D','\uD83E\uDD2B','\uD83E\uDD14','\uD83E\uDD10','\uD83D\uDE10','\uD83D\uDE11','\uD83D\uDE36','\uD83D\uDE0F','\uD83D\uDE12','\uD83D\uDE44','\uD83D\uDE2C','\uD83D\uDE0C','\uD83D\uDE14','\uD83D\uDE2A','\uD83E\uDD24','\uD83D\uDE34','\uD83D\uDE37','\uD83E\uDD12','\uD83E\uDD15','\uD83E\uDD22','\uD83D\uDC4D','\uD83D\uDC4E','\uD83D\uDC4C','\u270C\uFE0F','\uD83E\uDD1E','\uD83E\uDD1F','\uD83E\uDD18','\uD83D\uDC4F','\uD83D\uDE4C','\uD83D\uDC50','\uD83E\uDD32','\uD83E\uDD1D','\uD83D\uDE4F','\u270D\uFE0F','\uD83D\uDCAA','\uD83E\uDDBE'];
 
@@ -299,7 +301,25 @@ function ie(){const eg=document.getElementById('eg');if(!eg)return;eg.innerHTML=
 
 function ae(emoji){const mi=document.getElementById('mi');if(!mi)return;mi.value+=emoji;mi.focus();const ep=document.getElementById('ep');if(ep)ep.classList.add('p');es=false}
 
-async function markAsRead(messageId,sender){if(!cu||!messageId||sender===cu.email)return;try{await d.collection('messages').doc(messageId).update({readAt:firebase.firestore.FieldValue.serverTimestamp(),readBy:cu.email})}catch(e){}}
+async function markAllAsRead(){
+  if(!cu||!sc)return;
+  try{
+    const ci=cci(cu.email,sc);
+    const q=await d.collection('messages').where('chatId','==',ci).where('sender','==',sc).where('readBy','==',null).get();
+    
+    const batch=d.batch();
+    q.forEach(function(doc){
+      batch.update(doc.ref,{
+        readAt:firebase.firestore.FieldValue.serverTimestamp(),
+        readBy:cu.email
+      });
+    });
+    
+    if(!q.empty){
+      await batch.commit();
+    }
+  }catch(e){}
+}
 
 window.deleteMessage = async function(messageId){
   if(!messageId)return;
@@ -453,6 +473,7 @@ window.lo = async function(){
   try{
     if(ht)clearInterval(ht);
     if(um)um();
+    if(allUsersListener)allUsersListener();
     await suo(false);
     await a.signOut();
     cu=null;
@@ -473,9 +494,63 @@ window.lo = async function(){
   }
 };
 
-function su(ue,io){document.querySelectorAll('.g').forEach(function(i){i.classList.remove('active')});const userEl=document.querySelector('[data-email="'+ue+'"]');if(userEl)userEl.classList.add('active');sc=ue;unread[ue]=0;uur();const un=ue.split('@')[0];document.getElementById('ct').textContent=un;const cs=document.getElementById('cs');cs.innerHTML=io?'<span style="color:#10b981;display:flex;align-items:center"><span class="j online" style="margin-right:5px"></span>Online</span>':'<span style="color:#6b7280;display:flex;align-items:center"><span class="j offline" style="margin-right:5px"></span>Offline</span>';document.getElementById('mis').classList.remove('p');const kkElements=document.querySelectorAll('.kk');if(kkElements.length>0)kkElements[0].classList.remove('p');lm(ue)}
+function su(ue,io){
+  document.querySelectorAll('.g').forEach(function(i){i.classList.remove('active')});
+  const userEl=document.querySelector('[data-email="'+ue+'"]');
+  if(userEl)userEl.classList.add('active');
+  sc=ue;
+  unread[ue]=0;
+  uur();
+  const un=ue.split('@')[0];
+  document.getElementById('ct').textContent=un;
+  const cs=document.getElementById('cs');
+  cs.innerHTML=io?'<span style="color:#10b981;display:flex;align-items:center"><span class="j online" style="margin-right:5px"></span>Online</span>':'<span style="color:#6b7280;display:flex;align-items:center"><span class="j offline" style="margin-right:5px"></span>Offline</span>';
+  document.getElementById('mis').classList.remove('p');
+  const kkElements=document.querySelectorAll('.kk');
+  if(kkElements.length>0)kkElements[0].classList.remove('p');
+  lm(ue);
+  markAllAsRead();
+}
 
-function uur(){document.querySelectorAll('.ll').forEach(function(badge){badge.remove()});Object.keys(unread).forEach(function(email){if(unread[email]>0){const userEl=document.querySelector('[data-email="'+email+'"]');if(userEl){const badge=document.createElement('div');badge.className='ll';badge.textContent=unread[email]>99?'99+':unread[email];userEl.appendChild(badge)}}});ut()}
+function uur(){
+  Object.keys(unread).forEach(function(email){
+    const userEl=document.querySelector('[data-email="'+email+'"]');
+    if(userEl){
+      const existingBadge=userEl.querySelector('.unread-badge');
+      if(existingBadge)existingBadge.remove();
+      
+      if(unread[email]>0){
+        const nameEl=userEl.querySelector('.h');
+        if(nameEl){
+          const badge=document.createElement('span');
+          badge.className='unread-badge';
+          badge.textContent=unread[email]>99?'99+':unread[email];
+          nameEl.appendChild(badge);
+        }
+      }
+    }
+  });
+  ut();
+}
+
+async function countUnreadMessages(){
+  if(!cu)return;
+  try{
+    const ur=d.collection('users');
+    ur.onSnapshot(async function(sn){
+      for(const doc of sn.docs){
+        const userData=doc.data();
+        if(userData.email!==cu.email){
+          const ci=cci(cu.email,userData.email);
+          const q=await d.collection('messages').where('chatId','==',ci).where('sender','==',userData.email).where('readBy','==',null).get();
+          
+          unread[userData.email]=q.size;
+        }
+      }
+      uur();
+    });
+  }catch(e){}
+}
 
 async function processRenderQueue(){
   if(isRendering||renderQueue.length===0)return;
@@ -529,6 +604,8 @@ async function lm(oue){
         md.innerHTML='';
         renderQueue=newMessages;
         processRenderQueue();
+        
+        setTimeout(markAllAsRead,500);
       }else{
         md.innerHTML='<div class="q">\uD83D\uDCAC Rozpocznij rozmowę!</div>';
       }
@@ -544,6 +621,10 @@ async function lm(oue){
             messageIds.add(dt.id);
             renderQueue.push(dt);
             processRenderQueue();
+            
+            if(dt.sender===sc){
+              setTimeout(markAllAsRead,300);
+            }
           }
         }else if(change.type==='modified'){
           const dt=change.doc.data();
@@ -565,13 +646,15 @@ function updateMessageReadStatus(messageId,data){
   const receiptEl=msgEl.querySelector('.read-receipt');
   if(!receiptEl)return;
   
+  if(data.sender!==cu.email)return;
+  
   if(data.readAt&&data.readBy){
     const readDate=data.readAt.toDate();
-    const readTime=readDate.toLocaleString('pl-PL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
-    receiptEl.innerHTML='<span class="checkmark">\u2713\u2713</span> Odczytano: '+readTime;
+    const readTime=readDate.toLocaleString('pl-PL',{hour:'2-digit',minute:'2-digit'});
+    receiptEl.innerHTML='<span class="checkmark">✓✓</span> Odczytano '+readTime;
     receiptEl.classList.add('read');
   }else{
-    receiptEl.innerHTML='<span class="checkmark">\u2713</span> Wysłano';
+    receiptEl.innerHTML='<span class="checkmark">✓</span> Wysłano';
     receiptEl.classList.remove('read');
   }
 }
@@ -596,19 +679,16 @@ async function ddm(dt){
   }else{
     const dct=await dc(dt.text||'');
     content='<div class="m cc">'+escapeHtml(dct)+'</div>';
-    if(!io){
-      markAsRead(dt.id,dt.sender)
-    }
   }
   
   let readReceipt='';
   if(io){
     if(dt.readAt&&dt.readBy){
       const readDate=dt.readAt.toDate();
-      const readTime=readDate.toLocaleString('pl-PL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
-      readReceipt='<div class="read-receipt read"><span class="checkmark">\u2713\u2713</span> Odczytano: '+readTime+'</div>'
+      const readTime=readDate.toLocaleString('pl-PL',{hour:'2-digit',minute:'2-digit'});
+      readReceipt='<div class="read-receipt read"><span class="checkmark">✓✓</span> Odczytano '+readTime+'</div>'
     }else{
-      readReceipt='<div class="read-receipt"><span class="checkmark">\u2713</span> Wysłano</div>'
+      readReceipt='<div class="read-receipt"><span class="checkmark">✓</span> Wysłano</div>'
     }
   }
   
@@ -665,7 +745,70 @@ window.sm = async function(){
 
 async function suo(io){if(!cu)return;try{const ur=d.collection('users').doc(cu.uid);await ur.set({email:cu.email,isOnline:io,lastSeen:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})}catch(error){}}
 
-function lu(){const ur=d.collection('users');ur.onSnapshot(function(sn){const onlineUsers=[];const offlineUsers=[];sn.forEach(function(dc){const dt=dc.data();if(dt.email!==cu.email){const userItem={email:dt.email,isOnline:dt.isOnline||false,lastSeen:dt.lastSeen};if(dt.isOnline)onlineUsers.push(userItem);else offlineUsers.push(userItem)}});document.getElementById('onlineCount').textContent=onlineUsers.length;document.getElementById('offlineCount').textContent=offlineUsers.length;const ulOnline=document.getElementById('ulOnline');ulOnline.innerHTML='';if(onlineUsers.length===0){ulOnline.innerHTML='<div style="text-align:center;color:#666;font-size:12px;padding:12px">Brak użytkowników online</div>'}else{onlineUsers.forEach(function(user){const dv=document.createElement('div');dv.className='g';dv.setAttribute('data-email',user.email);dv.onclick=function(){su(user.email,user.isOnline)};dv.innerHTML='<div class="h">'+escapeHtml(user.email.split('@')[0])+'</div><div class="i"><span class="j online"></span>Online</div>';ulOnline.appendChild(dv)})}const ulOffline=document.getElementById('ulOffline');ulOffline.innerHTML='';if(offlineUsers.length===0){ulOffline.innerHTML='<div style="text-align:center;color:#666;font-size:12px;padding:12px">Wszyscy online! \uD83C\uDF89</div>'}else{offlineUsers.forEach(function(user){const dv=document.createElement('div');dv.className='g';dv.setAttribute('data-email',user.email);dv.onclick=function(){su(user.email,user.isOnline)};let lastSeenText='Dawno temu';if(user.lastSeen){const lastSeenDate=user.lastSeen.toDate();const now=new Date();const diffMs=now-lastSeenDate;const diffMins=Math.floor(diffMs/60000);if(diffMins<1)lastSeenText='Przed chwilą';else if(diffMins<60)lastSeenText=diffMins+' min temu';else if(diffMins<1440)lastSeenText=Math.floor(diffMins/60)+' godz. temu';else lastSeenText=Math.floor(diffMins/1440)+' dni temu'}dv.innerHTML='<div class="h">'+escapeHtml(user.email.split('@')[0])+'</div><div class="i"><span class="j offline"></span>'+lastSeenText+'</div>';ulOffline.appendChild(dv)})}uur()})}
+function lu(){
+  const ur=d.collection('users');
+  allUsersListener=ur.onSnapshot(function(sn){
+    const onlineUsers=[];
+    const offlineUsers=[];
+    sn.forEach(function(dc){
+      const dt=dc.data();
+      if(dt.email!==cu.email){
+        const userItem={email:dt.email,isOnline:dt.isOnline||false,lastSeen:dt.lastSeen};
+        if(dt.isOnline)onlineUsers.push(userItem);
+        else offlineUsers.push(userItem)
+      }
+    });
+    
+    document.getElementById('onlineCount').textContent=onlineUsers.length;
+    document.getElementById('offlineCount').textContent=offlineUsers.length;
+    
+    const ulOnline=document.getElementById('ulOnline');
+    ulOnline.innerHTML='';
+    if(onlineUsers.length===0){
+      ulOnline.innerHTML='<div style="text-align:center;color:#666;font-size:12px;padding:12px">Brak użytkowników online</div>'
+    }else{
+      onlineUsers.forEach(function(user){
+        const dv=document.createElement('div');
+        dv.className='g';
+        dv.setAttribute('data-email',user.email);
+        dv.onclick=function(){su(user.email,user.isOnline)};
+        const badgeHtml=unread[user.email]>0?'<span class="unread-badge">'+(unread[user.email]>99?'99+':unread[user.email])+'</span>':'';
+        dv.innerHTML='<div class="h">'+escapeHtml(user.email.split('@')[0])+badgeHtml+'</div><div class="i"><span class="j online"></span>Online</div>';
+        ulOnline.appendChild(dv)
+      })
+    }
+    
+    const ulOffline=document.getElementById('ulOffline');
+    ulOffline.innerHTML='';
+    if(offlineUsers.length===0){
+      ulOffline.innerHTML='<div style="text-align:center;color:#666;font-size:12px;padding:12px">Wszyscy online! \uD83C\uDF89</div>'
+    }else{
+      offlineUsers.forEach(function(user){
+        const dv=document.createElement('div');
+        dv.className='g';
+        dv.setAttribute('data-email',user.email);
+        dv.onclick=function(){su(user.email,user.isOnline)};
+        let lastSeenText='Dawno temu';
+        if(user.lastSeen){
+          const lastSeenDate=user.lastSeen.toDate();
+          const now=new Date();
+          const diffMs=now-lastSeenDate;
+          const diffMins=Math.floor(diffMs/60000);
+          if(diffMins<1)lastSeenText='Przed chwilą';
+          else if(diffMins<60)lastSeenText=diffMins+' min temu';
+          else if(diffMins<1440)lastSeenText=Math.floor(diffMins/60)+' godz. temu';
+          else lastSeenText=Math.floor(diffMins/1440)+' dni temu'
+        }
+        const badgeHtml=unread[user.email]>0?'<span class="unread-badge">'+(unread[user.email]>99?'99+':unread[user.email])+'</span>':'';
+        dv.innerHTML='<div class="h">'+escapeHtml(user.email.split('@')[0])+badgeHtml+'</div><div class="i"><span class="j offline"></span>'+lastSeenText+'</div>';
+        ulOffline.appendChild(dv)
+      })
+    }
+    uur()
+  });
+  
+  countUnreadMessages();
+}
 
 const msEl=document.getElementById('ms');
 if(msEl){
@@ -696,10 +839,22 @@ a.onAuthStateChanged(async function(u){
     document.getElementById('lf').classList.remove('p');
     if(ht){clearInterval(ht);ht=null}
     if(um){um();um=null}
+    if(allUsersListener){allUsersListener();allUsersListener=null}
   }
 });
 
-document.addEventListener('visibilitychange',function(){if(cu){if(document.hidden)suo(false);else{suo(true);if(sc){unread[sc]=0;uur()}}}});
+document.addEventListener('visibilitychange',function(){
+  if(cu){
+    if(document.hidden){
+      suo(false)
+    }else{
+      suo(true);
+      if(sc){
+        markAllAsRead()
+      }
+    }
+  }
+});
 </script>
 </body>
 </html>
