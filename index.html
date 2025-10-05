@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.png">
-<title>Chat</title>
+<title>Kalkulator</title>
 <style>
 * {margin:0;padding:0;box-sizing:border-box}
 body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0f0f0f;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;color:#e0e0e0}
@@ -113,13 +113,13 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 
 <div class="install-prompt" id="installPrompt">
   <strong>&#128242; Zainstaluj aplikacj&#281;</strong>
-  <p style="margin-top:8px;font-size:13px">Dodaj Chat do ekranu g&#322;&#243;wnego!</p>
+  <p style="margin-top:8px;font-size:13px">Dodaj Kalkulator do ekranu g&#322;&#243;wnego!</p>
   <button onclick="installApp()">Zainstaluj</button>
   <button onclick="dismissInstall()" style="background:#374151;color:#fff;margin-top:8px">P&#243;&#378;niej</button>
 </div>
 
 <div class="r" id="lf">
-  <h2 class="s">&#128172; Chat</h2>
+  <h2 class="s">&#128172; Kalkulator</h2>
   <div class="t">
     <label>Email</label>
     <input type="email" id="em" placeholder="twoj@email.com" autocomplete="email">
@@ -131,10 +131,10 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
   <button class="u" id="loginBtn" onclick="lg()">Zaloguj si&#281;</button>
   <button class="u v" id="registerBtn" onclick="rg()">Utw&#243;rz konto</button>
   <div id="am"></div>
-  <div class="w">&#128274; Bezpieczny end-to-end</div>
+  <div class="w">&#128274; Bezpieczne po&#322;&#261;czenie</div>
   <div style="margin-top:15px;text-align:center">
     <small style="color:#666;font-size:11px">
-      Firebase: <span id="firebaseStatus" style="color:#ef4444">&#10007; Ładowanie...</span>
+      Status: <span id="firebaseStatus" style="color:#ef4444">&#10007; Ładowanie...</span>
     </small>
   </div>
 </div>
@@ -190,14 +190,19 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
 <script>
-console.log('%c[CHAT] Inicjalizacja v2.2...', 'color: #10b981; font-weight: bold');
+const firebaseConfig={
+  apiKey:"AIzaSyCJeQEnsEDDnGvKoVzKkjRmnOIsmv7HPJs",
+  authDomain:"pensei-b3058.firebaseapp.com",
+  projectId:"pensei-b3058",
+  storageBucket:"pensei-b3058.firebasestorage.app",
+  messagingSenderId:"341036858535",
+  appId:"1:341036858535:web:43d4f98625abd9ff406f82",
+  measurementId:"G-MR8G2GNY5P"
+};
 
-// PWA Install
 if('serviceWorker'in navigator){
   window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('sw.js')
-      .then(()=>console.log('[SW] OK'))
-      .catch(e=>console.error('[SW] Error:',e))
+    navigator.serviceWorker.register('sw.js').catch(()=>{})
   })
 }
 
@@ -223,25 +228,12 @@ window.dismissInstall = function(){
   if(p)p.style.display='none'
 };
 
-// Firebase Config
-const firebaseConfig={
-  apiKey:"AIzaSyCJeQEnsEDDnGvKoVzKkjRmnOIsmv7HPJs",
-  authDomain:"pensei-b3058.firebaseapp.com",
-  projectId:"pensei-b3058",
-  storageBucket:"pensei-b3058.firebasestorage.app",
-  messagingSenderId:"341036858535",
-  appId:"1:341036858535:web:43d4f98625abd9ff406f82",
-  measurementId:"G-MR8G2GNY5P"
-};
-
-console.log('[Firebase] Inicjalizacja...');
 let a, d;
 
 try {
   firebase.initializeApp(firebaseConfig);
   a = firebase.auth();
   d = firebase.firestore();
-  console.log('%c[Firebase] ✓ Załadowano pomyślnie', 'color: #10b981');
   
   const statusEl = document.getElementById('firebaseStatus');
   if(statusEl) {
@@ -249,16 +241,14 @@ try {
     statusEl.style.color = '#10b981';
   }
 } catch(err) {
-  console.error('%c[Firebase] ✗ BŁĄD:', 'color: #ef4444', err);
   const statusEl = document.getElementById('firebaseStatus');
   if(statusEl) {
-    statusEl.innerHTML = '&#10007; Błąd: ' + err.message;
+    statusEl.innerHTML = '&#10007; Błąd';
     statusEl.style.color = '#ef4444';
   }
-  alert('BŁĄD FIREBASE: ' + err.message);
 }
 
-let cu=null,sc=null,um=null,ht=null,es=false,unread={},ot='Chat',nf=false,lastMessage=null,encryptionKey=null,messageIds=new Set(),audioContext=null,isFirstLoad=true,scrollTimeout=null,shouldAutoScroll=true;
+let cu=null,sc=null,um=null,ht=null,es=false,unread={},ot='Kalkulator',nf=false,lastMessage=null,encryptionKey=null,messageIds=new Set(),audioContext=null,isFirstLoad=true,scrollTimeout=null,shouldAutoScroll=true;
 
 const emojis=['\uD83D\uDE00','\uD83D\uDE03','\uD83D\uDE04','\uD83D\uDE01','\uD83D\uDE06','\uD83D\uDE05','\uD83E\uDD23','\uD83D\uDE02','\uD83D\uDE42','\uD83D\uDE43','\uD83D\uDE09','\uD83D\uDE0A','\uD83D\uDE07','\uD83E\uDD70','\uD83D\uDE0D','\uD83E\uDD29','\uD83D\uDE18','\uD83D\uDE17','\uD83D\uDE1A','\uD83D\uDE19','\uD83E\uDD72','\uD83D\uDE0B','\uD83D\uDE1B','\uD83D\uDE1C','\uD83E\uDD2A','\uD83D\uDE1D','\uD83E\uDD11','\uD83E\uDD17','\uD83E\uDD2D','\uD83E\uDD2B','\uD83E\uDD14','\uD83E\uDD10','\uD83D\uDE10','\uD83D\uDE11','\uD83D\uDE36','\uD83D\uDE0F','\uD83D\uDE12','\uD83D\uDE44','\uD83D\uDE2C','\uD83D\uDE0C','\uD83D\uDE14','\uD83D\uDE2A','\uD83E\uDD24','\uD83D\uDE34','\uD83D\uDE37','\uD83E\uDD12','\uD83E\uDD15','\uD83E\uDD22','\uD83D\uDC4D','\uD83D\uDC4E','\uD83D\uDC4C','\u270C\uFE0F','\uD83E\uDD1E','\uD83E\uDD1F','\uD83E\uDD18','\uD83D\uDC4F','\uD83D\uDE4C','\uD83D\uDC50','\uD83E\uDD32','\uD83E\uDD1D','\uD83D\uDE4F','\u270D\uFE0F','\uD83D\uDCAA','\uD83E\uDDBE'];
 
@@ -268,17 +258,17 @@ function showToast(title,message,type){type=type||'info';const toast=document.cr
 
 function rn(){if('Notification'in window&&Notification.permission==='default'){Notification.requestPermission().then(function(permission){nf=permission==='granted';if(nf)showToast('Powiadomienia','Powiadomienia włączone!','success')})}}
 
-function sn(title,body){if(nf&&'Notification'in window&&Notification.permission==='granted'){try{const notification=new Notification(title,{body:body,icon:'icon.png',tag:'chat-message',requireInteraction:false});notification.onclick=function(){window.focus();notification.close()}}catch(e){console.log('[Notification] Error:',e)}}}
+function sn(title,body){if(nf&&'Notification'in window&&Notification.permission==='granted'){try{const notification=new Notification(title,{body:body,icon:'icon.png',tag:'msg',requireInteraction:false});notification.onclick=function(){window.focus();notification.close()}}catch(e){}}}
 
 function ut(){const total=Object.values(unread).reduce(function(sum,count){return sum+count},0);document.title=total>0?'('+total+') '+ot:ot}
 
 function snt(message,sender){const senderName=sender.split('@')[0];const shortMsg=message.length>50?message.substring(0,50)+'...':message;showToast(senderName,shortMsg,'message');sn('\uD83D\uDCAC '+senderName,message);if(lastMessage!==message){playNotificationSound();lastMessage=message}}
 
-async function generateKey(password){const encoder=new TextEncoder();const keyMaterial=await crypto.subtle.importKey('raw',encoder.encode(password),'PBKDF2',false,['deriveBits','deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt:encoder.encode('chat-salt-2024'),iterations:100000,hash:'SHA-256'},keyMaterial,{name:'AES-GCM',length:256},true,['encrypt','decrypt'])}
+async function generateKey(password){const encoder=new TextEncoder();const keyMaterial=await crypto.subtle.importKey('raw',encoder.encode(password),'PBKDF2',false,['deriveBits','deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt:encoder.encode('salt-2024'),iterations:100000,hash:'SHA-256'},keyMaterial,{name:'AES-GCM',length:256},true,['encrypt','decrypt'])}
 
-async function ec(text){try{if(!encryptionKey)encryptionKey=await generateKey('secure-chat-key-2024');const encoder=new TextEncoder();const data=encoder.encode(text);const iv=crypto.getRandomValues(new Uint8Array(12));const encrypted=await crypto.subtle.encrypt({name:'AES-GCM',iv:iv},encryptionKey,data);const encryptedArray=new Uint8Array(encrypted);const combined=new Uint8Array(iv.length+encryptedArray.length);combined.set(iv);combined.set(encryptedArray,iv.length);return btoa(String.fromCharCode.apply(null,combined))}catch(e){console.error('[Encryption] Error:',e);return text}}
+async function ec(text){try{if(!encryptionKey)encryptionKey=await generateKey('key-2024');const encoder=new TextEncoder();const data=encoder.encode(text);const iv=crypto.getRandomValues(new Uint8Array(12));const encrypted=await crypto.subtle.encrypt({name:'AES-GCM',iv:iv},encryptionKey,data);const encryptedArray=new Uint8Array(encrypted);const combined=new Uint8Array(iv.length+encryptedArray.length);combined.set(iv);combined.set(encryptedArray,iv.length);return btoa(String.fromCharCode.apply(null,combined))}catch(e){return text}}
 
-async function dc(encryptedText){try{if(!encryptionKey)encryptionKey=await generateKey('secure-chat-key-2024');const combined=Uint8Array.from(atob(encryptedText),function(c){return c.charCodeAt(0)});const iv=combined.slice(0,12);const data=combined.slice(12);const decrypted=await crypto.subtle.decrypt({name:'AES-GCM',iv:iv},encryptionKey,data);const decoder=new TextDecoder();return decoder.decode(decrypted)}catch(e){console.error('[Decryption] Error:',e);return encryptedText}}
+async function dc(encryptedText){try{if(!encryptionKey)encryptionKey=await generateKey('key-2024');const combined=Uint8Array.from(atob(encryptedText),function(c){return c.charCodeAt(0)});const iv=combined.slice(0,12);const data=combined.slice(12);const decrypted=await crypto.subtle.decrypt({name:'AES-GCM',iv:iv},encryptionKey,data);const decoder=new TextDecoder();return decoder.decode(decrypted)}catch(e){return encryptedText}}
 
 function escapeHtml(text){const div=document.createElement('div');div.textContent=text;return div.innerHTML}
 
@@ -309,7 +299,7 @@ function ie(){const eg=document.getElementById('eg');if(!eg)return;eg.innerHTML=
 
 function ae(emoji){const mi=document.getElementById('mi');if(!mi)return;mi.value+=emoji;mi.focus();const ep=document.getElementById('ep');if(ep)ep.classList.add('p');es=false}
 
-async function markAsRead(messageId,sender){if(!cu||!messageId||sender===cu.email)return;try{await d.collection('messages').doc(messageId).update({readAt:firebase.firestore.FieldValue.serverTimestamp(),readBy:cu.email})}catch(e){console.log('[MarkRead] Error:',e)}}
+async function markAsRead(messageId,sender){if(!cu||!messageId||sender===cu.email)return;try{await d.collection('messages').doc(messageId).update({readAt:firebase.firestore.FieldValue.serverTimestamp(),readBy:cu.email})}catch(e){}}
 
 window.deleteMessage = async function(messageId){
   if(!messageId)return;
@@ -321,7 +311,6 @@ window.deleteMessage = async function(messageId){
     setTimeout(function(){if(msgEl&&msgEl.parentNode)msgEl.remove();messageIds.delete(messageId)},300);
     showToast('Sukces','Wiadomość usunięta','success')
   }catch(error){
-    console.error('[Delete] Error:',error);
     showToast('Błąd','Nie udało się usunąć','error')
   }
 };
@@ -374,21 +363,17 @@ window.oi = function(src){
 function sam(m,ie){const dv=document.getElementById('am');dv.innerHTML=ie?'<div class="x">'+escapeHtml(m)+'</div>':'<div class="y">'+escapeHtml(m)+'</div>';setTimeout(function(){dv.innerHTML=''},5000)}
 
 window.lg = async function(){
-  console.log('%c[Login] Rozpoczynam logowanie...', 'color: #2563eb; font-weight: bold');
-  
   const e=document.getElementById('em').value.trim();
   const p=document.getElementById('pw').value;
   const loginBtn=document.getElementById('loginBtn');
   
   if(!e||!p){
-    console.warn('[Login] Puste pola');
     sam('Wypełnij wszystkie pola',true);
     return
   }
   
   if(!a){
-    console.error('[Login] Firebase Auth nie jest zainicjalizowany!');
-    alert('BŁĄD: Firebase Auth nie jest załadowany. Odśwież stronę.');
+    alert('Błąd połączenia. Odśwież stronę.');
     return
   }
   
@@ -396,21 +381,10 @@ window.lg = async function(){
   loginBtn.textContent='Logowanie...';
   
   try{
-    console.log('[Login] Wywołuję signInWithEmailAndPassword...');
-    console.log('[Login] Email:', e);
-    
-    const result=await a.signInWithEmailAndPassword(e,p);
-    
-    console.log('%c[Login] ✓ Sukces!', 'color: #10b981; font-weight: bold');
-    console.log('[Login] User:', result.user.email);
-    
+    await a.signInWithEmailAndPassword(e,p);
     sam('Zalogowano pomyślnie');
     showToast('Sukces','Zalogowano!','success')
   }catch(er){
-    console.error('%c[Login] ✗ BŁĄD:', 'color: #ef4444; font-weight: bold');
-    console.error('[Login] Code:', er.code);
-    console.error('[Login] Message:', er.message);
-    
     let msg='Błąd logowania';
     
     if(er.code==='auth/user-not-found'){
@@ -425,8 +399,6 @@ window.lg = async function(){
       msg='Zbyt wiele prób. Spróbuj później'
     }else if(er.code==='auth/network-request-failed'){
       msg='Brak połączenia z internetem'
-    }else{
-      msg='Błąd: '+er.code
     }
     
     sam(msg,true);
@@ -438,8 +410,6 @@ window.lg = async function(){
 };
 
 window.rg = async function(){
-  console.log('[Register] Rozpoczynam rejestrację...');
-  
   const e=document.getElementById('em').value.trim();
   const p=document.getElementById('pw').value;
   const regBtn=document.getElementById('registerBtn');
@@ -455,7 +425,7 @@ window.rg = async function(){
   }
   
   if(!a){
-    alert('BŁĄD: Firebase Auth nie jest załadowany. Odśwież stronę.');
+    alert('Błąd połączenia. Odśwież stronę.');
     return
   }
   
@@ -463,18 +433,14 @@ window.rg = async function(){
   regBtn.textContent='Tworzenie...';
   
   try{
-    console.log('[Register] Wywołuję createUserWithEmailAndPassword...');
-    const result=await a.createUserWithEmailAndPassword(e,p);
-    console.log('[Register] ✓ Sukces:', result.user.email);
+    await a.createUserWithEmailAndPassword(e,p);
     sam('Konto utworzone');
     showToast('Sukces','Konto utworzone!','success')
   }catch(er){
-    console.error('[Register] ✗ Błąd:',er);
     let msg='Błąd rejestracji';
     if(er.code==='auth/email-already-in-use')msg='Email już używany';
     else if(er.code==='auth/weak-password')msg='Hasło za słabe';
     else if(er.code==='auth/invalid-email')msg='Nieprawidłowy email';
-    else msg='Błąd: '+er.code;
     sam(msg,true);
     showToast('Błąd',msg,'error')
   }finally{
@@ -500,7 +466,6 @@ window.lo = async function(){
     document.getElementById('pw').value='';
     showToast('Wylogowano','Do zobaczenia!','success')
   }catch(error){
-    console.error('[Logout] Error:',error);
     showToast('Błąd','Błąd wylogowania','error')
   }
 };
@@ -517,9 +482,11 @@ async function lm(oue){
   
   const ci=cci(cu.email,oue);
   const mr=d.collection('messages');
-  const q=mr.where('chatId','==',ci);
+  const q=mr.where('chatId','==',ci).orderBy('timestamp','asc');
   
   um=q.onSnapshot(async function(sn){
+    const changes=sn.docChanges();
+    
     if(isFirstLoad){
       const md=document.getElementById('ms');
       md.innerHTML='';
@@ -530,27 +497,19 @@ async function lm(oue){
         return
       }
       
-      let messages=[];
-      sn.forEach(function(doc){
-        const dt=doc.data();
-        dt.id=doc.id;
-        messages.push(dt)
-      });
-      
-      messages.sort(function(a,b){
-        if(!a.timestamp||!b.timestamp)return 0;
-        return a.timestamp.toDate()-b.timestamp.toDate()
-      });
-      
-      for(let i=0;i<messages.length;i++){
-        messageIds.add(messages[i].id);
-        await ddm(messages[i],false)
+      for(let i=0;i<changes.length;i++){
+        const change=changes[i];
+        if(change.type==='added'){
+          const dt=change.doc.data();
+          dt.id=change.doc.id;
+          messageIds.add(dt.id);
+          await ddm(dt)
+        }
       }
       
       scrollToBottom(true);
       isFirstLoad=false
     }else{
-      const changes=sn.docChanges();
       for(let i=0;i<changes.length;i++){
         const change=changes[i];
         
@@ -560,7 +519,7 @@ async function lm(oue){
           
           if(!messageIds.has(dt.id)){
             messageIds.add(dt.id);
-            await ddm(dt,true);
+            await ddm(dt);
             
             if(dt.sender!==cu.email){
               shouldAutoScroll=true
@@ -580,10 +539,24 @@ async function lm(oue){
   })
 }
 
-async function updateMessageReadStatus(messageId,data){const msgEl=document.querySelector('[data-msg-id="'+messageId+'"]');if(!msgEl)return;const receiptEl=msgEl.querySelector('.read-receipt');if(!receiptEl)return;if(data.readAt&&data.readBy){const readDate=data.readAt.toDate();const readTime=readDate.toLocaleString('pl-PL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});receiptEl.innerHTML='<span class="checkmark">\u2713\u2713</span> Odczytano: '+readTime;receiptEl.classList.add('read')}}
+async function updateMessageReadStatus(messageId,data){
+  const msgEl=document.querySelector('[data-msg-id="'+messageId+'"]');
+  if(!msgEl)return;
+  const receiptEl=msgEl.querySelector('.read-receipt');
+  if(!receiptEl)return;
+  if(data.readAt&&data.readBy){
+    const readDate=data.readAt.toDate();
+    const readTime=readDate.toLocaleString('pl-PL',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    receiptEl.innerHTML='<span class="checkmark">\u2713\u2713</span> Odczytano: '+readTime;
+    receiptEl.classList.add('read')
+  }
+}
 
-async function ddm(dt,shouldScroll){
+async function ddm(dt){
   const md=document.getElementById('ms');
+  
+  if(document.querySelector('[data-msg-id="'+dt.id+'"]'))return;
+  
   const qElement=md.querySelector('.q');
   if(qElement)qElement.remove();
   
@@ -662,16 +635,14 @@ window.sm = async function(){
     document.getElementById('imagePreviewContainer').innerHTML='';
     scrollToBottom(true)
   }catch(error){
-    console.error('[Send] Error:',error);
     showToast('Błąd','Błąd wysyłania','error')
   }
 };
 
-async function suo(io){if(!cu)return;try{const ur=d.collection('users').doc(cu.uid);await ur.set({email:cu.email,isOnline:io,lastSeen:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})}catch(error){console.error('[Status] Error:',error)}}
+async function suo(io){if(!cu)return;try{const ur=d.collection('users').doc(cu.uid);await ur.set({email:cu.email,isOnline:io,lastSeen:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})}catch(error){}}
 
 function lu(){const ur=d.collection('users');ur.onSnapshot(function(sn){const onlineUsers=[];const offlineUsers=[];sn.forEach(function(dc){const dt=dc.data();if(dt.email!==cu.email){const userItem={email:dt.email,isOnline:dt.isOnline||false,lastSeen:dt.lastSeen};if(dt.isOnline)onlineUsers.push(userItem);else offlineUsers.push(userItem)}});document.getElementById('onlineCount').textContent=onlineUsers.length;document.getElementById('offlineCount').textContent=offlineUsers.length;const ulOnline=document.getElementById('ulOnline');ulOnline.innerHTML='';if(onlineUsers.length===0){ulOnline.innerHTML='<div style="text-align:center;color:#666;font-size:12px;padding:12px">Brak użytkowników online</div>'}else{onlineUsers.forEach(function(user){const dv=document.createElement('div');dv.className='g';dv.setAttribute('data-email',user.email);dv.onclick=function(){su(user.email,user.isOnline)};dv.innerHTML='<div class="h">'+escapeHtml(user.email.split('@')[0])+'</div><div class="i"><span class="j online"></span>Online</div>';ulOnline.appendChild(dv)})}const ulOffline=document.getElementById('ulOffline');ulOffline.innerHTML='';if(offlineUsers.length===0){ulOffline.innerHTML='<div style="text-align:center;color:#666;font-size:12px;padding:12px">Wszyscy online! \uD83C\uDF89</div>'}else{offlineUsers.forEach(function(user){const dv=document.createElement('div');dv.className='g';dv.setAttribute('data-email',user.email);dv.onclick=function(){su(user.email,user.isOnline)};let lastSeenText='Dawno temu';if(user.lastSeen){const lastSeenDate=user.lastSeen.toDate();const now=new Date();const diffMs=now-lastSeenDate;const diffMins=Math.floor(diffMs/60000);if(diffMins<1)lastSeenText='Przed chwilą';else if(diffMins<60)lastSeenText=diffMins+' min temu';else if(diffMins<1440)lastSeenText=Math.floor(diffMins/60)+' godz. temu';else lastSeenText=Math.floor(diffMins/1440)+' dni temu'}dv.innerHTML='<div class="h">'+escapeHtml(user.email.split('@')[0])+'</div><div class="i"><span class="j offline"></span>'+lastSeenText+'</div>';ulOffline.appendChild(dv)})}uur()})}
 
-// Detect user scroll
 const msEl=document.getElementById('ms');
 if(msEl){
   msEl.addEventListener('scroll',function(){
@@ -685,11 +656,8 @@ document.getElementById('pw').addEventListener('keypress',function(e){if(e.key==
 document.addEventListener('click',function(e){if(!e.target.closest('.dd')&&!e.target.closest('.ee')){const ep=document.getElementById('ep');if(ep&&es){ep.classList.add('p');es=false}}});
 
 a.onAuthStateChanged(async function(u){
-  console.log('%c[Auth] State changed:', 'color: #2563eb', u ? u.email : 'null');
-  
   if(u){
     cu=u;
-    console.log('[Auth] Zalogowany jako:', u.email);
     document.getElementById('lf').classList.add('p');
     document.getElementById('ma').classList.remove('p');
     document.getElementById('up').textContent=u.email;
@@ -699,7 +667,6 @@ a.onAuthStateChanged(async function(u){
     ht=setInterval(function(){suo(true)},30000);
     window.addEventListener('beforeunload',function(){suo(false)})
   }else{
-    console.log('[Auth] Wylogowany');
     cu=null;
     document.getElementById('ma').classList.add('p');
     document.getElementById('lf').classList.remove('p');
@@ -709,8 +676,6 @@ a.onAuthStateChanged(async function(u){
 });
 
 document.addEventListener('visibilitychange',function(){if(cu){if(document.hidden)suo(false);else{suo(true);if(sc){unread[sc]=0;uur()}}}});
-
-console.log('%c[CHAT] ✓ Załadowano pomyślnie v2.2', 'color: #10b981; font-weight: bold');
 </script>
 </body>
 </html>
