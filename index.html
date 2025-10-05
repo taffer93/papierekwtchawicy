@@ -23,9 +23,12 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 .j {width:8px;height:8px;border-radius:50%;margin-right:8px}
 .j.online {background:#10b981;box-shadow:0 0 8px #10b981}
 .j.offline {background:#6b7280}
-.k {background:#252525;padding:14px 16px;margin:10px 0;border-radius:12px;max-width:75%;word-wrap:break-word}
+.k {background:#252525;padding:14px 16px;margin:10px 0;border-radius:12px;max-width:75%;word-wrap:break-word;position:relative}
 .k.own {background:#2563eb;color:#fff;margin-left:auto;margin-right:0}
 .k.other {background:#252525;margin-right:auto;margin-left:0;color:#e0e0e0}
+.k:hover .delete-msg {opacity:1}
+.delete-msg {position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.7);color:#fff;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:16px;font-weight:bold;opacity:0;transition:all 0.2s;display:flex;align-items:center;justify-content:center;z-index:10}
+.delete-msg:hover {background:#ef4444;transform:scale(1.1)}
 .l {font-size:10px;opacity:0.6;margin-bottom:6px;font-weight:500}
 .m {font-size:15px;line-height:1.5}
 .n {display:flex;gap:8px;align-items:center;position:relative;flex-wrap:wrap}
@@ -76,13 +79,14 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 .jj:hover {background:#ef4444}
 .kk {background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.3);padding:10px 14px;border-radius:8px;margin:10px 0;font-size:12px;color:#60a5fa;text-align:center}
 .ll {position:absolute;top:-6px;right:-6px;background:#ef4444;color:#fff;border-radius:50%;width:20px;height:20px;font-size:10px;display:flex;align-items:center;justify-content:center;font-weight:bold;box-shadow:0 2px 8px rgba(239,68,68,0.5)}
-.mm {position:fixed;top:20px;right:20px;background:#10b981;color:#fff;padding:14px 20px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.3);z-index:10001;font-size:13px;font-weight:500;animation:slideIn 0.3s ease;max-width:320px;border:1px solid #14c992}
+.mm {position:fixed;top:20px;right:20px;background:#10b981;color:#fff;padding:14px 20px;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,0.3);z-index:10001;font-size:13px;font-weight:500;animation:slideIn 0.3s ease;max-width:320px;border:1px solid #14c992}
 .user-section {margin-bottom:16px}
 .user-section h3 {color:#888;margin-bottom:8px;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;padding:0 8px;font-weight:600}
 .users-online-count {background:#10b981;color:#fff;border-radius:10px;padding:3px 8px;font-size:10px;margin-left:6px;font-weight:600}
 .users-offline-count {background:#6b7280;color:#fff;border-radius:10px;padding:3px 8px;font-size:10px;margin-left:6px;font-weight:600}
 .image-preview-container {display:flex;flex-wrap:wrap;gap:6px;width:100%;margin-bottom:8px}
 .toast-notification {position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#2563eb;color:#fff;padding:16px 24px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.4);z-index:10002;font-size:14px;font-weight:500;animation:toastIn 0.3s ease;max-width:90%;border:1px solid #3b82f6}
+.msg-deleting {animation:fadeOut 0.3s ease;opacity:0;transform:scale(0.8)}
 .ee::-webkit-scrollbar,.aa::-webkit-scrollbar,.b::-webkit-scrollbar,.e::-webkit-scrollbar{width:6px;height:6px}
 .ee::-webkit-scrollbar-track,.aa::-webkit-scrollbar-track,.b::-webkit-scrollbar-track,.e::-webkit-scrollbar-track{background:#1a1a1a}
 .ee::-webkit-scrollbar-thumb,.aa::-webkit-scrollbar-thumb,.b::-webkit-scrollbar-thumb,.e::-webkit-scrollbar-thumb{background:#3a3a3a;border-radius:3px}
@@ -94,6 +98,10 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 @keyframes toastIn {
   from {transform:translate(-50%,-100%);opacity:0}
   to {transform:translate(-50%,0);opacity:1}
+}
+@keyframes fadeOut {
+  from {opacity:1;transform:scale(1)}
+  to {opacity:0;transform:scale(0.8)}
 }
 @media(max-width:768px) {
   body {overflow:hidden;height:100vh;display:block}
@@ -131,6 +139,8 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
   .mm,.toast-notification {position:fixed;top:12px;left:12px;right:12px;width:auto;padding:12px 16px;font-size:12px;transform:none}
   .toast-notification {left:12px;right:12px;transform:none}
   .k {padding:12px 14px;margin:8px 0;max-width:80%;border-radius:12px}
+  .k:hover .delete-msg {opacity:1}
+  .delete-msg {opacity:0.7}
   .m {font-size:14px}
   .l {font-size:10px}
   input,textarea {font-size:15px!important}
@@ -202,7 +212,7 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
       <div class="n">
         <input type="text" id="mi" placeholder="Napisz wiadomo&#347;&#263;..." autocomplete="off">
         <div class="button-group">
-          <button class="dd" id="emojiPickerBtn" title="Emotki">&#128522;</button>
+          <button class="dd" onclick="toggleEmoji()" title="Emotki">&#128522;</button>
           <button class="dd" onclick="document.getElementById('fi').click()" title="Zdj&#281;cie">&#128247;</button>
           <button class="o" onclick="sm()" title="Wy&#347;lij">&#10148;</button>
         </div>
@@ -456,22 +466,28 @@ function scrollToBottom() {
   }
 }
 
-function toggleEmojiPicker() {
+function toggleEmoji() {
   const ep = document.getElementById('ep');
-  if (!ep) return;
+  if (!ep) {
+    console.log('Panel emoji nie istnieje');
+    return;
+  }
   
-  console.log('Toggle emoji, current state:', es);
+  console.log('Toggle emoji - aktualny stan:', es);
   
   if (es) {
     ep.classList.add('p');
     es = false;
+    console.log('Zamknieto panel emoji');
   } else {
     const eg = document.getElementById('eg');
     if (!eg.innerHTML) {
+      console.log('Tworzenie emoji grid');
       ie();
     }
     ep.classList.remove('p');
     es = true;
+    console.log('Otwarto panel emoji');
   }
 }
 
@@ -490,6 +506,7 @@ function ie() {
     };
     eg.appendChild(btn);
   });
+  console.log('Utworzono', emojis.length, 'przyciskow emoji');
 }
 
 function ae(emoji) {
@@ -504,6 +521,35 @@ function ae(emoji) {
     ep.classList.add('p');
   }
   es = false;
+}
+
+async function deleteMessage(messageId) {
+  if (!messageId) return;
+  
+  if (!confirm('Czy na pewno chcesz usun\u0105\u0107 t\u0119 wiadomo\u015b\u0107?')) {
+    return;
+  }
+  
+  try {
+    const msgEl = document.querySelector('[data-msg-id="' + messageId + '"]');
+    if (msgEl) {
+      msgEl.classList.add('msg-deleting');
+    }
+    
+    await d.collection('messages').doc(messageId).delete();
+    
+    setTimeout(function() {
+      if (msgEl && msgEl.parentNode) {
+        msgEl.remove();
+      }
+      messageIds.delete(messageId);
+    }, 300);
+    
+    showToast('Sukces', 'Wiadomo\u015b\u0107 usuni\u0119ta', 'success');
+  } catch (error) {
+    console.error('Blad usuwania:', error);
+    showToast('B\u0142\u0105d', 'Nie uda\u0142o si\u0119 usun\u0105\u0107 wiadomo\u015bci', 'error');
+  }
 }
 
 function ci(file, maxWidth, quality) {
@@ -792,6 +838,12 @@ async function lm(oue) {
             await ddm(dt);
             scrollToBottom();
           }
+        } else if (change.type === 'removed') {
+          const msgEl = document.querySelector('[data-msg-id="' + change.doc.id + '"]');
+          if (msgEl) {
+            msgEl.remove();
+          }
+          messageIds.delete(change.doc.id);
         }
       }
     }
@@ -821,7 +873,9 @@ async function ddm(dt) {
     content = '<div class="m cc">' + escapeHtml(dct) + '</div>';
   }
   
-  mdv.innerHTML = '<div class="l">' + escapeHtml(io ? 'Ty' : dt.sender.split('@')[0]) + ' &bull; ' + tm + '</div>' + content;
+  const deleteBtn = '<button class="delete-msg" onclick="deleteMessage(\'' + dt.id + '\')" title="Usu\u0144">&times;</button>';
+  
+  mdv.innerHTML = deleteBtn + '<div class="l">' + escapeHtml(io ? 'Ty' : dt.sender.split('@')[0]) + ' &bull; ' + tm + '</div>' + content;
   
   md.appendChild(mdv);
 }
@@ -997,20 +1051,8 @@ document.getElementById('pw').addEventListener('keypress', function(e) {
   }
 });
 
-setTimeout(function() {
-  const emojiBtn = document.getElementById('emojiPickerBtn');
-  if (emojiBtn) {
-    emojiBtn.addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      toggleEmojiPicker();
-    });
-    console.log('Emoji button listener attached');
-  }
-}, 500);
-
 document.addEventListener('click', function(e) {
-  if (!e.target.closest('#emojiPickerBtn') && !e.target.closest('.ee')) {
+  if (!e.target.closest('.dd') && !e.target.closest('.ee')) {
     const ep = document.getElementById('ep');
     if (ep && es) {
       ep.classList.add('p');
@@ -1029,18 +1071,6 @@ a.onAuthStateChanged(async function(u) {
     await suo(true);
     lu();
     rn();
-    
-    setTimeout(function() {
-      const emojiBtn = document.getElementById('emojiPickerBtn');
-      if (emojiBtn && !emojiBtn.onclick) {
-        emojiBtn.addEventListener('click', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          toggleEmojiPicker();
-        });
-        console.log('Emoji button reattached after auth');
-      }
-    }, 100);
     
     ht = setInterval(function() { suo(true); }, 30000);
     
@@ -1076,7 +1106,7 @@ document.addEventListener('visibilitychange', function() {
   }
 });
 
-console.log('Chat zaladowany - Dark Mode FINAL');
+console.log('Chat zaladowany - z usuwaniem wiadomosci!');
 </script>
 
 </body>
