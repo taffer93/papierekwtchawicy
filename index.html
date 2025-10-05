@@ -13,7 +13,7 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 .c {flex:1;display:flex;flex-direction:column;min-width:0;background:#1a1a1a}
 .d {background:#1e1e1e;padding:16px 20px;border-bottom:1px solid #2d2d2d;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
 .e {flex:1;padding:20px;overflow-y:auto;background:#1a1a1a;min-height:0}
-.f {background:#1e1e1e;padding:16px;border-top:1px solid #2d2d2d;flex-shrink:0}
+.f {background:#1e1e1e;padding:16px;border-top:1px solid #2d2d2d;flex-shrink:0;position:relative}
 .g {padding:12px 16px;margin:6px 0;background:#1e1e1e;border-radius:8px;cursor:pointer;transition:all 0.2s;border:1px solid transparent;position:relative}
 .g:hover {background:#252525;border-color:#3a3a3a}
 .g.active {background:#2563eb;border-color:#3b82f6}
@@ -23,7 +23,7 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 .j {width:8px;height:8px;border-radius:50%;margin-right:8px}
 .j.online {background:#10b981;box-shadow:0 0 8px #10b981}
 .j.offline {background:#6b7280}
-.k {background:#252525;padding:14px 16px;margin:10px 0;border-radius:12px;max-width:75%;word-wrap:break-word;animation:slideUp 0.2s ease}
+.k {background:#252525;padding:14px 16px;margin:10px 0;border-radius:12px;max-width:75%;word-wrap:break-word}
 .k.own {background:#2563eb;color:#fff;margin-left:auto;margin-right:0}
 .k.other {background:#252525;margin-right:auto;margin-left:0;color:#e0e0e0}
 .l {font-size:10px;opacity:0.6;margin-bottom:6px;font-weight:500}
@@ -94,10 +94,6 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 @keyframes toastIn {
   from {transform:translate(-50%,-100%);opacity:0}
   to {transform:translate(-50%,0);opacity:1}
-}
-@keyframes slideUp {
-  from {transform:translateY(10px);opacity:0}
-  to {transform:translateY(0);opacity:1}
 }
 @media(max-width:768px) {
   body {overflow:hidden;height:100vh;display:block}
@@ -206,7 +202,7 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
       <div class="n">
         <input type="text" id="mi" placeholder="Napisz wiadomo&#347;&#263;..." autocomplete="off">
         <div class="button-group">
-          <button class="dd" onclick="te(event)" title="Emotki">&#128522;</button>
+          <button class="dd" id="emojiPickerBtn" title="Emotki">&#128522;</button>
           <button class="dd" onclick="document.getElementById('fi').click()" title="Zdj&#281;cie">&#128247;</button>
           <button class="o" onclick="sm()" title="Wy&#347;lij">&#10148;</button>
         </div>
@@ -224,7 +220,6 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
 
 <script>
-// ==================== KONFIGURACJA FIREBASE ====================
 const firebaseConfig = {
   apiKey: "AIzaSyCJeQEnsEDDnGvKoVzKkjRmnOIsmv7HPJs",
   authDomain: "pensei-b3058.firebaseapp.com",
@@ -239,7 +234,6 @@ firebase.initializeApp(firebaseConfig);
 const a = firebase.auth();
 const d = firebase.firestore();
 
-// ==================== ZMIENNE GLOBALNE ====================
 let cu = null;
 let sc = null;
 let um = null;
@@ -252,6 +246,7 @@ let lastMessage = null;
 let encryptionKey = null;
 let messageIds = new Set();
 let audioContext = null;
+let isFirstLoad = true;
 
 const emojis = [
   '\uD83D\uDE00','\uD83D\uDE03','\uD83D\uDE04','\uD83D\uDE01','\uD83D\uDE06','\uD83D\uDE05','\uD83E\uDD23','\uD83D\uDE02',
@@ -264,7 +259,6 @@ const emojis = [
   '\uD83D\uDE4C','\uD83D\uDC50','\uD83E\uDD32','\uD83E\uDD1D','\uD83D\uDE4F','\u270D\uFE0F','\uD83D\uDCAA','\uD83E\uDDBE'
 ];
 
-// ==================== NOWOCZESNY D?WI?K ====================
 function playNotificationSound() {
   try {
     if (!audioContext) {
@@ -291,7 +285,6 @@ function playNotificationSound() {
   }
 }
 
-// ==================== POWIADOMIENIA ====================
 function showToast(title, message, type) {
   type = type || 'info';
   const toast = document.createElement('div');
@@ -341,7 +334,6 @@ function sn(title, body) {
       const notification = new Notification(title, {
         body: body,
         icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="0.9em" font-size="90">??</text></svg>',
-        badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="0.9em" font-size="90">??</text></svg>',
         tag: 'chat-message',
         requireInteraction: false
       });
@@ -373,7 +365,6 @@ function snt(message, sender) {
   }
 }
 
-// ==================== ZAAWANSOWANE SZYFROWANIE AES-GCM ====================
 async function generateKey(password) {
   const encoder = new TextEncoder();
   const keyMaterial = await crypto.subtle.importKey(
@@ -450,7 +441,6 @@ async function dc(encryptedText) {
   }
 }
 
-// ==================== FUNKCJE POMOCNICZE ====================
 function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
@@ -462,31 +452,20 @@ function scrollToBottom() {
   if (md) {
     setTimeout(function() {
       md.scrollTop = md.scrollHeight;
-    }, 100);
+    }, 50);
   }
 }
 
-// ==================== EMOTIKONY ====================
-function te(event) {
-  if (event) {
-    event.preventDefault();
-    event.stopPropagation();
-  }
-  
-  console.log('Emoji button clicked');
-  
+function toggleEmojiPicker() {
   const ep = document.getElementById('ep');
-  if (!ep) {
-    console.log('Emoji panel not found');
-    return;
-  }
+  if (!ep) return;
+  
+  console.log('Toggle emoji, current state:', es);
   
   if (es) {
-    console.log('Closing emoji panel');
     ep.classList.add('p');
     es = false;
   } else {
-    console.log('Opening emoji panel');
     const eg = document.getElementById('eg');
     if (!eg.innerHTML) {
       ie();
@@ -511,7 +490,6 @@ function ie() {
     };
     eg.appendChild(btn);
   });
-  console.log('Emoji grid created with', emojis.length, 'emojis');
 }
 
 function ae(emoji) {
@@ -528,7 +506,6 @@ function ae(emoji) {
   es = false;
 }
 
-// ==================== OBS?UGA OBRAZ¨®W ====================
 function ci(file, maxWidth, quality) {
   maxWidth = maxWidth || 800;
   quality = quality || 0.8;
@@ -626,7 +603,6 @@ function oi(src) {
   document.body.appendChild(modal);
 }
 
-// ==================== AUTENTYKACJA ====================
 function sam(m, ie) {
   const dv = document.getElementById('am');
   dv.innerHTML = ie ? '<div class="x">' + escapeHtml(m) + '</div>' : '<div class="y">' + escapeHtml(m) + '</div>';
@@ -710,7 +686,6 @@ async function lo() {
   }
 }
 
-// ==================== ZARZ?DZANIE U?YTKOWNIKAMI ====================
 function su(ue, io) {
   document.querySelectorAll('.g').forEach(function(i) {
     i.classList.remove('active');
@@ -766,50 +741,70 @@ async function lm(oue) {
   }
   
   messageIds.clear();
+  isFirstLoad = true;
   
   const ci = cci(cu.email, oue);
   const mr = d.collection('messages');
   const q = mr.where('chatId', '==', ci);
   
-  console.log('Loading messages for chatId:', ci);
-  
   um = q.onSnapshot(async function(sn) {
-    console.log('Snapshot received, docs count:', sn.docs.length);
+    const changes = sn.docChanges();
     
-    const md = document.getElementById('ms');
-    md.innerHTML = '';
-    messageIds.clear();
-    
-    if (sn.empty) {
-      md.innerHTML = '<div class="q">\uD83D\uDCAC Rozpocznij rozmow\u0119!</div>';
-      return;
+    if (isFirstLoad) {
+      const md = document.getElementById('ms');
+      md.innerHTML = '';
+      
+      if (sn.empty) {
+        md.innerHTML = '<div class="q">\uD83D\uDCAC Rozpocznij rozmow\u0119!</div>';
+        isFirstLoad = false;
+        return;
+      }
+      
+      let messages = [];
+      sn.forEach(function(doc) {
+        const dt = doc.data();
+        dt.id = doc.id;
+        messages.push(dt);
+      });
+      
+      messages.sort(function(a, b) {
+        if (!a.timestamp || !b.timestamp) return 0;
+        return a.timestamp.toDate() - b.timestamp.toDate();
+      });
+      
+      for (let i = 0; i < messages.length; i++) {
+        messageIds.add(messages[i].id);
+        await ddm(messages[i]);
+      }
+      
+      scrollToBottom();
+      isFirstLoad = false;
+    } else {
+      for (let i = 0; i < changes.length; i++) {
+        const change = changes[i];
+        
+        if (change.type === 'added') {
+          const dt = change.doc.data();
+          dt.id = change.doc.id;
+          
+          if (!messageIds.has(dt.id)) {
+            messageIds.add(dt.id);
+            await ddm(dt);
+            scrollToBottom();
+          }
+        }
+      }
     }
-    
-    let messages = [];
-    sn.forEach(function(doc) {
-      const dt = doc.data();
-      dt.id = doc.id;
-      messages.push(dt);
-    });
-    
-    messages.sort(function(a, b) {
-      if (!a.timestamp || !b.timestamp) return 0;
-      return a.timestamp.toDate() - b.timestamp.toDate();
-    });
-    
-    console.log('Rendering', messages.length, 'messages');
-    
-    for (let i = 0; i < messages.length; i++) {
-      messageIds.add(messages[i].id);
-      await ddm(messages[i]);
-    }
-    
-    scrollToBottom();
   });
 }
 
 async function ddm(dt) {
   const md = document.getElementById('ms');
+  
+  const qElement = md.querySelector('.q');
+  if (qElement) {
+    qElement.remove();
+  }
   
   const mdv = document.createElement('div');
   mdv.setAttribute('data-msg-id', dt.id);
@@ -861,7 +856,6 @@ async function sm() {
         text: encryptedMsg,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       });
-      console.log('Message sent');
     }
     
     for (let i = 0; i < imgs.length; i++) {
@@ -871,7 +865,6 @@ async function sm() {
         image: imgs[i].src,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       });
-      console.log('Image sent');
     }
     
     mi.value = '';
@@ -983,7 +976,6 @@ function lu() {
   });
 }
 
-// ==================== OBS?UGA ZDARZE? ====================
 document.getElementById('mi').addEventListener('keypress', function(e) {
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
@@ -1005,8 +997,20 @@ document.getElementById('pw').addEventListener('keypress', function(e) {
   }
 });
 
+setTimeout(function() {
+  const emojiBtn = document.getElementById('emojiPickerBtn');
+  if (emojiBtn) {
+    emojiBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleEmojiPicker();
+    });
+    console.log('Emoji button listener attached');
+  }
+}, 500);
+
 document.addEventListener('click', function(e) {
-  if (!e.target.closest('.dd') && !e.target.closest('.ee')) {
+  if (!e.target.closest('#emojiPickerBtn') && !e.target.closest('.ee')) {
     const ep = document.getElementById('ep');
     if (ep && es) {
       ep.classList.add('p');
@@ -1015,7 +1019,6 @@ document.addEventListener('click', function(e) {
   }
 });
 
-// ==================== INICJALIZACJA ====================
 a.onAuthStateChanged(async function(u) {
   if (u) {
     cu = u;
@@ -1026,6 +1029,18 @@ a.onAuthStateChanged(async function(u) {
     await suo(true);
     lu();
     rn();
+    
+    setTimeout(function() {
+      const emojiBtn = document.getElementById('emojiPickerBtn');
+      if (emojiBtn && !emojiBtn.onclick) {
+        emojiBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleEmojiPicker();
+        });
+        console.log('Emoji button reattached after auth');
+      }
+    }, 100);
     
     ht = setInterval(function() { suo(true); }, 30000);
     
@@ -1061,7 +1076,7 @@ document.addEventListener('visibilitychange', function() {
   }
 });
 
-console.log('\uD83D\uDCAC Chat zaladowany - Dark Mode v3');
+console.log('Chat zaladowany - Dark Mode FINAL');
 </script>
 
 </body>
