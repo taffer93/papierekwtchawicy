@@ -36,7 +36,7 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 .o {background:#2563eb;color:#fff;padding:12px;border:none;border-radius:50%;cursor:pointer;transition:all 0.2s;width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
 .o:hover {background:#3b82f6;transform:scale(1.05)}
 .o:active {transform:scale(0.95)}
-.p {display:none}
+.p {display:none!important}
 .q {text-align:center;color:#666;padding:40px 20px;font-style:italic;font-size:14px}
 .r {background:#1e1e1e;padding:40px;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.5);width:100%;max-width:420px;margin:20px;border:1px solid #2d2d2d}
 .s {text-align:center;margin-bottom:30px;color:#e0e0e0;font-size:26px;font-weight:600}
@@ -64,7 +64,7 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 .dd {background:#374151;color:#e0e0e0;padding:8px;border:none;border-radius:50%;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0}
 .dd:hover {background:#4b5563;transform:scale(1.05)}
 .dd:active {transform:scale(0.95)}
-.ee {position:absolute;bottom:100%;right:0;background:#252525;border:1px solid #3a3a3a;border-radius:12px;padding:12px;box-shadow:0 8px 24px rgba(0,0,0,0.5);width:320px;max-height:240px;overflow-y:auto;z-index:1000;margin-bottom:8px}
+.ee {position:absolute;bottom:calc(100% + 8px);right:0;background:#252525;border:1px solid #3a3a3a;border-radius:12px;padding:12px;box-shadow:0 8px 24px rgba(0,0,0,0.5);width:320px;max-height:240px;overflow-y:auto;z-index:1000}
 .ff {display:grid;grid-template-columns:repeat(8,1fr);gap:4px}
 .gg {padding:10px;border:none;background:#1e1e1e;cursor:pointer;border-radius:6px;font-size:22px;transition:all 0.15s;border:1px solid transparent}
 .gg:hover {background:#3a3a3a;border-color:#4a4a4a;transform:scale(1.1)}
@@ -82,6 +82,7 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 .users-online-count {background:#10b981;color:#fff;border-radius:10px;padding:3px 8px;font-size:10px;margin-left:6px;font-weight:600}
 .users-offline-count {background:#6b7280;color:#fff;border-radius:10px;padding:3px 8px;font-size:10px;margin-left:6px;font-weight:600}
 .image-preview-container {display:flex;flex-wrap:wrap;gap:6px;width:100%;margin-bottom:8px}
+.toast-notification {position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#2563eb;color:#fff;padding:16px 24px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.4);z-index:10002;font-size:14px;font-weight:500;animation:toastIn 0.3s ease;max-width:90%;border:1px solid #3b82f6}
 .ee::-webkit-scrollbar,.aa::-webkit-scrollbar,.b::-webkit-scrollbar,.e::-webkit-scrollbar{width:6px;height:6px}
 .ee::-webkit-scrollbar-track,.aa::-webkit-scrollbar-track,.b::-webkit-scrollbar-track,.e::-webkit-scrollbar-track{background:#1a1a1a}
 .ee::-webkit-scrollbar-thumb,.aa::-webkit-scrollbar-thumb,.b::-webkit-scrollbar-thumb,.e::-webkit-scrollbar-thumb{background:#3a3a3a;border-radius:3px}
@@ -89,6 +90,10 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 @keyframes slideIn {
   from {transform:translateX(100%);opacity:0}
   to {transform:translateX(0);opacity:1}
+}
+@keyframes toastIn {
+  from {transform:translate(-50%,-100%);opacity:0}
+  to {transform:translate(-50%,0);opacity:1}
 }
 @keyframes slideUp {
   from {transform:translateY(10px);opacity:0}
@@ -127,7 +132,8 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
   .jj {width:20px;height:20px;font-size:13px;top:3px;right:3px}
   .image-preview-container {gap:4px;margin-bottom:6px}
   .ee {position:fixed;bottom:180px;right:12px;left:12px;width:auto;max-height:200px}
-  .mm {position:fixed;top:12px;left:12px;right:12px;width:auto;padding:12px 16px;font-size:12px}
+  .mm,.toast-notification {position:fixed;top:12px;left:12px;right:12px;width:auto;padding:12px 16px;font-size:12px;transform:none}
+  .toast-notification {left:12px;right:12px;transform:none}
   .k {padding:12px 14px;margin:8px 0;max-width:80%;border-radius:12px}
   .m {font-size:14px}
   .l {font-size:10px}
@@ -141,35 +147,31 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 </head>
 <body>
 
-<!-- Panel logowania -->
 <div class="r" id="lf">
-  <h2 class="s">?? Chat</h2>
+  <h2 class="s">&#128172; Chat</h2>
   <div class="t">
     <label>Email</label>
     <input type="email" id="em" placeholder="twoj@email.com" autocomplete="email">
   </div>
   <div class="t">
-    <label>Has?o</label>
-    <input type="password" id="pw" placeholder="????????" autocomplete="current-password">
+    <label>Has&#322;o</label>
+    <input type="password" id="pw" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;" autocomplete="current-password">
   </div>
-  <button class="u" onclick="lg()">Zaloguj si?</button>
-  <button class="u v" onclick="rg()">Utw車rz konto</button>
+  <button class="u" onclick="lg()">Zaloguj si&#281;</button>
+  <button class="u v" onclick="rg()">Utw&#243;rz konto</button>
   <div id="am"></div>
-  <div class="w">?? Bezpieczny komunikator end-to-end</div>
+  <div class="w">&#128274; Bezpieczny komunikator end-to-end</div>
 </div>
 
-<!-- G?車wny interfejs czatu -->
 <div class="a p" id="ma">
-  <!-- Panel boczny z u?ytkownikami -->
   <div class="b">
     <div class="bb">
-      <h4>Tw車j profil</h4>
+      <h4>Tw&#243;j profil</h4>
       <span id="up"></span>
     </div>
-    <button class="z" onclick="lo()">Wyloguj si?</button>
+    <button class="z" onclick="lo()">Wyloguj si&#281;</button>
     
     <div class="aa">
-      <!-- U?ytkownicy online -->
       <div class="user-section">
         <h3>
           Online
@@ -178,7 +180,6 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
         <div id="ulOnline"></div>
       </div>
       
-      <!-- U?ytkownicy offline -->
       <div class="user-section">
         <h3>
           Offline
@@ -189,26 +190,25 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
     </div>
   </div>
   
-  <!-- Panel czatu -->
   <div class="c">
     <div class="d">
       <div>
-        <h3 id="ct" style="margin:0;font-size:16px;color:#e0e0e0">Wybierz rozm車wc?</h3>
+        <h3 id="ct" style="margin:0;font-size:16px;color:#e0e0e0">Wybierz rozm&#243;wc&#281;</h3>
         <div id="cs" style="margin-top:4px;font-size:11px"></div>
       </div>
     </div>
     <div class="e" id="ms">
-      <div class="q">?? Wybierz osob? z listy, aby rozpocz?? rozmow?</div>
+      <div class="q">&#128172; Wybierz osob&#281; z listy, aby rozpocz&#261;&#263; rozmow&#281;</div>
     </div>
     <div class="f p" id="mis">
-      <div class="kk">? Wysy?aj wiadomo?ci, zdj?cia i emotki</div>
+      <div class="kk">&#10024; Wysy&#322;aj wiadomo&#347;ci, zdj&#281;cia i emotki</div>
       <div class="image-preview-container" id="imagePreviewContainer"></div>
       <div class="n">
-        <input type="text" id="mi" placeholder="Napisz wiadomo??..." autocomplete="off">
+        <input type="text" id="mi" placeholder="Napisz wiadomo&#347;&#263;..." autocomplete="off">
         <div class="button-group">
-          <button class="dd" onclick="te()" title="Emotki">??</button>
-          <button class="dd" onclick="document.getElementById('fi').click()" title="Zdj?cie">??</button>
-          <button class="o" onclick="sm()" title="Wy?lij">?</button>
+          <button class="dd" onclick="te()" title="Emotki">&#128522;</button>
+          <button class="dd" onclick="document.getElementById('fi').click()" title="Zdj&#281;cie">&#128247;</button>
+          <button class="o" onclick="sm()" title="Wy&#347;lij">&#10148;</button>
         </div>
         <input type="file" id="fi" accept="image/*" style="display:none" onchange="hu(this)">
       </div>
@@ -251,18 +251,127 @@ let nf = false;
 let lastMessage = null;
 let encryptionKey = null;
 let messageIds = new Set();
+let audioContext = null;
 
-// EMOJI jako prawdziwe znaki Unicode
 const emojis = [
-  '??','??','??','??','??','??','??','??',
-  '??','??','??','??','??','??','??','??',
-  '??','??','??','??','??','??','??','??',
-  '??','??','??','??','??','??','??','??',
-  '??','??','??','??','??','??','??','??',
-  '??','??','??','??','??','??','??','??',
-  '??','??','??','??','??','??','??','??',
-  '??','??','??','??','??','??','??','??'
+  '\uD83D\uDE00','\uD83D\uDE03','\uD83D\uDE04','\uD83D\uDE01','\uD83D\uDE06','\uD83D\uDE05','\uD83E\uDD23','\uD83D\uDE02',
+  '\uD83D\uDE42','\uD83D\uDE43','\uD83D\uDE09','\uD83D\uDE0A','\uD83D\uDE07','\uD83E\uDD70','\uD83D\uDE0D','\uD83E\uDD29',
+  '\uD83D\uDE18','\uD83D\uDE17','\uD83D\uDE1A','\uD83D\uDE19','\uD83E\uDD72','\uD83D\uDE0B','\uD83D\uDE1B','\uD83D\uDE1C',
+  '\uD83E\uDD2A','\uD83D\uDE1D','\uD83E\uDD11','\uD83E\uDD17','\uD83E\uDD2D','\uD83E\uDD2B','\uD83E\uDD14','\uD83E\uDD10',
+  '\uD83D\uDE10','\uD83D\uDE11','\uD83D\uDE36','\uD83D\uDE0F','\uD83D\uDE12','\uD83D\uDE44','\uD83D\uDE2C','\uD83D\uDE0C',
+  '\uD83D\uDE14','\uD83D\uDE2A','\uD83E\uDD24','\uD83D\uDE34','\uD83D\uDE37','\uD83E\uDD12','\uD83E\uDD15','\uD83E\uDD22',
+  '\uD83D\uDC4D','\uD83D\uDC4E','\uD83D\uDC4C','\u270C\uFE0F','\uD83E\uDD1E','\uD83E\uDD1F','\uD83E\uDD18','\uD83D\uDC4F',
+  '\uD83D\uDE4C','\uD83D\uDC50','\uD83E\uDD32','\uD83E\uDD1D','\uD83D\uDE4F','\u270D\uFE0F','\uD83D\uDCAA','\uD83E\uDDBE'
 ];
+
+// ==================== NOWOCZESNY D?WI?K ====================
+function playNotificationSound() {
+  try {
+    if (!audioContext) {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    
+    const now = audioContext.currentTime;
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(800, now);
+    oscillator.frequency.exponentialRampToValueAtTime(600, now + 0.1);
+    
+    gainNode.gain.setValueAtTime(0.3, now);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+    
+    oscillator.start(now);
+    oscillator.stop(now + 0.3);
+  } catch (e) {
+    console.log('Audio nie dziala:', e);
+  }
+}
+
+// ==================== POWIADOMIENIA ====================
+function showToast(title, message, type) {
+  type = type || 'info';
+  const toast = document.createElement('div');
+  toast.className = 'toast-notification';
+  
+  if (type === 'success') {
+    toast.style.background = '#10b981';
+    toast.style.borderColor = '#14c992';
+  } else if (type === 'error') {
+    toast.style.background = '#ef4444';
+    toast.style.borderColor = '#f87171';
+  } else if (type === 'message') {
+    toast.style.background = '#2563eb';
+    toast.style.borderColor = '#3b82f6';
+  }
+  
+  toast.innerHTML = '<strong>' + escapeHtml(title) + '</strong><br>' + escapeHtml(message);
+  document.body.appendChild(toast);
+  
+  playNotificationSound();
+  
+  if (navigator.vibrate) {
+    navigator.vibrate([100, 50, 100]);
+  }
+  
+  setTimeout(function() {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translate(-50%, -100%)';
+    setTimeout(function() { toast.remove(); }, 300);
+  }, 4000);
+}
+
+function rn() {
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission().then(function(permission) {
+      nf = permission === 'granted';
+      if (nf) {
+        showToast('Powiadomienia', 'Powiadomienia w??czone!', 'success');
+      }
+    });
+  }
+}
+
+function sn(title, body) {
+  if (nf && 'Notification' in window && Notification.permission === 'granted') {
+    try {
+      const notification = new Notification(title, {
+        body: body,
+        icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="0.9em" font-size="90">??</text></svg>',
+        badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="0.9em" font-size="90">??</text></svg>',
+        tag: 'chat-message',
+        requireInteraction: false
+      });
+      notification.onclick = function() {
+        window.focus();
+        notification.close();
+      };
+    } catch (e) {
+      console.log('Notification error:', e);
+    }
+  }
+}
+
+function ut() {
+  const total = Object.values(unread).reduce(function(sum, count) { return sum + count; }, 0);
+  document.title = total > 0 ? '(' + total + ') ' + ot : ot;
+}
+
+function snt(message, sender) {
+  const senderName = sender.split('@')[0];
+  const shortMsg = message.length > 50 ? message.substring(0, 50) + '...' : message;
+  
+  showToast(senderName, shortMsg, 'message');
+  sn('\uD83D\uDCAC ' + senderName, message);
+  
+  if (lastMessage !== message) {
+    playNotificationSound();
+    lastMessage = message;
+  }
+}
 
 // ==================== ZAAWANSOWANE SZYFROWANIE AES-GCM ====================
 async function generateKey(password) {
@@ -312,7 +421,7 @@ async function ec(text) {
     
     return btoa(String.fromCharCode.apply(null, combined));
   } catch (e) {
-    console.error('B??d szyfrowania:', e);
+    console.error('Blad szyfrowania:', e);
     return text;
   }
 }
@@ -336,7 +445,7 @@ async function dc(encryptedText) {
     const decoder = new TextDecoder();
     return decoder.decode(decrypted);
   } catch (e) {
-    console.error('B??d deszyfrowania:', e);
+    console.error('Blad deszyfrowania:', e);
     return encryptedText;
   }
 }
@@ -357,62 +466,17 @@ function scrollToBottom() {
   }
 }
 
-// ==================== POWIADOMIENIA ====================
-function rn() {
-  if ('Notification' in window && Notification.permission === 'default') {
-    Notification.requestPermission().then(function(permission) {
-      nf = permission === 'granted';
-    });
-  }
-}
-
-function sn(title, body) {
-  if (nf && 'Notification' in window && Notification.permission === 'granted') {
-    const notification = new Notification(title, {
-      body: body,
-      icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="0.9em" font-size="90">??</text></svg>'
-    });
-    notification.onclick = function() {
-      window.focus();
-      notification.close();
-    };
-  }
-}
-
-function ut() {
-  const total = Object.values(unread).reduce(function(sum, count) { return sum + count; }, 0);
-  document.title = total > 0 ? '(' + total + ') ' + ot : ot;
-}
-
-function snt(message, sender) {
-  if (document.hidden || !document.hasFocus()) {
-    const senderName = sender.split('@')[0];
-    const toast = document.createElement('div');
-    toast.className = 'mm';
-    toast.innerHTML = '<strong>?? ' + escapeHtml(senderName) + '</strong><br>' + escapeHtml(message.length > 50 ? message.substring(0, 50) + '...' : message);
-    document.body.appendChild(toast);
-    setTimeout(function() { toast.remove(); }, 4000);
-    sn('?? ' + senderName, message);
-    
-    if (lastMessage !== message) {
-      try {
-        const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmsfBSF+zPLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmsfBSF+zPLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmsfBSF+zPLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmsfBTyA0fLKdSsEKG/A7+GNQQ0PVKvh8blwHAU2jdXzzn0vBSl+zPLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmsfBTyA0fLKdSsEKG/A7+GNQQ0PVKvh8blwHAU2jdXzzn0vBSl+zPLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmsfBTyA0fLKdSsEKG/A7+GNQQ0PVKvh8blwHAU2jdXzzn0vBSl+zPLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmsfBTyA0fLKdSsEKG/A7+GNQQ0PVKvh8blwHAU2jdXzzn0vBSl+zPLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmsfBTyA0fLKdSsEKG/A7+GNQQ0PVKvh8blwHAU2jdXzzn0vBSl+zPLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmsfBTyA0fLKdSsEKG/A7+GNQQ0PVKvh8blwHAU2jdXzzn0vBSl+zPLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmsfBTyA0fLKdSsEKG/A7+GNQQ0PVKvh8blwHAU2jdXzzn0vBSl+zPLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmsfBTyA0fLKdSsEKG/A7+GNQQ0PVKvh8blwHAU2jdXzzn0vBSl+zPLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmsfBQ==');
-        audio.volume = 0.3;
-        audio.play().catch(function() {});
-      } catch (e) {}
-      lastMessage = message;
-    }
-  }
-}
-
 // ==================== EMOTIKONY ====================
 function te() {
   const ep = document.getElementById('ep');
+  if (!ep) return;
+  
   if (es) {
     ep.classList.add('p');
     es = false;
   } else {
-    if (!document.getElementById('eg').innerHTML) {
+    const eg = document.getElementById('eg');
+    if (!eg.innerHTML) {
       ie();
     }
     ep.classList.remove('p');
@@ -422,6 +486,8 @@ function te() {
 
 function ie() {
   const eg = document.getElementById('eg');
+  if (!eg) return;
+  
   eg.innerHTML = '';
   emojis.forEach(function(emoji) {
     const btn = document.createElement('button');
@@ -434,9 +500,15 @@ function ie() {
 
 function ae(emoji) {
   const mi = document.getElementById('mi');
+  if (!mi) return;
+  
   mi.value += emoji;
   mi.focus();
-  document.getElementById('ep').classList.add('p');
+  
+  const ep = document.getElementById('ep');
+  if (ep) {
+    ep.classList.add('p');
+  }
   es = false;
 }
 
@@ -481,7 +553,7 @@ async function hu(input) {
   if (!file) return;
   
   if (!file.type.startsWith('image/')) {
-    alert('Wybierz plik obrazu');
+    showToast('B\u0142\u0105d', 'Wybierz plik obrazu', 'error');
     return;
   }
   
@@ -519,7 +591,7 @@ async function hu(input) {
     
     reader.readAsDataURL(compressedFile);
   } catch (error) {
-    alert('B??d przetwarzania obrazu');
+    showToast('B\u0142\u0105d', 'B\u0142\u0105d przetwarzania obrazu', 'error');
   }
   
   input.value = '';
@@ -550,20 +622,22 @@ async function lg() {
   const p = document.getElementById('pw').value;
   
   if (!e || !p) {
-    sam('Wype?nij wszystkie pola', true);
+    sam('Wype\u0142nij wszystkie pola', true);
     return;
   }
   
   try {
     await a.signInWithEmailAndPassword(e, p);
-    sam('Zalogowano pomy?lnie');
+    sam('Zalogowano pomy\u015blnie');
+    showToast('Sukces', 'Zalogowano pomy\u015blnie!', 'success');
   } catch (er) {
-    let msg = 'B??d logowania';
-    if (er.code === 'auth/user-not-found') msg = 'Nie znaleziono u?ytkownika';
-    else if (er.code === 'auth/wrong-password') msg = 'Nieprawid?owe has?o';
-    else if (er.code === 'auth/invalid-email') msg = 'Nieprawid?owy email';
-    else if (er.code === 'auth/invalid-credential') msg = 'Nieprawid?owe dane logowania';
+    let msg = 'B\u0142\u0105d logowania';
+    if (er.code === 'auth/user-not-found') msg = 'Nie znaleziono u\u017cytkownika';
+    else if (er.code === 'auth/wrong-password') msg = 'Nie扭把忘志id\u0142owe has\u0142o';
+    else if (er.code === 'auth/invalid-email') msg = 'Nieprawid\u0142owy email';
+    else if (er.code === 'auth/invalid-credential') msg = 'Nieprawid\u0142owe dane logowania';
     sam(msg, true);
+    showToast('B\u0142\u0105d', msg, 'error');
   }
 }
 
@@ -572,24 +646,26 @@ async function rg() {
   const p = document.getElementById('pw').value;
   
   if (!e || !p) {
-    sam('Wype?nij wszystkie pola', true);
+    sam('Wype\u0142nij wszystkie pola', true);
     return;
   }
   
   if (p.length < 6) {
-    sam('Has?o musi mie? minimum 6 znak車w', true);
+    sam('Has\u0142o musi mie\u0107 minimum 6 znak\u00f3w', true);
     return;
   }
   
   try {
     await a.createUserWithEmailAndPassword(e, p);
-    sam('Konto utworzone pomy?lnie');
+    sam('Konto utworzone pomy\u015blnie');
+    showToast('Sukces', 'Konto utworzone!', 'success');
   } catch (er) {
-    let msg = 'B??d rejestracji';
-    if (er.code === 'auth/email-already-in-use') msg = 'Ten email jest ju? u?ywany';
-    else if (er.code === 'auth/weak-password') msg = 'Has?o jest za s?abe';
-    else if (er.code === 'auth/invalid-email') msg = 'Nieprawid?owy email';
+    let msg = 'B\u0142\u0105d rejestracji';
+    if (er.code === 'auth/email-already-in-use') msg = 'Ten email jest ju\u017c u\u017cywany';
+    else if (er.code === 'auth/weak-password') msg = 'Has\u0142o jest za s\u0142abe';
+    else if (er.code === 'auth/invalid-email') msg = 'Nieprawid\u0142owy email';
     sam(msg, true);
+    showToast('B\u0142\u0105d', msg, 'error');
   }
 }
 
@@ -610,9 +686,11 @@ async function lo() {
     document.getElementById('lf').classList.remove('p');
     document.getElementById('em').value = '';
     document.getElementById('pw').value = '';
+    
+    showToast('Wylogowano', 'Do zobaczenia!', 'success');
   } catch (error) {
-    console.error('B??d wylogowania:', error);
-    alert('B??d wylogowania. Spr車buj ponownie.');
+    console.error('Blad wylogowania:', error);
+    showToast('B\u0142\u0105d', 'B\u0142\u0105d wylogowania', 'error');
   }
 }
 
@@ -707,7 +785,7 @@ async function lm(oue) {
     if (isInitialLoad) {
       const md = document.getElementById('ms');
       if (md.innerHTML === '') {
-        md.innerHTML = '<div class="q">?? Rozpocznij rozmow?!</div>';
+        md.innerHTML = '<div class="q">\uD83D\uDCAC Rozpocznij rozmow\u0119!</div>';
       }
     }
     
@@ -748,7 +826,7 @@ async function ddm(dt) {
     }
   }
   
-  mdv.innerHTML = '<div class="l">' + escapeHtml(io ? 'Ty' : dt.sender.split('@')[0]) + ' ? ' + tm + '</div>' + content;
+  mdv.innerHTML = '<div class="l">' + escapeHtml(io ? 'Ty' : dt.sender.split('@')[0]) + ' &bull; ' + tm + '</div>' + content;
   
   md.appendChild(mdv);
 }
@@ -768,7 +846,7 @@ async function sm() {
   }
   
   if (!sc) {
-    alert('Wybierz rozm車wc?');
+    showToast('B\u0142\u0105d', 'Wybierz rozm\u00f3wc\u0119', 'error');
     return;
   }
   
@@ -798,8 +876,8 @@ async function sm() {
     document.getElementById('imagePreviewContainer').innerHTML = '';
     
   } catch (error) {
-    console.error('B??d wysy?ania:', error);
-    alert('B??d wysy?ania wiadomo?ci');
+    console.error('Blad wysylania:', error);
+    showToast('B\u0142\u0105d', 'B\u0142\u0105d wysy\u0142ania wiadomo\u015bci', 'error');
   }
 }
 
@@ -814,7 +892,7 @@ async function suo(io) {
       lastSeen: firebase.firestore.FieldValue.serverTimestamp()
     }, { merge: true });
   } catch (error) {
-    console.error('B??d aktualizacji statusu:', error);
+    console.error('Blad aktualizacji statusu:', error);
   }
 }
 
@@ -849,7 +927,7 @@ function lu() {
     ulOnline.innerHTML = '';
     
     if (onlineUsers.length === 0) {
-      ulOnline.innerHTML = '<div style="text-align:center;color:#666;font-size:12px;padding:12px">Brak u?ytkownik車w online</div>';
+      ulOnline.innerHTML = '<div style="text-align:center;color:#666;font-size:12px;padding:12px">Brak u\u017cytkownik\u00f3w online</div>';
     } else {
       onlineUsers.forEach(function(user) {
         const dv = document.createElement('div');
@@ -867,7 +945,7 @@ function lu() {
     ulOffline.innerHTML = '';
     
     if (offlineUsers.length === 0) {
-      ulOffline.innerHTML = '<div style="text-align:center;color:#666;font-size:12px;padding:12px">Wszyscy online! ??</div>';
+      ulOffline.innerHTML = '<div style="text-align:center;color:#666;font-size:12px;padding:12px">Wszyscy online! \uD83C\uDF89</div>';
     } else {
       offlineUsers.forEach(function(user) {
         const dv = document.createElement('div');
@@ -883,7 +961,7 @@ function lu() {
           const diffMins = Math.floor(diffMs / 60000);
           
           if (diffMins < 1) {
-            lastSeenText = 'Przed chwil?';
+            lastSeenText = 'Przed chwil\u0105';
           } else if (diffMins < 60) {
             lastSeenText = diffMins + ' min temu';
           } else if (diffMins < 1440) {
@@ -981,7 +1059,7 @@ document.addEventListener('visibilitychange', function() {
   }
 });
 
-console.log('?? Chat za?adowany - Dark Mode');
+console.log('\uD83D\uDCAC Chat zaladowany - Dark Mode');
 </script>
 
 </body>
