@@ -248,7 +248,7 @@ try {
   }
 }
 
-let cu=null,sc=null,um=null,ht=null,es=false,unread={},ot='Kalkulator',nf=false,lastMessage=null,encryptionKey=null,messageIds=new Set(),audioContext=null,isFirstLoad=true,scrollTimeout=null,shouldAutoScroll=true;
+let cu=null,sc=null,um=null,ht=null,es=false,unread={},ot='Kalkulator',nf=false,lastMessage=null,encryptionKey=null,messageIds=new Set(),audioContext=null,scrollTimeout=null,shouldAutoScroll=true,renderQueue=[],isRendering=false;
 
 const emojis=['\uD83D\uDE00','\uD83D\uDE03','\uD83D\uDE04','\uD83D\uDE01','\uD83D\uDE06','\uD83D\uDE05','\uD83E\uDD23','\uD83D\uDE02','\uD83D\uDE42','\uD83D\uDE43','\uD83D\uDE09','\uD83D\uDE0A','\uD83D\uDE07','\uD83E\uDD70','\uD83D\uDE0D','\uD83E\uDD29','\uD83D\uDE18','\uD83D\uDE17','\uD83D\uDE1A','\uD83D\uDE19','\uD83E\uDD72','\uD83D\uDE0B','\uD83D\uDE1B','\uD83D\uDE1C','\uD83E\uDD2A','\uD83D\uDE1D','\uD83E\uDD11','\uD83E\uDD17','\uD83E\uDD2D','\uD83E\uDD2B','\uD83E\uDD14','\uD83E\uDD10','\uD83D\uDE10','\uD83D\uDE11','\uD83D\uDE36','\uD83D\uDE0F','\uD83D\uDE12','\uD83D\uDE44','\uD83D\uDE2C','\uD83D\uDE0C','\uD83D\uDE14','\uD83D\uDE2A','\uD83E\uDD24','\uD83D\uDE34','\uD83D\uDE37','\uD83E\uDD12','\uD83E\uDD15','\uD83E\uDD22','\uD83D\uDC4D','\uD83D\uDC4E','\uD83D\uDC4C','\u270C\uFE0F','\uD83E\uDD1E','\uD83E\uDD1F','\uD83E\uDD18','\uD83D\uDC4F','\uD83D\uDE4C','\uD83D\uDC50','\uD83E\uDD32','\uD83E\uDD1D','\uD83D\uDE4F','\u270D\uFE0F','\uD83D\uDCAA','\uD83E\uDDBE'];
 
@@ -460,6 +460,8 @@ window.lo = async function(){
     unread={};
     encryptionKey=null;
     messageIds.clear();
+    renderQueue=[];
+    isRendering=false;
     document.getElementById('ma').classList.add('p');
     document.getElementById('lf').classList.remove('p');
     document.getElementById('em').value='';
@@ -474,74 +476,60 @@ function su(ue,io){document.querySelectorAll('.g').forEach(function(i){i.classLi
 
 function uur(){document.querySelectorAll('.ll').forEach(function(badge){badge.remove()});Object.keys(unread).forEach(function(email){if(unread[email]>0){const userEl=document.querySelector('[data-email="'+email+'"]');if(userEl){const badge=document.createElement('div');badge.className='ll';badge.textContent=unread[email]>99?'99+':unread[email];userEl.appendChild(badge)}}});ut()}
 
+async function processRenderQueue(){
+  if(isRendering||renderQueue.length===0)return;
+  isRendering=true;
+  
+  while(renderQueue.length>0){
+    const msg=renderQueue.shift();
+    await ddm(msg);
+  }
+  
+  isRendering=false;
+  scrollToBottom(true);
+}
+
 async function lm(oue){
   if(um)um();
   messageIds.clear();
-  isFirstLoad=true;
+  renderQueue=[];
+  isRendering=false;
   shouldAutoScroll=true;
+  
+  const md=document.getElementById('ms');
+  md.innerHTML='<div class="q">\uD83D\uDCAC Ładowanie...</div>';
   
   const ci=cci(cu.email,oue);
   const mr=d.collection('messages');
   const q=mr.where('chatId','==',ci);
   
-  um=q.onSnapshot(async function(sn){
-    const changes=sn.docChanges();
+  um=q.onSnapshot(function(sn){
+    const newMessages=[];
     
-    if(isFirstLoad){
-      const md=document.getElementById('ms');
-      md.innerHTML='';
+    sn.forEach(function(doc){
+      const dt=doc.data();
+      dt.id=doc.id;
       
-      if(sn.empty){
-        md.innerHTML='<div class="q">\uD83D\uDCAC Rozpocznij rozmowę!</div>';
-        isFirstLoad=false;
-        return
+      if(!messageIds.has(dt.id)){
+        messageIds.add(dt.id);
+        newMessages.push(dt);
       }
-      
-      let messages=[];
-      sn.forEach(function(doc){
-        const dt=doc.data();
-        dt.id=doc.id;
-        messages.push(dt)
-      });
-      
-      messages.sort(function(a,b){
+    });
+    
+    if(newMessages.length>0){
+      newMessages.sort(function(a,b){
         if(!a.timestamp||!b.timestamp)return 0;
         return a.timestamp.toDate()-b.timestamp.toDate()
       });
       
-      for(let i=0;i<messages.length;i++){
-        messageIds.add(messages[i].id);
-        await ddm(messages[i])
+      if(messageIds.size===newMessages.length){
+        md.innerHTML='';
       }
       
-      scrollToBottom(true);
-      isFirstLoad=false
-    }else{
-      for(let i=0;i<changes.length;i++){
-        const change=changes[i];
-        
-        if(change.type==='added'){
-          const dt=change.doc.data();
-          dt.id=change.doc.id;
-          
-          if(!messageIds.has(dt.id)){
-            messageIds.add(dt.id);
-            await ddm(dt);
-            
-            if(dt.sender!==cu.email){
-              shouldAutoScroll=true
-            }
-            
-            scrollToBottom()
-          }
-        }else if(change.type==='modified'){
-          await updateMessageReadStatus(change.doc.id,change.doc.data())
-        }else if(change.type==='removed'){
-          const msgEl=document.querySelector('[data-msg-id="'+change.doc.id+'"]');
-          if(msgEl)msgEl.remove();
-          messageIds.delete(change.doc.id)
-        }
-      }
+      renderQueue=renderQueue.concat(newMessages);
+      processRenderQueue();
+    }else if(sn.empty){
+      md.innerHTML='<div class="q">\uD83D\uDCAC Rozpocznij rozmowę!</div>';
     }
   })
 }
