@@ -168,7 +168,7 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 </div>
 
 <div class="r p" id="lf">
-  <h2 class="s">&#128172; Kalkulator</h2>
+  <h2 class="s">&#128172; Zaloguj się</h2>
   <div class="t">
     <label>Email</label>
     <input type="email" id="em" placeholder="twoj@email.com" autocomplete="email">
@@ -309,7 +309,7 @@ window.calculateCalc = function(){
     
     if(calcExpression==='1488+2137'||calcExpression==='2137+1488'){
       const msg=document.getElementById('calcMessage');
-      msg.innerHTML='<div class="calc-message">🎉 Brawo! Znalazłeś sekretny kod! 🎉<br>Witaj w świecie prawdziwych matematyków 😎</div>';
+      msg.innerHTML='<div class="calc-message">🎉 Brawo! Znalazłeś sekretny kod! 🎉<br>Za chwilę przejdziesz do logowania... 🔐</div>';
       
       setTimeout(function(){
         document.getElementById('calcScreen').classList.add('p');
@@ -344,10 +344,8 @@ try {
   a = firebase.auth();
   d = firebase.firestore();
   
-  // ✅ WYŁĄCZ AUTOMATYCZNE LOGOWANIE
   a.setPersistence(firebase.auth.Auth.Persistence.NONE);
   
-  // ✅ WYLOGUJ UŻYTKOWNIKA PRZY STARCIE STRONY
   if(a.currentUser){
     a.signOut();
   }
@@ -607,8 +605,12 @@ window.lo = async function(){
     renderQueue=[];
     isRendering=false;
     isFirstSnapshot=true;
+    
+    // WYLOGOWANIE - POWRÓT DO KALKULATORA
     document.getElementById('ma').classList.add('p');
-    document.getElementById('lf').classList.remove('p');
+    document.getElementById('lf').classList.add('p');
+    document.getElementById('calcScreen').classList.remove('p');
+    
     document.getElementById('em').value='';
     document.getElementById('pw').value='';
     showToast('Wylogowano','Do zobaczenia!','success')
@@ -979,10 +981,11 @@ a.onAuthStateChanged(async function(u){
   if(u){
     cu=u;
     
-    // ✅ UKRYJ KALKULATOR I EKRAN LOGOWANIA
+    // ZALOGOWANO - POKAŻ GŁÓWNĄ APLIKACJĘ
     document.getElementById('calcScreen').classList.add('p');
     document.getElementById('lf').classList.add('p');
     document.getElementById('ma').classList.remove('p');
+    
     document.getElementById('up').textContent=u.email;
     await suo(true);
     lu();
@@ -990,9 +993,12 @@ a.onAuthStateChanged(async function(u){
     ht=setInterval(function(){suo(true)},30000);
     window.addEventListener('beforeunload',function(){suo(false)})
   }else{
+    // NIE ZALOGOWANO - POKAŻ KALKULATOR
     cu=null;
     document.getElementById('ma').classList.add('p');
-    document.getElementById('lf').classList.remove('p');
+    document.getElementById('lf').classList.add('p');
+    document.getElementById('calcScreen').classList.remove('p');
+    
     if(ht){clearInterval(ht);ht=null}
     if(um){um();um=null}
     if(allUsersListener){allUsersListener();allUsersListener=null}
