@@ -107,7 +107,7 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
   .d {padding:12px 16px;flex-shrink:0}
   .d h3 {font-size:15px}
   .d #cs {font-size:11px}
-  .e {flex:1;min-height:0;padding:12px;padding-bottom:240px!important;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .e {flex:1;min-height:0;padding:12px;padding-bottom:240px;overflow-y:auto;-webkit-overflow-scrolling:touch}
   .f {position:fixed;bottom:0;left:0;right:0;padding:12px;border-top:1px solid #2d2d2d;background:#1e1e1e;z-index:999;box-shadow:0 -4px 16px rgba(0,0,0,0.3)}
   .bb {padding:12px;margin-bottom:12px}
   .bb h4 {font-size:14px;margin-bottom:4px}
@@ -206,7 +206,7 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
       <div class="n">
         <input type="text" id="mi" placeholder="Napisz wiadomo&#347;&#263;..." autocomplete="off">
         <div class="button-group">
-          <button class="dd" id="emojiBtn" title="Emotki">&#128522;</button>
+          <button class="dd" onclick="te(event)" title="Emotki">&#128522;</button>
           <button class="dd" onclick="document.getElementById('fi').click()" title="Zdj&#281;cie">&#128247;</button>
           <button class="o" onclick="sm()" title="Wy&#347;lij">&#10148;</button>
         </div>
@@ -460,26 +460,33 @@ function escapeHtml(text) {
 function scrollToBottom() {
   const md = document.getElementById('ms');
   if (md) {
-    requestAnimationFrame(function() {
+    setTimeout(function() {
       md.scrollTop = md.scrollHeight;
-      console.log('Scroll to:', md.scrollHeight, 'Current:', md.scrollTop);
-    });
+    }, 100);
   }
 }
 
 // ==================== EMOTIKONY ====================
 function te(event) {
   if (event) {
+    event.preventDefault();
     event.stopPropagation();
   }
   
+  console.log('Emoji button clicked');
+  
   const ep = document.getElementById('ep');
-  if (!ep) return;
+  if (!ep) {
+    console.log('Emoji panel not found');
+    return;
+  }
   
   if (es) {
+    console.log('Closing emoji panel');
     ep.classList.add('p');
     es = false;
   } else {
+    console.log('Opening emoji panel');
     const eg = document.getElementById('eg');
     if (!eg.innerHTML) {
       ie();
@@ -504,6 +511,7 @@ function ie() {
     };
     eg.appendChild(btn);
   });
+  console.log('Emoji grid created with', emojis.length, 'emojis');
 }
 
 function ae(emoji) {
@@ -761,64 +769,47 @@ async function lm(oue) {
   
   const ci = cci(cu.email, oue);
   const mr = d.collection('messages');
-  const q = mr.where('chatId', '==', ci).orderBy('timestamp', 'asc');
+  const q = mr.where('chatId', '==', ci);
+  
+  console.log('Loading messages for chatId:', ci);
   
   um = q.onSnapshot(async function(sn) {
+    console.log('Snapshot received, docs count:', sn.docs.length);
+    
     const md = document.getElementById('ms');
+    md.innerHTML = '';
+    messageIds.clear();
     
     if (sn.empty) {
       md.innerHTML = '<div class="q">\uD83D\uDCAC Rozpocznij rozmow\u0119!</div>';
       return;
     }
     
-    const changes = sn.docChanges();
-    const isInitialLoad = changes.every(function(c) { return c.type === 'added'; }) && changes.length === sn.size;
+    let messages = [];
+    sn.forEach(function(doc) {
+      const dt = doc.data();
+      dt.id = doc.id;
+      messages.push(dt);
+    });
     
-    if (isInitialLoad) {
-      md.innerHTML = '';
-      messageIds.clear();
-      
-      for (let i = 0; i < sn.docs.length; i++) {
-        const doc = sn.docs[i];
-        const dt = doc.data();
-        dt.id = doc.id;
-        messageIds.add(dt.id);
-        await ddm(dt, true);
-      }
-      
-      scrollToBottom();
-    } else {
-      for (let i = 0; i < changes.length; i++) {
-        const change = changes[i];
-        
-        if (change.type === 'added') {
-          const dt = change.doc.data();
-          dt.id = change.doc.id;
-          
-          if (!messageIds.has(dt.id)) {
-            messageIds.add(dt.id);
-            await ddm(dt, false);
-            scrollToBottom();
-          }
-        }
-      }
+    messages.sort(function(a, b) {
+      if (!a.timestamp || !b.timestamp) return 0;
+      return a.timestamp.toDate() - b.timestamp.toDate();
+    });
+    
+    console.log('Rendering', messages.length, 'messages');
+    
+    for (let i = 0; i < messages.length; i++) {
+      messageIds.add(messages[i].id);
+      await ddm(messages[i]);
     }
+    
+    scrollToBottom();
   });
 }
 
-async function ddm(dt, isInitial) {
+async function ddm(dt) {
   const md = document.getElementById('ms');
-  
-  const existingMsg = document.querySelector('[data-msg-id="' + dt.id + '"]');
-  if (existingMsg) {
-    console.log('Wiadomosc juz istnieje:', dt.id);
-    return;
-  }
-  
-  const qElement = md.querySelector('.q');
-  if (qElement) {
-    qElement.remove();
-  }
   
   const mdv = document.createElement('div');
   mdv.setAttribute('data-msg-id', dt.id);
@@ -833,19 +824,11 @@ async function ddm(dt, isInitial) {
   } else {
     const dct = await dc(dt.text);
     content = '<div class="m cc">' + escapeHtml(dct) + '</div>';
-    
-    if (!io && !isInitial && (sc !== dt.sender || document.hidden || !document.hasFocus())) {
-      if (!unread[dt.sender]) unread[dt.sender] = 0;
-      unread[dt.sender]++;
-      uur();
-      snt(dct, dt.sender);
-    }
   }
   
   mdv.innerHTML = '<div class="l">' + escapeHtml(io ? 'Ty' : dt.sender.split('@')[0]) + ' &bull; ' + tm + '</div>' + content;
   
   md.appendChild(mdv);
-  console.log('Dodano wiadomosc:', dt.id, 'isInitial:', isInitial);
 }
 
 function cci(e1, e2) {
@@ -878,6 +861,7 @@ async function sm() {
         text: encryptedMsg,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       });
+      console.log('Message sent');
     }
     
     for (let i = 0; i < imgs.length; i++) {
@@ -887,6 +871,7 @@ async function sm() {
         image: imgs[i].src,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       });
+      console.log('Image sent');
     }
     
     mi.value = '';
@@ -1020,22 +1005,13 @@ document.getElementById('pw').addEventListener('keypress', function(e) {
   }
 });
 
-// Obs?uga przycisku emoji
-document.addEventListener('DOMContentLoaded', function() {
-  const emojiBtn = document.getElementById('emojiBtn');
-  if (emojiBtn) {
-    emojiBtn.addEventListener('click', te);
-  }
-});
-
-// Zamknij panel emoji po klikni?ciu poza nim
 document.addEventListener('click', function(e) {
-  const ep = document.getElementById('ep');
-  const emojiBtn = document.getElementById('emojiBtn');
-  
-  if (es && ep && emojiBtn && !ep.contains(e.target) && e.target !== emojiBtn) {
-    ep.classList.add('p');
-    es = false;
+  if (!e.target.closest('.dd') && !e.target.closest('.ee')) {
+    const ep = document.getElementById('ep');
+    if (ep && es) {
+      ep.classList.add('p');
+      es = false;
+    }
   }
 });
 
@@ -1085,7 +1061,7 @@ document.addEventListener('visibilitychange', function() {
   }
 });
 
-console.log('\uD83D\uDCAC Chat zaladowany - Dark Mode v2');
+console.log('\uD83D\uDCAC Chat zaladowany - Dark Mode v3');
 </script>
 
 </body>
