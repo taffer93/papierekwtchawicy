@@ -28,10 +28,11 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 .k.other {background:#e9ecef;margin-right:auto;margin-left:0}
 .l {font-size:11px;opacity:0.7;margin-bottom:6px;font-weight:500}
 .m {font-size:15px;line-height:1.4}
-.n {display:flex;gap:8px;align-items:flex-end;position:relative}
-.n input {flex:1;padding:12px 16px;border:2px solid #e9ecef;border-radius:20px;font-size:16px;outline:none;resize:none;max-height:100px;min-height:44px}
+.n {display:flex;gap:8px;align-items:flex-end;position:relative;flex-wrap:wrap}
+.n input {flex:1;padding:12px 16px;border:2px solid #e9ecef;border-radius:20px;font-size:16px;outline:none;resize:none;max-height:100px;min-height:44px;min-width:200px}
 .n input:focus {border-color:#007bff}
-.o {background:linear-gradient(135deg,#007bff,#0056b3);color:white;padding:12px;border:none;border-radius:50%;cursor:pointer;transition:all 0.3s;width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.button-group {display:flex;gap:8px;flex-shrink:0}
+.o {background:linear-gradient(135deg,#007bff,#0056b3);color:white;padding:12px;border:none;border-radius:50%;cursor:pointer;transition:all 0.3s;width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
 .o:hover {transform:scale(1.1);box-shadow:0 4px 12px rgba(0,123,255,0.4)}
 .p {display:none}
 .q {text-align:center;color:#6c757d;padding:40px 20px;font-style:italic}
@@ -55,7 +56,7 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 .bb h4 {color:white;margin-bottom:8px;font-size:18px}
 .bb span {color:rgba(255,255,255,0.9);font-size:14px}
 .cc {font-size:18px;line-height:1.5}
-.dd {background:#6c757d;color:white;padding:8px;border:none;border-radius:50%;cursor:pointer;margin-left:4px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+.dd {background:#6c757d;color:white;padding:8px;border:none;border-radius:50%;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0}
 .dd:hover {background:#5a6268;transform:scale(1.1)}
 .ee {position:absolute;bottom:100%;right:0;background:white;border:1px solid #ddd;border-radius:12px;padding:15px;box-shadow:0 8px 24px rgba(0,0,0,0.2);width:280px;max-height:200px;overflow-y:auto;z-index:1000}
 .ff {display:grid;grid-template-columns:repeat(8,1fr);gap:5px}
@@ -63,7 +64,7 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 .gg:hover {background:#f0f0f0;transform:scale(1.2)}
 .hh {max-width:200px;border-radius:12px;cursor:pointer;transition:transform 0.2s}
 .hh:hover {transform:scale(1.05)}
-.ii {position:relative;display:inline-block}
+.ii {position:relative;display:inline-block;margin:5px}
 .jj {position:absolute;top:5px;right:5px;background:rgba(0,0,0,0.7);color:white;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:16px;font-weight:bold}
 .jj:hover {background:rgba(220,53,69,0.9)}
 .kk {background:#e3f2fd;border:1px solid #90caf9;padding:10px 15px;border-radius:20px;margin:10px 0;font-size:13px;color:#1565c0;text-align:center}
@@ -73,6 +74,7 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 .user-section h3 {color:#495057;margin-bottom:10px;font-size:14px;text-transform:uppercase;letter-spacing:1px;padding:0 10px}
 .users-online-count {background:#28a745;color:white;border-radius:12px;padding:5px 10px;font-size:11px;margin-left:8px}
 .users-offline-count {background:#6c757d;color:white;border-radius:12px;padding:5px 10px;font-size:11px;margin-left:8px}
+.image-preview-container {display:flex;flex-wrap:wrap;gap:5px;width:100%;margin-bottom:8px}
 @keyframes pulse {
   0%, 100% {opacity:1;transform:scale(1)}
   50% {opacity:0.7;transform:scale(1.1)}
@@ -91,16 +93,47 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
   60% {transform:scale(1.1)}
 }
 @media(max-width:768px) {
-  body {overflow:auto;height:100vh}
+  body {overflow:hidden;height:100vh;display:block}
   .a {flex-direction:column;height:100vh;max-width:100%;border-radius:0;position:fixed;top:0;left:0;right:0;bottom:0}
-  .b {flex:none;height:35%;border-right:none;border-bottom:1px solid #e9ecef;padding:15px;overflow-y:auto}
-  .c {flex:1;min-height:0}
-  .e {flex:1;min-height:0;padding:15px;padding-bottom:20px;overflow-y:auto;-webkit-overflow-scrolling:touch}
-  .f {padding:10px 15px;border-top:1px solid #e9ecef;background:white}
-  .bb {padding:15px;margin-bottom:15px}
-  .ee {position:fixed;bottom:80px;right:10px;left:10px;width:auto}
-  .mm {position:fixed;top:10px;left:10px;right:10px;width:auto}
+  .b {flex:none;height:30%;border-right:none;border-bottom:1px solid #e9ecef;padding:10px;overflow-y:auto}
+  .c {flex:1;min-height:0;display:flex;flex-direction:column}
+  .d {padding:10px 15px;flex-shrink:0}
+  .d h3 {font-size:16px}
+  .d #cs {font-size:11px}
+  .e {flex:1;min-height:0;padding:10px;padding-bottom:10px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .f {position:fixed;bottom:0;left:0;right:0;padding:10px;border-top:1px solid #e9ecef;background:white;z-index:999;box-shadow:0 -2px 10px rgba(0,0,0,0.1)}
+  .bb {padding:10px;margin-bottom:10px}
+  .bb h4 {font-size:14px;margin-bottom:4px}
+  .bb span {font-size:12px}
+  .z {padding:8px 16px;font-size:13px;margin-top:8px}
+  .g {padding:8px 12px;margin:4px 0;border-radius:8px}
+  .h {font-size:13px;margin-bottom:2px}
+  .i {font-size:11px}
+  .j {width:8px;height:8px;margin-right:6px}
+  .user-section {margin-bottom:12px}
+  .user-section h3 {font-size:12px;margin-bottom:6px;padding:0 5px}
+  .users-online-count, .users-offline-count {padding:3px 8px;font-size:10px;margin-left:5px}
+  .aa {margin-top:10px}
+  .n {gap:5px}
+  .n input {min-width:150px;padding:10px 12px;font-size:16px;min-height:40px}
+  .button-group {gap:5px}
+  .dd {width:32px;height:32px;padding:6px;font-size:16px}
+  .o {width:40px;height:40px;padding:10px;font-size:18px}
+  .kk {padding:8px 10px;font-size:12px;margin:8px 0}
+  .ii {margin:3px}
+  .hh {max-width:80px;max-height:80px;border-radius:8px}
+  .jj {width:20px;height:20px;font-size:14px;top:3px;right:3px}
+  .image-preview-container {gap:3px;margin-bottom:5px}
+  .ee {position:fixed;bottom:70px;right:10px;left:10px;width:auto;max-height:150px}
+  .mm {position:fixed;top:10px;left:10px;right:10px;width:auto;padding:10px 15px;font-size:13px}
+  .k {padding:12px;margin:8px 0;max-width:85%}
+  .m {font-size:14px}
+  .l {font-size:10px}
   input,textarea {font-size:16px!important}
+  .r {padding:30px 20px;margin:10px;border-radius:15px}
+  .s {font-size:24px;margin-bottom:20px}
+  .t input {font-size:16px;padding:10px 14px}
+  .u {padding:12px 20px;font-size:15px}
 }
 </style>
 </head>
@@ -167,11 +200,14 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
     </div>
     <div class="f p" id="mis">
       <div class="kk">&#x2728; Emotki &#x1F60A;, zdj&#x119;cia &#x1F4F7; i wiadomo&#x15B;ci tekstowe!</div>
+      <div class="image-preview-container" id="imagePreviewContainer"></div>
       <div class="n">
         <input type="text" id="mi" placeholder="Napisz wiadomo&#x15B;&#x107;... &#x270D;&#xFE0F;" autocomplete="off">
-        <button class="dd" onclick="te()" title="Emotki">&#x1F60A;</button>
-        <button class="dd" onclick="document.getElementById('fi').click()" title="Zdj&#x119;cie">&#x1F4F7;</button>
-        <button class="o" onclick="sm()" title="Wy&#x15B;lij">&#x27A4;</button>
+        <div class="button-group">
+          <button class="dd" onclick="te()" title="Emotki">&#x1F60A;</button>
+          <button class="dd" onclick="document.getElementById('fi').click()" title="Zdj&#x119;cie">&#x1F4F7;</button>
+          <button class="o" onclick="sm()" title="Wy&#x15B;lij">&#x27A4;</button>
+        </div>
         <input type="file" id="fi" accept="image/*" style="display:none" onchange="hu(this)">
       </div>
       <div class="ee p" id="ep">
@@ -274,7 +310,7 @@ async function dc(encryptedText) {
       encryptionKey = await generateKey('secure-chat-key-2024');
     }
     
-    const combined = Uint8Array.from(atob(encryptedText), c => c.charCodeAt(0));
+    const combined = Uint8Array.from(atob(encryptedText), function(c) { return c.charCodeAt(0); });
     const iv = combined.slice(0, 12);
     const data = combined.slice(12);
     
@@ -302,7 +338,7 @@ function escapeHtml(text) {
 // ==================== POWIADOMIENIA ====================
 function rn() {
   if ('Notification' in window && Notification.permission === 'default') {
-    Notification.requestPermission().then(permission => {
+    Notification.requestPermission().then(function(permission) {
       nf = permission === 'granted';
     });
   }
@@ -314,7 +350,7 @@ function sn(title, body) {
       body: body,
       icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="0.9em" font-size="90">??</text></svg>'
     });
-    notification.onclick = () => {
+    notification.onclick = function() {
       window.focus();
       notification.close();
     };
@@ -322,7 +358,7 @@ function sn(title, body) {
 }
 
 function ut() {
-  const total = Object.values(unread).reduce((sum, count) => sum + count, 0);
+  const total = Object.values(unread).reduce(function(sum, count) { return sum + count; }, 0);
   document.title = total > 0 ? '(' + total + ') ' + ot : ot;
 }
 
@@ -455,8 +491,8 @@ async function hu(input) {
       wrapper.appendChild(img);
       wrapper.appendChild(removeBtn);
       
-      const mi = document.getElementById('mi');
-      mi.parentNode.insertBefore(wrapper, mi.nextSibling);
+      const container = document.getElementById('imagePreviewContainer');
+      container.appendChild(wrapper);
     };
     
     reader.readAsDataURL(compressedFile);
@@ -713,7 +749,7 @@ async function sm() {
     }
     
     mi.value = '';
-    document.querySelectorAll('.ii').forEach(function(el) { el.remove(); });
+    document.getElementById('imagePreviewContainer').innerHTML = '';
     
   } catch (error) {
     console.error('B??d wysy?ania:', error);
