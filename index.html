@@ -127,4 +127,851 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
   .jj {width:20px;height:20px;font-size:14px;top:3px;right:3px}
   .image-preview-container {gap:3px;margin-bottom:5px}
   .ee {position:fixed;bottom:140px;right:10px;left:10px;width:auto;max-height:150px}
-  .mm {position:fixed;top:10px;left:10px;right:10px;width:auto;padding:10px 
+  .mm {position:fixed;top:10px;left:10px;right:10px;width:auto;padding:10px 15px;font-size:13px}
+  .k {padding:12px;margin:8px 0;max-width:85%}
+  .m {font-size:14px}
+  .l {font-size:10px}
+  input,textarea {font-size:16px!important}
+  .r {padding:30px 20px;margin:10px;border-radius:15px}
+  .s {font-size:24px;margin-bottom:20px}
+  .t input {font-size:16px;padding:10px 14px}
+  .u {padding:12px 20px;font-size:15px}
+}
+</style>
+</head>
+<body>
+
+<!-- Panel logowania -->
+<div class="r" id="lf">
+  <h2 class="s">&#x1F4AC; Witaj w Chat</h2>
+  <div class="t">
+    <label>Email:</label>
+    <input type="email" id="em" placeholder="Tw&#xF3;j email" autocomplete="email">
+  </div>
+  <div class="t">
+    <label>Has&#x142;o:</label>
+    <input type="password" id="pw" placeholder="Minimum 6 znak&#xF3;w" autocomplete="current-password">
+  </div>
+  <button class="u" onclick="lg()">Zaloguj si&#x119;</button>
+  <button class="u v" onclick="rg()">Utw&#xF3;rz konto</button>
+  <div id="am"></div>
+  <div class="w">&#x1F512; Bezpieczny komunikator z pe&#x142;n&#x105; prywatno&#x15B;ci&#x105;</div>
+</div>
+
+<!-- G?車wny interfejs czatu -->
+<div class="a p" id="ma">
+  <!-- Panel boczny z u?ytkownikami -->
+  <div class="b">
+    <div class="bb">
+      <h4>&#x1F464; Tw&#xF3;j profil</h4>
+      <span id="up"></span>
+    </div>
+    <button class="z" onclick="lo()">&#x1F6AA; Wyloguj si&#x119;</button>
+    
+    <div class="aa">
+      <!-- U?ytkownicy online -->
+      <div class="user-section">
+        <h3>
+          &#x1F7E2; Online
+          <span class="users-online-count" id="onlineCount">0</span>
+        </h3>
+        <div id="ulOnline"></div>
+      </div>
+      
+      <!-- U?ytkownicy offline -->
+      <div class="user-section">
+        <h3>
+          &#x26AB; Offline
+          <span class="users-offline-count" id="offlineCount">0</span>
+        </h3>
+        <div id="ulOffline"></div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Panel czatu -->
+  <div class="c">
+    <div class="d">
+      <div>
+        <h3 id="ct" style="margin:0;font-size:18px">Wybierz rozm&#xF3;wc&#x119;</h3>
+        <div id="cs" style="margin-top:4px;font-size:12px"></div>
+      </div>
+    </div>
+    <div class="e" id="ms">
+      <div class="q">&#x1F4AC; Wybierz osob&#x119; z listy po lewej, aby rozpocz&#x105;&#x107; rozmow&#x119;</div>
+    </div>
+    <div class="f p" id="mis">
+      <div class="kk">&#x2728; Emotki &#x1F60A;, zdj&#x119;cia &#x1F4F7; i wiadomo&#x15B;ci tekstowe!</div>
+      <div class="image-preview-container" id="imagePreviewContainer"></div>
+      <div class="n">
+        <input type="text" id="mi" placeholder="Napisz wiadomo&#x15B;&#x107;... &#x270D;&#xFE0F;" autocomplete="off">
+        <div class="button-group">
+          <button class="dd" onclick="te()" title="Emotki">&#x1F60A;</button>
+          <button class="dd" onclick="document.getElementById('fi').click()" title="Zdj&#x119;cie">&#x1F4F7;</button>
+          <button class="o" onclick="sm()" title="Wy&#x15B;lij">&#x27A4;</button>
+        </div>
+        <input type="file" id="fi" accept="image/*" style="display:none" onchange="hu(this)">
+      </div>
+      <div class="ee p" id="ep">
+        <div class="ff" id="eg"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
+
+<script>
+// ==================== KONFIGURACJA FIREBASE ====================
+const firebaseConfig = {
+  apiKey: "AIzaSyCJeQEnsEDDnGvKoVzKkjRmnOIsmv7HPJs",
+  authDomain: "pensei-b3058.firebaseapp.com",
+  projectId: "pensei-b3058",
+  storageBucket: "pensei-b3058.firebasestorage.app",
+  messagingSenderId: "341036858535",
+  appId: "1:341036858535:web:43d4f98625abd9ff406f82",
+  measurementId: "G-MR8G2GNY5P"
+};
+
+firebase.initializeApp(firebaseConfig);
+const a = firebase.auth();
+const d = firebase.firestore();
+
+// ==================== ZMIENNE GLOBALNE ====================
+let cu = null;
+let sc = null;
+let um = null;
+let ht = null;
+let es = false;
+let unread = {};
+let ot = 'Chat';
+let nf = false;
+let lastMessage = null;
+let encryptionKey = null;
+let messageIds = new Set();
+
+const emojis = ['??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??'];
+
+// ==================== ZAAWANSOWANE SZYFROWANIE AES-GCM ====================
+async function generateKey(password) {
+  const encoder = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(password),
+    'PBKDF2',
+    false,
+    ['deriveBits', 'deriveKey']
+  );
+  
+  return crypto.subtle.deriveKey(
+    {
+      name: 'PBKDF2',
+      salt: encoder.encode('chat-salt-2024'),
+      iterations: 100000,
+      hash: 'SHA-256'
+    },
+    keyMaterial,
+    { name: 'AES-GCM', length: 256 },
+    true,
+    ['encrypt', 'decrypt']
+  );
+}
+
+async function ec(text) {
+  try {
+    if (!encryptionKey) {
+      encryptionKey = await generateKey('secure-chat-key-2024');
+    }
+    
+    const encoder = new TextEncoder();
+    const data = encoder.encode(text);
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    
+    const encrypted = await crypto.subtle.encrypt(
+      { name: 'AES-GCM', iv: iv },
+      encryptionKey,
+      data
+    );
+    
+    const encryptedArray = new Uint8Array(encrypted);
+    const combined = new Uint8Array(iv.length + encryptedArray.length);
+    combined.set(iv);
+    combined.set(encryptedArray, iv.length);
+    
+    return btoa(String.fromCharCode.apply(null, combined));
+  } catch (e) {
+    console.error('B??d szyfrowania:', e);
+    return text;
+  }
+}
+
+async function dc(encryptedText) {
+  try {
+    if (!encryptionKey) {
+      encryptionKey = await generateKey('secure-chat-key-2024');
+    }
+    
+    const combined = Uint8Array.from(atob(encryptedText), function(c) { return c.charCodeAt(0); });
+    const iv = combined.slice(0, 12);
+    const data = combined.slice(12);
+    
+    const decrypted = await crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv: iv },
+      encryptionKey,
+      data
+    );
+    
+    const decoder = new TextDecoder();
+    return decoder.decode(decrypted);
+  } catch (e) {
+    console.error('B??d deszyfrowania:', e);
+    return encryptedText;
+  }
+}
+
+// ==================== FUNKCJE POMOCNICZE ====================
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function scrollToBottom() {
+  const md = document.getElementById('ms');
+  if (md) {
+    setTimeout(function() {
+      md.scrollTop = md.scrollHeight;
+    }, 100);
+  }
+}
+
+// ==================== POWIADOMIENIA ====================
+function rn() {
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission().then(function(permission) {
+      nf = permission === 'granted';
+    });
+  }
+}
+
+function sn(title, body) {
+  if (nf && 'Notification' in window && Notification.permission === 'granted') {
+    const notification = new Notification(title, {
+      body: body,
+      icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="0.9em" font-size="90">??</text></svg>'
+    });
+    notification.onclick = function() {
+      window.focus();
+      notification.close();
+    };
+  }
+}
+
+function ut() {
+  const total = Object.values(unread).reduce(function(sum, count) { return sum + count; }, 0);
+  document.title = total > 0 ? '(' + total + ') ' + ot : ot;
+}
+
+function snt(message, sender) {
+  if (document.hidden || !document.hasFocus()) {
+    const senderName = sender.split('@')[0];
+    const toast = document.createElement('div');
+    toast.className = 'mm';
+    toast.innerHTML = '<strong>&#x1F4AC; ' + escapeHtml(senderName) + '</strong><br>' + escapeHtml(message.length > 50 ? message.substring(0, 50) + '...' : message);
+    document.body.appendChild(toast);
+    setTimeout(function() { toast.remove(); }, 4000);
+    sn('?? ' + senderName, message);
+    
+    if (lastMessage !== message) {
+      try {
+        const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmsfBSF+zPLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmsfBSF+zPLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmsfBSF+zPLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmsfBTyA0fLKdSsEKG/A7+GNQQ0PVKvh8blwHAU2jdXzzn0vBSl+zPLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmsfBTyA0fLKdSsEKG/A7+GNQQ0PVKvh8blwHAU2jdXzzn0vBSl+zPLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmsfBTyA0fLKdSsEKG/A7+GNQQ0PVKvh8blwHAU2jdXzzn0vBSl+zPLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmsfBTyA0fLKdSsEKG/A7+GNQQ0PVKvh8blwHAU2jdXzzn0vBSl+zPLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmsfBTyA0fLKdSsEKG/A7+GNQQ0PVKvh8blwHAU2jdXzzn0vBSl+zPLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmsfBTyA0fLKdSsEKG/A7+GNQQ0PVKvh8blwHAU2jdXzzn0vBSl+zPLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmsfBTyA0fLKdSsEKG/A7+GNQQ0PVKvh8blwHAU2jdXzzn0vBSl+zPLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmsfBTyA0fLKdSsEKG/A7+GNQQ0PVKvh8blwHAU2jdXzzn0vBSl+zPLNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmsfBQ==');
+        audio.volume = 0.3;
+        audio.play().catch(function() {});
+      } catch (e) {}
+      lastMessage = message;
+    }
+  }
+}
+
+// ==================== EMOTIKONY ====================
+function te() {
+  const ep = document.getElementById('ep');
+  if (es) {
+    ep.classList.add('p');
+    es = false;
+  } else {
+    if (!document.getElementById('eg').innerHTML) {
+      ie();
+    }
+    ep.classList.remove('p');
+    es = true;
+  }
+}
+
+function ie() {
+  const eg = document.getElementById('eg');
+  eg.innerHTML = '';
+  emojis.forEach(function(emoji) {
+    const btn = document.createElement('button');
+    btn.className = 'gg';
+    btn.textContent = emoji;
+    btn.onclick = function() { ae(emoji); };
+    eg.appendChild(btn);
+  });
+}
+
+function ae(emoji) {
+  const mi = document.getElementById('mi');
+  mi.value += emoji;
+  mi.focus();
+  document.getElementById('ep').classList.add('p');
+  es = false;
+}
+
+// ==================== OBS?UGA OBRAZ車W ====================
+function ci(file, maxWidth, quality) {
+  maxWidth = maxWidth || 800;
+  quality = quality || 0.8;
+  
+  return new Promise(function(resolve) {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    
+    img.onload = function() {
+      let width = img.width;
+      let height = img.height;
+      
+      if (width > height) {
+        if (width > maxWidth) {
+          height *= maxWidth / width;
+          width = maxWidth;
+        }
+      } else {
+        if (height > maxWidth) {
+          width *= maxWidth / height;
+          height = maxWidth;
+        }
+      }
+      
+      canvas.width = width;
+      canvas.height = height;
+      ctx.drawImage(img, 0, 0, width, height);
+      canvas.toBlob(resolve, 'image/jpeg', quality);
+    };
+    
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+async function hu(input) {
+  const file = input.files[0];
+  if (!file) return;
+  
+  if (!file.type.startsWith('image/')) {
+    alert('Wybierz plik obrazu');
+    return;
+  }
+  
+  try {
+    let compressedFile = file;
+    if (file.size > 1024 * 1024) {
+      compressedFile = await ci(file, 600, 0.7);
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const base64 = e.target.result;
+      const img = document.createElement('img');
+      img.src = base64;
+      img.className = 'hh';
+      img.onclick = function() { oi(base64); };
+      
+      const wrapper = document.createElement('div');
+      wrapper.className = 'ii';
+      
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'jj';
+      removeBtn.innerHTML = '&times;';
+      removeBtn.onclick = function(ev) {
+        ev.stopPropagation();
+        wrapper.remove();
+      };
+      
+      wrapper.appendChild(img);
+      wrapper.appendChild(removeBtn);
+      
+      const container = document.getElementById('imagePreviewContainer');
+      container.appendChild(wrapper);
+    };
+    
+    reader.readAsDataURL(compressedFile);
+  } catch (error) {
+    alert('B??d przetwarzania obrazu');
+  }
+  
+  input.value = '';
+}
+
+function oi(src) {
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:flex;align-items:center;justify-content:center;z-index:10000;cursor:pointer';
+  
+  const img = document.createElement('img');
+  img.src = src;
+  img.style.cssText = 'max-width:90%;max-height:90%;border-radius:12px';
+  
+  modal.appendChild(img);
+  modal.onclick = function() { modal.remove(); };
+  document.body.appendChild(modal);
+}
+
+// ==================== AUTENTYKACJA ====================
+function sam(m, ie) {
+  const dv = document.getElementById('am');
+  dv.innerHTML = ie ? '<div class="x">' + escapeHtml(m) + '</div>' : '<div class="y">' + escapeHtml(m) + '</div>';
+  setTimeout(function() { dv.innerHTML = ''; }, 5000);
+}
+
+async function lg() {
+  const e = document.getElementById('em').value.trim();
+  const p = document.getElementById('pw').value;
+  
+  if (!e || !p) {
+    sam('Wype?nij wszystkie pola', true);
+    return;
+  }
+  
+  try {
+    await a.signInWithEmailAndPassword(e, p);
+    sam('Zalogowano pomy?lnie');
+  } catch (er) {
+    let msg = 'B??d logowania';
+    if (er.code === 'auth/user-not-found') msg = 'Nie znaleziono u?ytkownika';
+    else if (er.code === 'auth/wrong-password') msg = 'Nieprawid?owe has?o';
+    else if (er.code === 'auth/invalid-email') msg = 'Nieprawid?owy email';
+    sam(msg, true);
+  }
+}
+
+async function rg() {
+  const e = document.getElementById('em').value.trim();
+  const p = document.getElementById('pw').value;
+  
+  if (!e || !p) {
+    sam('Wype?nij wszystkie pola', true);
+    return;
+  }
+  
+  if (p.length < 6) {
+    sam('Has?o musi mie? minimum 6 znak車w', true);
+    return;
+  }
+  
+  try {
+    await a.createUserWithEmailAndPassword(e, p);
+    sam('Konto utworzone pomy?lnie');
+  } catch (er) {
+    let msg = 'B??d rejestracji';
+    if (er.code === 'auth/email-already-in-use') msg = 'Ten email jest ju? u?ywany';
+    else if (er.code === 'auth/weak-password') msg = 'Has?o jest za s?abe';
+    else if (er.code === 'auth/invalid-email') msg = 'Nieprawid?owy email';
+    sam(msg, true);
+  }
+}
+
+async function lo() {
+  try {
+    if (ht) clearInterval(ht);
+    if (um) um();
+    await suo(false);
+    await a.signOut();
+    
+    cu = null;
+    sc = null;
+    unread = {};
+    encryptionKey = null;
+    messageIds.clear();
+    
+    document.getElementById('ma').classList.add('p');
+    document.getElementById('lf').classList.remove('p');
+    document.getElementById('em').value = '';
+    document.getElementById('pw').value = '';
+  } catch (error) {
+    console.error('B??d wylogowania:', error);
+    alert('B??d wylogowania. Spr車buj ponownie.');
+  }
+}
+
+// ==================== ZARZ?DZANIE U?YTKOWNIKAMI ====================
+function su(ue, io) {
+  document.querySelectorAll('.g').forEach(function(i) {
+    i.classList.remove('active');
+  });
+  
+  const userEl = document.querySelector('[data-email="' + ue + '"]');
+  if (userEl) {
+    userEl.classList.add('active');
+  }
+  
+  sc = ue;
+  unread[ue] = 0;
+  uur();
+  
+  const un = ue.split('@')[0];
+  document.getElementById('ct').innerHTML = '&#x1F4AC; ' + escapeHtml(un);
+  
+  const cs = document.getElementById('cs');
+  cs.innerHTML = io ? 
+    '<span style="color:rgba(255,255,255,0.9);display:flex;align-items:center"><span class="j online" style="margin-right:5px"></span>Online</span>' : 
+    '<span style="color:rgba(255,255,255,0.7);display:flex;align-items:center"><span class="j offline" style="margin-right:5px"></span>Offline</span>';
+  
+  document.getElementById('mis').classList.remove('p');
+  const kkElements = document.querySelectorAll('.kk');
+  if (kkElements.length > 0) {
+    kkElements[0].classList.remove('p');
+  }
+  
+  lm(ue);
+}
+
+function uur() {
+  document.querySelectorAll('.ll').forEach(function(badge) { badge.remove(); });
+  
+  Object.keys(unread).forEach(function(email) {
+    if (unread[email] > 0) {
+      const userEl = document.querySelector('[data-email="' + email + '"]');
+      if (userEl) {
+        const badge = document.createElement('div');
+        badge.className = 'll';
+        badge.textContent = unread[email] > 99 ? '99+' : unread[email];
+        userEl.appendChild(badge);
+      }
+    }
+  });
+  
+  ut();
+}
+
+async function lm(oue) {
+  if (um) {
+    um();
+  }
+  
+  messageIds.clear();
+  
+  const ci = cci(cu.email, oue);
+  const mr = d.collection('messages');
+  const q = mr.where('chatId', '==', ci);
+  
+  um = q.onSnapshot(async function(sn) {
+    const changes = sn.docChanges();
+    
+    if (changes.length === 0) return;
+    
+    const isInitialLoad = changes.length === sn.docs.length;
+    
+    if (isInitialLoad) {
+      const md = document.getElementById('ms');
+      md.innerHTML = '';
+      messageIds.clear();
+    }
+    
+    for (let i = 0; i < changes.length; i++) {
+      const change = changes[i];
+      
+      if (change.type === 'added') {
+        const dt = change.doc.data();
+        dt.id = change.doc.id;
+        
+        if (!messageIds.has(dt.id)) {
+          messageIds.add(dt.id);
+          await ddm(dt);
+        }
+      }
+    }
+    
+    if (isInitialLoad) {
+      const md = document.getElementById('ms');
+      if (md.innerHTML === '') {
+        md.innerHTML = '<div class="q">&#x1F4AC; Rozpocznij rozmow&#x119;!</div>';
+      }
+    }
+    
+    scrollToBottom();
+  });
+}
+
+async function ddm(dt) {
+  const md = document.getElementById('ms');
+  
+  const existingMsg = document.querySelector('[data-msg-id="' + dt.id + '"]');
+  if (existingMsg) return;
+  
+  const qElement = md.querySelector('.q');
+  if (qElement) {
+    qElement.remove();
+  }
+  
+  const mdv = document.createElement('div');
+  mdv.setAttribute('data-msg-id', dt.id);
+  const io = dt.sender === cu.email;
+  mdv.className = 'k ' + (io ? 'own' : 'other');
+  
+  const tm = dt.timestamp ? new Date(dt.timestamp.toDate()).toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }) : 'Teraz';
+  
+  let content;
+  if (dt.image) {
+    content = '<img src="' + dt.image + '" class="hh" onclick="oi(\'' + dt.image + '\')" style="cursor:pointer">';
+  } else {
+    const dct = await dc(dt.text);
+    content = '<div class="m cc">' + escapeHtml(dct) + '</div>';
+    
+    if (!io && (sc !== dt.sender || document.hidden || !document.hasFocus())) {
+      if (!unread[dt.sender]) unread[dt.sender] = 0;
+      unread[dt.sender]++;
+      uur();
+      snt(dct, dt.sender);
+    }
+  }
+  
+  mdv.innerHTML = '<div class="l">' + escapeHtml(io ? 'Ty' : dt.sender.split('@')[0]) + ' &bull; ' + tm + '</div>' + content;
+  
+  md.appendChild(mdv);
+}
+
+function cci(e1, e2) {
+  return [e1, e2].sort().join('_');
+}
+
+async function sm() {
+  const mi = document.getElementById('mi');
+  const msg = mi.value.trim();
+  
+  const imgs = document.querySelectorAll('.ii img');
+  
+  if (!msg && imgs.length === 0) {
+    return;
+  }
+  
+  if (!sc) {
+    alert('Wybierz rozm車wc?');
+    return;
+  }
+  
+  try {
+    const ci = cci(cu.email, sc);
+    
+    if (msg) {
+      const encryptedMsg = await ec(msg);
+      await d.collection('messages').add({
+        chatId: ci,
+        sender: cu.email,
+        text: encryptedMsg,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    }
+    
+    for (let i = 0; i < imgs.length; i++) {
+      await d.collection('messages').add({
+        chatId: ci,
+        sender: cu.email,
+        image: imgs[i].src,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    }
+    
+    mi.value = '';
+    document.getElementById('imagePreviewContainer').innerHTML = '';
+    
+  } catch (error) {
+    console.error('B??d wysy?ania:', error);
+    alert('B??d wysy?ania wiadomo?ci');
+  }
+}
+
+async function suo(io) {
+  if (!cu) return;
+  
+  try {
+    const ur = d.collection('users').doc(cu.uid);
+    await ur.set({
+      email: cu.email,
+      isOnline: io,
+      lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+  } catch (error) {
+    console.error('B??d aktualizacji statusu:', error);
+  }
+}
+
+function lu() {
+  const ur = d.collection('users');
+  
+  ur.onSnapshot(function(sn) {
+    const onlineUsers = [];
+    const offlineUsers = [];
+    
+    sn.forEach(function(dc) {
+      const dt = dc.data();
+      if (dt.email !== cu.email) {
+        const userItem = {
+          email: dt.email,
+          isOnline: dt.isOnline || false,
+          lastSeen: dt.lastSeen
+        };
+        
+        if (dt.isOnline) {
+          onlineUsers.push(userItem);
+        } else {
+          offlineUsers.push(userItem);
+        }
+      }
+    });
+    
+    document.getElementById('onlineCount').textContent = onlineUsers.length;
+    document.getElementById('offlineCount').textContent = offlineUsers.length;
+    
+    const ulOnline = document.getElementById('ulOnline');
+    ulOnline.innerHTML = '';
+    
+    if (onlineUsers.length === 0) {
+      ulOnline.innerHTML = '<div style="text-align:center;color:#6c757d;font-size:12px;padding:10px">Brak u&#x17C;ytkownik&#xF3;w online</div>';
+    } else {
+      onlineUsers.forEach(function(user) {
+        const dv = document.createElement('div');
+        dv.className = 'g';
+        dv.setAttribute('data-email', user.email);
+        dv.onclick = function() { su(user.email, user.isOnline); };
+        
+        dv.innerHTML = '<div class="h">' + escapeHtml(user.email.split('@')[0]) + '</div><div class="i"><span class="j online"></span>Online</div>';
+        
+        ulOnline.appendChild(dv);
+      });
+    }
+    
+    const ulOffline = document.getElementById('ulOffline');
+    ulOffline.innerHTML = '';
+    
+    if (offlineUsers.length === 0) {
+      ulOffline.innerHTML = '<div style="text-align:center;color:#6c757d;font-size:12px;padding:10px">Wszyscy online! &#x1F389;</div>';
+    } else {
+      offlineUsers.forEach(function(user) {
+        const dv = document.createElement('div');
+        dv.className = 'g';
+        dv.setAttribute('data-email', user.email);
+        dv.onclick = function() { su(user.email, user.isOnline); };
+        
+        let lastSeenText = 'Ostatnio widziany dawno temu';
+        if (user.lastSeen) {
+          const lastSeenDate = user.lastSeen.toDate();
+          const now = new Date();
+          const diffMs = now - lastSeenDate;
+          const diffMins = Math.floor(diffMs / 60000);
+          
+          if (diffMins < 1) {
+            lastSeenText = 'Przed chwil&#x105;';
+          } else if (diffMins < 60) {
+            lastSeenText = diffMins + ' min temu';
+          } else if (diffMins < 1440) {
+            lastSeenText = Math.floor(diffMins / 60) + ' godz. temu';
+          } else {
+            lastSeenText = Math.floor(diffMins / 1440) + ' dni temu';
+          }
+        }
+        
+        dv.innerHTML = '<div class="h">' + escapeHtml(user.email.split('@')[0]) + '</div><div class="i"><span class="j offline"></span>' + lastSeenText + '</div>';
+        
+        ulOffline.appendChild(dv);
+      });
+    }
+    
+    uur();
+  });
+}
+
+// ==================== OBS?UGA ZDARZE? ====================
+document.getElementById('mi').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sm();
+  }
+});
+
+document.getElementById('em').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    lg();
+  }
+});
+
+document.getElementById('pw').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    lg();
+  }
+});
+
+document.addEventListener('click', function(e) {
+  const ep = document.getElementById('ep');
+  const emojiBtn = document.querySelectorAll('.dd')[0];
+  
+  if (es && !ep.contains(e.target) && e.target !== emojiBtn) {
+    ep.classList.add('p');
+    es = false;
+  }
+});
+
+// ==================== INICJALIZACJA ====================
+a.onAuthStateChanged(async function(u) {
+  if (u) {
+    cu = u;
+    document.getElementById('lf').classList.add('p');
+    document.getElementById('ma').classList.remove('p');
+    document.getElementById('up').textContent = u.email;
+    
+    await suo(true);
+    lu();
+    rn();
+    
+    ht = setInterval(function() { suo(true); }, 30000);
+    
+    window.addEventListener('beforeunload', function() { suo(false); });
+  } else {
+    cu = null;
+    document.getElementById('ma').classList.add('p');
+    document.getElementById('lf').classList.remove('p');
+    
+    if (ht) {
+      clearInterval(ht);
+      ht = null;
+    }
+    
+    if (um) {
+      um();
+      um = null;
+    }
+  }
+});
+
+document.addEventListener('visibilitychange', function() {
+  if (cu) {
+    if (document.hidden) {
+      suo(false);
+    } else {
+      suo(true);
+      if (sc) {
+        unread[sc] = 0;
+        uur();
+      }
+    }
+  }
+});
+
+console.log('Chat za?adowany pomy?lnie!');
+</script>
+
+</body>
+</html>
