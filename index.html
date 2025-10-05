@@ -15,6 +15,19 @@
 body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0f0f0f;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;color:#e0e0e0}
 .install-prompt {position:fixed;bottom:20px;left:20px;right:20px;background:#2563eb;color:#fff;padding:16px 20px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.4);z-index:10003;display:none;animation:slideUp 0.3s ease}
 .install-prompt button {background:#fff;color:#2563eb;border:none;padding:10px 20px;border-radius:8px;font-weight:600;cursor:pointer;margin-top:10px;width:100%}
+.calc-screen {background:#1e1e1e;padding:40px;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.5);width:100%;max-width:320px;margin:20px;border:1px solid #2d2d2d}
+.calc-display {background:#252525;padding:20px;border-radius:8px;font-size:32px;text-align:right;margin-bottom:20px;min-height:80px;color:#e0e0e0;font-family:monospace;border:1px solid #3a3a3a;overflow:hidden;word-wrap:break-word}
+.calc-buttons {display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.calc-btn {background:#374151;color:#e0e0e0;border:none;padding:20px;border-radius:8px;font-size:20px;cursor:pointer;transition:all 0.2s;font-weight:600;border:1px solid #4b5563}
+.calc-btn:hover {background:#4b5563;transform:scale(1.05)}
+.calc-btn:active {transform:scale(0.95)}
+.calc-btn.operator {background:#2563eb;color:#fff}
+.calc-btn.operator:hover {background:#3b82f6}
+.calc-btn.equals {background:#10b981;color:#fff}
+.calc-btn.equals:hover {background:#14c992}
+.calc-btn.clear {background:#ef4444;color:#fff}
+.calc-btn.clear:hover {background:#f87171}
+.calc-message {background:rgba(16,185,129,0.1);border:1px solid #10b981;padding:12px;border-radius:8px;margin-top:15px;text-align:center;font-size:14px;color:#10b981;animation:fadeIn 0.5s ease}
 .a {background:#1a1a1a;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.5);overflow:hidden;width:100%;max-width:1000px;height:700px;display:flex;border:1px solid #2d2d2d}
 .b {flex:0 0 280px;background:#161616;padding:16px;border-right:1px solid #2d2d2d;display:flex;flex-direction:column;overflow-y:auto;min-width:0}
 .c {flex:1;display:flex;flex-direction:column;min-width:0;background:#1a1a1a}
@@ -26,7 +39,7 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 .g.active {background:#2563eb;border-color:#3b82f6}
 .g.active .h, .g.active .i {color:#fff}
 .h {font-weight:600;margin-bottom:4px;font-size:14px;color:#e0e0e0;display:flex;align-items:center;justify-content:space-between}
-.unread-badge {background:#ef4444;color:#fff;border-radius:12px;padding:2px 8px;font-size:10px;font-weight:700;margin-left:8px;box-shadow:0 2px 8px rgba(239,68,68,0.4);animation:pulse 2s infinite}
+.user-unread-badge {background:#ef4444;color:#fff;border-radius:50%;padding:0;width:18px;height:18px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(239,68,68,0.4)}
 .i {font-size:12px;color:#888;display:flex;align-items:center}
 .j {width:8px;height:8px;border-radius:50%;margin-right:8px}
 .j.online {background:#10b981;box-shadow:0 0 8px #10b981}
@@ -97,9 +110,14 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 .ll {position:absolute;top:-6px;right:-6px;background:#ef4444;color:#fff;border-radius:50%;width:20px;height:20px;font-size:10px;display:flex;align-items:center;justify-content:center;font-weight:bold;box-shadow:0 2px 8px rgba(239,68,68,0.5)}
 .mm {position:fixed;top:20px;right:20px;background:#10b981;color:#fff;padding:14px 20px;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,0.3);z-index:10001;font-size:13px;font-weight:500;animation:slideIn 0.3s ease;max-width:320px;border:1px solid #14c992}
 .user-section {margin-bottom:16px}
-.user-section h3 {color:#888;margin-bottom:8px;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;padding:0 8px;font-weight:600}
+.user-section h3 {color:#888;margin-bottom:8px;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;padding:8px;font-weight:600;cursor:pointer;background:#1e1e1e;border-radius:6px;transition:all 0.2s;display:flex;align-items:center;justify-content:space-between}
+.user-section h3:hover {background:#252525}
+.user-section h3 .toggle-icon {font-size:14px;transition:transform 0.3s}
+.user-section h3.collapsed .toggle-icon {transform:rotate(-90deg)}
 .users-online-count {background:#10b981;color:#fff;border-radius:10px;padding:3px 8px;font-size:10px;margin-left:6px;font-weight:600}
 .users-offline-count {background:#6b7280;color:#fff;border-radius:10px;padding:3px 8px;font-size:10px;margin-left:6px;font-weight:600}
+.user-list {max-height:500px;overflow:hidden;transition:max-height 0.3s ease}
+.user-list.collapsed {max-height:0}
 .image-preview-container {display:flex;flex-wrap:wrap;gap:6px;width:100%;margin-bottom:8px}
 .toast-notification {position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#2563eb;color:#fff;padding:16px 24px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.4);z-index:10002;font-size:14px;font-weight:500;animation:toastIn 0.3s ease;max-width:90%;border:1px solid #3b82f6}
 .msg-deleting {animation:fadeOut 0.3s ease;opacity:0;transform:scale(0.8)}
@@ -111,8 +129,9 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 @keyframes toastIn{from{transform:translate(-50%,-100%);opacity:0}to{transform:translate(-50%,0);opacity:1}}
 @keyframes fadeOut{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(0.8)}}
 @keyframes slideUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.6}}
-@media(max-width:768px){body{overflow:hidden;height:100vh;display:block}.a{flex-direction:column;height:100vh;max-width:100%;border-radius:0;position:fixed;top:0;left:0;right:0;bottom:0;border:none}.b{flex:none;height:35%;border-right:none;border-bottom:1px solid #2d2d2d;padding:12px;overflow-y:auto}.c{flex:1;min-height:0;display:flex;flex-direction:column}.d{padding:12px 16px;flex-shrink:0}.d h3{font-size:15px}.d #cs{font-size:11px}.e{flex:1;min-height:0;padding:12px;padding-bottom:240px;overflow-y:auto;-webkit-overflow-scrolling:touch}.f{position:fixed;bottom:0;left:0;right:0;padding:12px;border-top:1px solid #2d2d2d;background:#1e1e1e;z-index:999;box-shadow:0 -4px 16px rgba(0,0,0,0.3)}.bb{padding:12px;margin-bottom:12px}.bb h4{font-size:14px;margin-bottom:4px}.bb span{font-size:12px}.z{padding:10px 16px;font-size:13px;margin-top:10px}.g{padding:10px 12px;margin:4px 0;border-radius:8px}.h{font-size:13px;margin-bottom:3px}.i{font-size:11px}.j{width:7px;height:7px;margin-right:6px}.user-section{margin-bottom:12px}.user-section h3{font-size:10px;margin-bottom:6px;padding:0 4px}.users-online-count,.users-offline-count{padding:2px 6px;font-size:9px;margin-left:4px}.aa{margin-top:8px}.n{gap:6px}.n input{min-width:140px;padding:10px 14px;font-size:15px;min-height:40px}.button-group{gap:6px}.dd{width:34px;height:34px;padding:6px;font-size:16px}.o{width:40px;height:40px;padding:10px;font-size:18px}.kk{padding:8px 12px;font-size:11px;margin:8px 0}.ii{margin:3px}.hh{max-width:100px;max-height:100px;border-radius:8px}.jj{width:20px;height:20px;font-size:13px;top:3px;right:3px}.image-preview-container{gap:4px;margin-bottom:6px}.ee{position:fixed;bottom:200px;right:12px;left:12px;width:auto;max-height:200px}.mm,.toast-notification{position:fixed;top:12px;left:12px;right:12px;width:auto;padding:12px 16px;font-size:12px;transform:none}.toast-notification{left:12px;right:12px;transform:none}.k{padding:12px 14px;margin:8px 0;max-width:80%;border-radius:12px}.k:hover .delete-msg{opacity:1}.delete-msg{opacity:0.7}.m{font-size:14px}.l{font-size:10px}.read-receipt{font-size:9px;margin-top:4px}input,textarea{font-size:15px!important}.r{padding:30px 20px;margin:12px;border-radius:12px}.s{font-size:22px;margin-bottom:24px}.t input{font-size:15px;padding:11px 14px}.u{padding:13px 20px;font-size:14px}}
+@media(max-width:768px){body{overflow:hidden;height:100vh;display:block}.a{flex-direction:column;height:100vh;max-width:100%;border-radius:0;position:fixed;top:0;left:0;right:0;bottom:0;border:none}.b{flex:none;height:35%;border-right:none;border-bottom:1px solid #2d2d2d;padding:12px;overflow-y:auto}.c{flex:1;min-height:0;display:flex;flex-direction:column}.d{padding:12px 16px;flex-shrink:0}.d h3{font-size:15px}.d #cs{font-size:11px}.e{flex:1;min-height:0;padding:12px;padding-bottom:240px;overflow-y:auto;-webkit-overflow-scrolling:touch}.f{position:fixed;bottom:0;left:0;right:0;padding:12px;border-top:1px solid #2d2d2d;background:#1e1e1e;z-index:999;box-shadow:0 -4px 16px rgba(0,0,0,0.3)}.bb{padding:12px;margin-bottom:12px}.bb h4{font-size:14px;margin-bottom:4px}.bb span{font-size:12px}.z{padding:10px 16px;font-size:13px;margin-top:10px}.g{padding:10px 12px;margin:4px 0;border-radius:8px}.h{font-size:13px;margin-bottom:3px}.i{font-size:11px}.j{width:7px;height:7px;margin-right:6px}.user-section{margin-bottom:12px}.user-section h3{font-size:10px;margin-bottom:6px;padding:6px}.users-online-count,.users-offline-count{padding:2px 6px;font-size:9px;margin-left:4px}.aa{margin-top:8px}.n{gap:6px}.n input{min-width:140px;padding:10px 14px;font-size:15px;min-height:40px}.button-group{gap:6px}.dd{width:34px;height:34px;padding:6px;font-size:16px}.o{width:40px;height:40px;padding:10px;font-size:18px}.kk{padding:8px 12px;font-size:11px;margin:8px 0}.ii{margin:3px}.hh{max-width:100px;max-height:100px;border-radius:8px}.jj{width:20px;height:20px;font-size:13px;top:3px;right:3px}.image-preview-container{gap:4px;margin-bottom:6px}.ee{position:fixed;bottom:200px;right:12px;left:12px;width:auto;max-height:200px}.mm,.toast-notification{position:fixed;top:12px;left:12px;right:12px;width:auto;padding:12px 16px;font-size:12px;transform:none}.toast-notification{left:12px;right:12px;transform:none}.k{padding:12px 14px;margin:8px 0;max-width:80%;border-radius:12px}.k:hover .delete-msg{opacity:1}.delete-msg{opacity:0.7}.m{font-size:14px}.l{font-size:10px}.read-receipt{font-size:9px;margin-top:4px}input,textarea{font-size:15px!important}.r{padding:30px 20px;margin:12px;border-radius:12px}.s{font-size:22px;margin-bottom:24px}.t input{font-size:15px;padding:11px 14px}.u{padding:13px 20px;font-size:14px}.calc-screen{padding:30px 20px;margin:12px}.calc-display{font-size:28px;padding:16px}.calc-btn{padding:16px;font-size:18px}}
 </style>
 </head>
 <body>
@@ -124,7 +143,31 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
   <button onclick="dismissInstall()" style="background:#374151;color:#fff;margin-top:8px">P&#243;&#378;niej</button>
 </div>
 
-<div class="r" id="lf">
+<div class="calc-screen" id="calcScreen">
+  <h2 class="s" style="text-align:center;margin-bottom:20px">&#128200; Kalkulator</h2>
+  <div class="calc-display" id="calcDisplay">0</div>
+  <div class="calc-buttons">
+    <button class="calc-btn" onclick="appendCalc('7')">7</button>
+    <button class="calc-btn" onclick="appendCalc('8')">8</button>
+    <button class="calc-btn" onclick="appendCalc('9')">9</button>
+    <button class="calc-btn operator" onclick="appendCalc('+')">+</button>
+    <button class="calc-btn" onclick="appendCalc('4')">4</button>
+    <button class="calc-btn" onclick="appendCalc('5')">5</button>
+    <button class="calc-btn" onclick="appendCalc('6')">6</button>
+    <button class="calc-btn operator" onclick="appendCalc('-')">-</button>
+    <button class="calc-btn" onclick="appendCalc('1')">1</button>
+    <button class="calc-btn" onclick="appendCalc('2')">2</button>
+    <button class="calc-btn" onclick="appendCalc('3')">3</button>
+    <button class="calc-btn operator" onclick="appendCalc('*')">×</button>
+    <button class="calc-btn clear" onclick="clearCalc()">C</button>
+    <button class="calc-btn" onclick="appendCalc('0')">0</button>
+    <button class="calc-btn equals" onclick="calculateCalc()">=</button>
+    <button class="calc-btn operator" onclick="appendCalc('/')">÷</button>
+  </div>
+  <div id="calcMessage"></div>
+</div>
+
+<div class="r p" id="lf">
   <h2 class="s">&#128172; Kalkulator</h2>
   <div class="t">
     <label>Email</label>
@@ -154,12 +197,18 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
     <button class="z" onclick="lo()">Wyloguj</button>
     <div class="aa">
       <div class="user-section">
-        <h3>Online<span class="users-online-count" id="onlineCount">0</span></h3>
-        <div id="ulOnline"></div>
+        <h3 onclick="toggleUserSection('online')">
+          <span>Online<span class="users-online-count" id="onlineCount">0</span></span>
+          <span class="toggle-icon">▼</span>
+        </h3>
+        <div class="user-list" id="ulOnline"></div>
       </div>
       <div class="user-section">
-        <h3>Offline<span class="users-offline-count" id="offlineCount">0</span></h3>
-        <div id="ulOffline"></div>
+        <h3 onclick="toggleUserSection('offline')">
+          <span>Offline<span class="users-offline-count" id="offlineCount">0</span></span>
+          <span class="toggle-icon">▼</span>
+        </h3>
+        <div class="user-list" id="ulOffline"></div>
       </div>
     </div>
   </div>
@@ -232,6 +281,60 @@ window.installApp = function(){
 window.dismissInstall = function(){
   const p=document.getElementById('installPrompt');
   if(p)p.style.display='none'
+};
+
+let calcExpression='';
+let calcDisplay=null;
+
+window.appendCalc = function(value){
+  if(!calcDisplay)calcDisplay=document.getElementById('calcDisplay');
+  if(calcExpression==='0'||calcExpression==='')calcExpression='';
+  calcExpression+=value;
+  calcDisplay.textContent=calcExpression;
+};
+
+window.clearCalc = function(){
+  if(!calcDisplay)calcDisplay=document.getElementById('calcDisplay');
+  calcExpression='';
+  calcDisplay.textContent='0';
+  const msg=document.getElementById('calcMessage');
+  if(msg)msg.innerHTML='';
+};
+
+window.calculateCalc = function(){
+  if(!calcDisplay)calcDisplay=document.getElementById('calcDisplay');
+  try{
+    const result=eval(calcExpression);
+    calcDisplay.textContent=result;
+    
+    if(calcExpression==='1488+2137'||calcExpression==='2137+1488'){
+      const msg=document.getElementById('calcMessage');
+      msg.innerHTML='<div class="calc-message">🎉 Brawo! Znalazłeś sekretny kod! 🎉<br>Witaj w świecie prawdziwych matematyków 😎</div>';
+      
+      setTimeout(function(){
+        document.getElementById('calcScreen').classList.add('p');
+        document.getElementById('lf').classList.remove('p');
+      },2000);
+    }
+    
+    calcExpression=result.toString();
+  }catch(e){
+    calcDisplay.textContent='Błąd';
+    calcExpression='';
+  }
+};
+
+window.toggleUserSection = function(section){
+  const list=document.getElementById(section==='online'?'ulOnline':'ulOffline');
+  const header=list.previousElementSibling;
+  
+  if(list.classList.contains('collapsed')){
+    list.classList.remove('collapsed');
+    header.classList.remove('collapsed');
+  }else{
+    list.classList.add('collapsed');
+    header.classList.add('collapsed');
+  }
 };
 
 let a, d;
@@ -528,15 +631,15 @@ function uur(){
   Object.keys(unread).forEach(function(email){
     const userEl=document.querySelector('[data-email="'+email+'"]');
     if(userEl){
-      const existingBadge=userEl.querySelector('.unread-badge');
+      const existingBadge=userEl.querySelector('.user-unread-badge');
       if(existingBadge)existingBadge.remove();
       
       if(unread[email]>0){
         const nameEl=userEl.querySelector('.h');
         if(nameEl){
           const badge=document.createElement('span');
-          badge.className='unread-badge';
-          badge.textContent=unread[email]>99?'99+':unread[email];
+          badge.className='user-unread-badge';
+          badge.textContent=unread[email]>9?'9+':unread[email];
           nameEl.appendChild(badge);
         }
       }
@@ -814,7 +917,7 @@ function lu(){
         dv.className='g';
         dv.setAttribute('data-email',user.email);
         dv.onclick=function(){su(user.email,user.isOnline)};
-        const badgeHtml=unread[user.email]>0?'<span class="unread-badge">'+(unread[user.email]>99?'99+':unread[user.email])+'</span>':'';
+        const badgeHtml=unread[user.email]>0?'<span class="user-unread-badge">'+(unread[user.email]>9?'9+':unread[user.email])+'</span>':'';
         dv.innerHTML='<div class="h">'+escapeHtml(user.email.split('@')[0])+badgeHtml+'</div><div class="i"><span class="j online"></span>Online</div>';
         ulOnline.appendChild(dv)
       })
@@ -841,7 +944,7 @@ function lu(){
           else if(diffMins<1440)lastSeenText=Math.floor(diffMins/60)+' godz. temu';
           else lastSeenText=Math.floor(diffMins/1440)+' dni temu'
         }
-        const badgeHtml=unread[user.email]>0?'<span class="unread-badge">'+(unread[user.email]>99?'99+':unread[user.email])+'</span>':'';
+        const badgeHtml=unread[user.email]>0?'<span class="user-unread-badge">'+(unread[user.email]>9?'9+':unread[user.email])+'</span>':'';
         dv.innerHTML='<div class="h">'+escapeHtml(user.email.split('@')[0])+badgeHtml+'</div><div class="i"><span class="j offline"></span>'+lastSeenText+'</div>';
         ulOffline.appendChild(dv)
       })
@@ -860,7 +963,7 @@ if(msEl){
 }
 
 document.getElementById('mi').addEventListener('keypress',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sm()}});
-document.getElementById('em').addEventListener('keypress',function(e){if(e.key==='Enter'){e.preventDefault();lg()}});
+document.getElementById('em').addEventListener('keypress',function(e){if(e.key==='Enter'{e.preventDefault();lg()}});
 document.getElementById('pw').addEventListener('keypress',function(e){if(e.key==='Enter'){e.preventDefault();lg()}});
 document.addEventListener('click',function(e){if(!e.target.closest('.dd')&&!e.target.closest('.ee')){const ep=document.getElementById('ep');if(ep&&es){ep.classList.add('p');es=false}}});
 
