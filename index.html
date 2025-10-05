@@ -19,7 +19,7 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 .b {flex:0 0 280px;background:#161616;padding:16px;border-right:1px solid #2d2d2d;display:flex;flex-direction:column;overflow-y:auto;min-width:0}
 .c {flex:1;display:flex;flex-direction:column;min-width:0;background:#1a1a1a}
 .d {background:#1e1e1e;padding:16px 20px;border-bottom:1px solid #2d2d2d;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
-.e {flex:1;padding:20px;overflow-y:auto;background:#1a1a1a;min-height:0;scroll-behavior:smooth}
+.e {flex:1;padding:20px;overflow-y:auto;background:#1a1a1a;min-height:0}
 .f {background:#1e1e1e;padding:16px;border-top:1px solid #2d2d2d;flex-shrink:0;position:relative}
 .g {padding:12px 16px;margin:6px 0;background:#1e1e1e;border-radius:8px;cursor:pointer;transition:all 0.2s;border:1px solid transparent;position:relative}
 .g:hover {background:#252525;border-color:#3a3a3a}
@@ -34,6 +34,7 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 .k {background:#252525;padding:14px 16px;margin:10px 0;border-radius:12px;max-width:75%;word-wrap:break-word;position:relative}
 .k.own {background:#2563eb;color:#fff;margin-left:auto;margin-right:0}
 .k.other {background:#252525;margin-right:auto;margin-left:0;color:#e0e0e0}
+.k.unread {background:#2a2a2a;border-left:3px solid #3b82f6}
 .k:hover .delete-msg {opacity:1}
 .delete-msg {position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.7);color:#fff;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:16px;font-weight:bold;opacity:0;transition:all 0.2s;display:flex;align-items:center;justify-content:center;z-index:10}
 .delete-msg:hover {background:#ef4444;transform:scale(1.1)}
@@ -42,6 +43,9 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 .read-receipt {font-size:10px;opacity:0.6;margin-top:6px;text-align:right;font-style:italic;display:flex;align-items:center;justify-content:flex-end;gap:4px}
 .read-receipt.read {color:#10b981;opacity:0.9}
 .checkmark {font-size:14px}
+.unread-separator {display:flex;align-items:center;margin:20px 0;color:#3b82f6;font-size:12px;font-weight:600;text-align:center}
+.unread-separator::before, .unread-separator::after {content:'';flex:1;border-bottom:2px solid #3b82f6;margin:0 10px}
+.unread-separator span {padding:0 10px;background:#1a1a1a}
 .n {display:flex;gap:8px;align-items:center;position:relative;flex-wrap:wrap}
 .n input {flex:1;padding:12px 16px;border:1px solid #3a3a3a;border-radius:24px;font-size:15px;outline:none;background:#252525;color:#e0e0e0;min-width:200px;transition:all 0.2s}
 .n input:focus {border-color:#3b82f6;background:#2a2a2a}
@@ -250,7 +254,7 @@ try {
   }
 }
 
-let cu=null,sc=null,um=null,ht=null,es=false,unread={},ot='Kalkulator',nf=false,lastMessage=null,encryptionKey=null,messageIds=new Set(),audioContext=null,scrollTimeout=null,shouldAutoScroll=true,renderQueue=[],isRendering=false,isFirstSnapshot=true,allUsersListener=null;
+let cu=null,sc=null,um=null,ht=null,es=false,unread={},ot='Kalkulator',nf=false,lastMessage=null,encryptionKey=null,messageIds=new Set(),audioContext=null,scrollTimeout=null,shouldAutoScroll=true,renderQueue=[],isRendering=false,isFirstSnapshot=true,allUsersListener=null,unreadMessageIds=new Set();
 
 const emojis=['\uD83D\uDE00','\uD83D\uDE03','\uD83D\uDE04','\uD83D\uDE01','\uD83D\uDE06','\uD83D\uDE05','\uD83E\uDD23','\uD83D\uDE02','\uD83D\uDE42','\uD83D\uDE43','\uD83D\uDE09','\uD83D\uDE0A','\uD83D\uDE07','\uD83E\uDD70','\uD83D\uDE0D','\uD83E\uDD29','\uD83D\uDE18','\uD83D\uDE17','\uD83D\uDE1A','\uD83D\uDE19','\uD83E\uDD72','\uD83D\uDE0B','\uD83D\uDE1B','\uD83D\uDE1C','\uD83E\uDD2A','\uD83D\uDE1D','\uD83E\uDD11','\uD83E\uDD17','\uD83E\uDD2D','\uD83E\uDD2B','\uD83E\uDD14','\uD83E\uDD10','\uD83D\uDE10','\uD83D\uDE11','\uD83D\uDE36','\uD83D\uDE0F','\uD83D\uDE12','\uD83D\uDE44','\uD83D\uDE2C','\uD83D\uDE0C','\uD83D\uDE14','\uD83D\uDE2A','\uD83E\uDD24','\uD83D\uDE34','\uD83D\uDE37','\uD83E\uDD12','\uD83E\uDD15','\uD83E\uDD22','\uD83D\uDC4D','\uD83D\uDC4E','\uD83D\uDC4C','\u270C\uFE0F','\uD83E\uDD1E','\uD83E\uDD1F','\uD83E\uDD18','\uD83D\uDC4F','\uD83D\uDE4C','\uD83D\uDC50','\uD83E\uDD32','\uD83E\uDD1D','\uD83D\uDE4F','\u270D\uFE0F','\uD83D\uDCAA','\uD83E\uDDBE'];
 
@@ -278,6 +282,12 @@ function isUserAtBottom(){
   const md=document.getElementById('ms');
   if(!md)return true;
   return md.scrollHeight - md.scrollTop - md.clientHeight < 100;
+}
+
+function scrollToBottomInstant(){
+  const md=document.getElementById('ms');
+  if(!md)return;
+  md.scrollTop=md.scrollHeight;
 }
 
 function scrollToBottom(force){
@@ -313,6 +323,7 @@ async function markAllAsRead(){
         readAt:firebase.firestore.FieldValue.serverTimestamp(),
         readBy:cu.email
       });
+      unreadMessageIds.delete(doc.id);
     });
     
     if(!q.empty){
@@ -481,6 +492,7 @@ window.lo = async function(){
     unread={};
     encryptionKey=null;
     messageIds.clear();
+    unreadMessageIds.clear();
     renderQueue=[];
     isRendering=false;
     isFirstSnapshot=true;
@@ -556,18 +568,31 @@ async function processRenderQueue(){
   if(isRendering||renderQueue.length===0)return;
   isRendering=true;
   
+  let separatorAdded=false;
+  
   while(renderQueue.length>0){
     const msg=renderQueue.shift();
+    
+    if(!separatorAdded && unreadMessageIds.has(msg.id) && msg.sender===sc){
+      const md=document.getElementById('ms');
+      const separator=document.createElement('div');
+      separator.className='unread-separator';
+      separator.innerHTML='<span>📬 Nowe wiadomości</span>';
+      md.appendChild(separator);
+      separatorAdded=true;
+    }
+    
     await ddm(msg);
   }
   
   isRendering=false;
-  scrollToBottom(true);
+  scrollToBottomInstant();
 }
 
 async function lm(oue){
   if(um)um();
   messageIds.clear();
+  unreadMessageIds.clear();
   renderQueue=[];
   isRendering=false;
   shouldAutoScroll=true;
@@ -591,6 +616,11 @@ async function lm(oue){
           const dt=change.doc.data();
           dt.id=change.doc.id;
           messageIds.add(dt.id);
+          
+          if(dt.sender===oue && !dt.readBy){
+            unreadMessageIds.add(dt.id);
+          }
+          
           newMessages.push(dt);
         }
       });
@@ -630,10 +660,17 @@ async function lm(oue){
           const dt=change.doc.data();
           dt.id=change.doc.id;
           updateMessageReadStatus(dt.id,dt);
+          
+          if(dt.readBy){
+            unreadMessageIds.delete(dt.id);
+            const msgEl=document.querySelector('[data-msg-id="'+dt.id+'"]');
+            if(msgEl)msgEl.classList.remove('unread');
+          }
         }else if(change.type==='removed'){
           const msgEl=document.querySelector('[data-msg-id="'+change.doc.id+'"]');
           if(msgEl)msgEl.remove();
           messageIds.delete(change.doc.id);
+          unreadMessageIds.delete(change.doc.id);
         }
       });
     }
@@ -671,6 +708,11 @@ async function ddm(dt){
   mdv.setAttribute('data-msg-id',dt.id);
   const io=dt.sender===cu.email;
   mdv.className='k '+(io?'own':'other');
+  
+  if(!io && unreadMessageIds.has(dt.id)){
+    mdv.classList.add('unread');
+  }
+  
   const tm=dt.timestamp?new Date(dt.timestamp.toDate()).toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'}):'Teraz';
   
   let content;
