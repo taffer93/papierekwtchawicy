@@ -314,7 +314,7 @@ window.calculateCalc = function(){
       setTimeout(function(){
         document.getElementById('calcScreen').classList.add('p');
         document.getElementById('lf').classList.remove('p');
-      },2000);
+      },3000);
     }
     
     calcExpression=result.toString();
@@ -343,6 +343,14 @@ try {
   firebase.initializeApp(firebaseConfig);
   a = firebase.auth();
   d = firebase.firestore();
+  
+  // ✅ WYŁĄCZ AUTOMATYCZNE LOGOWANIE
+  a.setPersistence(firebase.auth.Auth.Persistence.NONE);
+  
+  // ✅ WYLOGUJ UŻYTKOWNIKA PRZY STARCIE STRONY
+  if(a.currentUser){
+    a.signOut();
+  }
   
   const statusEl = document.getElementById('firebaseStatus');
   if(statusEl) {
@@ -970,6 +978,9 @@ document.addEventListener('click',function(e){if(!e.target.closest('.dd')&&!e.ta
 a.onAuthStateChanged(async function(u){
   if(u){
     cu=u;
+    
+    // ✅ UKRYJ KALKULATOR I EKRAN LOGOWANIA
+    document.getElementById('calcScreen').classList.add('p');
     document.getElementById('lf').classList.add('p');
     document.getElementById('ma').classList.remove('p');
     document.getElementById('up').textContent=u.email;
