@@ -107,7 +107,7 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
   .d {padding:12px 16px;flex-shrink:0}
   .d h3 {font-size:15px}
   .d #cs {font-size:11px}
-  .e {flex:1;min-height:0;padding:12px;padding-bottom:200px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .e {flex:1;min-height:0;padding:12px;padding-bottom:240px!important;overflow-y:auto;-webkit-overflow-scrolling:touch}
   .f {position:fixed;bottom:0;left:0;right:0;padding:12px;border-top:1px solid #2d2d2d;background:#1e1e1e;z-index:999;box-shadow:0 -4px 16px rgba(0,0,0,0.3)}
   .bb {padding:12px;margin-bottom:12px}
   .bb h4 {font-size:14px;margin-bottom:4px}
@@ -131,7 +131,7 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
   .hh {max-width:100px;max-height:100px;border-radius:8px}
   .jj {width:20px;height:20px;font-size:13px;top:3px;right:3px}
   .image-preview-container {gap:4px;margin-bottom:6px}
-  .ee {position:fixed;bottom:180px;right:12px;left:12px;width:auto;max-height:200px}
+  .ee {position:fixed;bottom:200px;right:12px;left:12px;width:auto;max-height:200px}
   .mm,.toast-notification {position:fixed;top:12px;left:12px;right:12px;width:auto;padding:12px 16px;font-size:12px;transform:none}
   .toast-notification {left:12px;right:12px;transform:none}
   .k {padding:12px 14px;margin:8px 0;max-width:80%;border-radius:12px}
@@ -206,7 +206,7 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
       <div class="n">
         <input type="text" id="mi" placeholder="Napisz wiadomo&#347;&#263;..." autocomplete="off">
         <div class="button-group">
-          <button class="dd" onclick="te()" title="Emotki">&#128522;</button>
+          <button class="dd" id="emojiBtn" title="Emotki">&#128522;</button>
           <button class="dd" onclick="document.getElementById('fi').click()" title="Zdj&#281;cie">&#128247;</button>
           <button class="o" onclick="sm()" title="Wy&#347;lij">&#10148;</button>
         </div>
@@ -329,7 +329,7 @@ function rn() {
     Notification.requestPermission().then(function(permission) {
       nf = permission === 'granted';
       if (nf) {
-        showToast('Powiadomienia', 'Powiadomienia w??czone!', 'success');
+        showToast('Powiadomienia', 'Powiadomienia w\u0142\u0105czone!', 'success');
       }
     });
   }
@@ -460,14 +460,19 @@ function escapeHtml(text) {
 function scrollToBottom() {
   const md = document.getElementById('ms');
   if (md) {
-    setTimeout(function() {
+    requestAnimationFrame(function() {
       md.scrollTop = md.scrollHeight;
-    }, 100);
+      console.log('Scroll to:', md.scrollHeight, 'Current:', md.scrollTop);
+    });
   }
 }
 
 // ==================== EMOTIKONY ====================
-function te() {
+function te(event) {
+  if (event) {
+    event.stopPropagation();
+  }
+  
   const ep = document.getElementById('ep');
   if (!ep) return;
   
@@ -493,7 +498,10 @@ function ie() {
     const btn = document.createElement('button');
     btn.className = 'gg';
     btn.textContent = emoji;
-    btn.onclick = function() { ae(emoji); };
+    btn.onclick = function(e) { 
+      e.stopPropagation();
+      ae(emoji); 
+    };
     eg.appendChild(btn);
   });
 }
@@ -633,7 +641,7 @@ async function lg() {
   } catch (er) {
     let msg = 'B\u0142\u0105d logowania';
     if (er.code === 'auth/user-not-found') msg = 'Nie znaleziono u\u017cytkownika';
-    else if (er.code === 'auth/wrong-password') msg = 'Nie§á§â§Ñ§Óid\u0142owe has\u0142o';
+    else if (er.code === 'auth/wrong-password') msg = 'Nieprawid\u0142owe has\u0142o';
     else if (er.code === 'auth/invalid-email') msg = 'Nieprawid\u0142owy email';
     else if (er.code === 'auth/invalid-credential') msg = 'Nieprawid\u0142owe dane logowania';
     sam(msg, true);
@@ -753,51 +761,59 @@ async function lm(oue) {
   
   const ci = cci(cu.email, oue);
   const mr = d.collection('messages');
-  const q = mr.where('chatId', '==', ci);
+  const q = mr.where('chatId', '==', ci).orderBy('timestamp', 'asc');
   
   um = q.onSnapshot(async function(sn) {
-    const changes = sn.docChanges();
+    const md = document.getElementById('ms');
     
-    if (changes.length === 0) return;
-    
-    const isInitialLoad = changes.length === sn.docs.length;
-    
-    if (isInitialLoad) {
-      const md = document.getElementById('ms');
-      md.innerHTML = '';
-      messageIds.clear();
+    if (sn.empty) {
+      md.innerHTML = '<div class="q">\uD83D\uDCAC Rozpocznij rozmow\u0119!</div>';
+      return;
     }
     
-    for (let i = 0; i < changes.length; i++) {
-      const change = changes[i];
+    const changes = sn.docChanges();
+    const isInitialLoad = changes.every(function(c) { return c.type === 'added'; }) && changes.length === sn.size;
+    
+    if (isInitialLoad) {
+      md.innerHTML = '';
+      messageIds.clear();
       
-      if (change.type === 'added') {
-        const dt = change.doc.data();
-        dt.id = change.doc.id;
+      for (let i = 0; i < sn.docs.length; i++) {
+        const doc = sn.docs[i];
+        const dt = doc.data();
+        dt.id = doc.id;
+        messageIds.add(dt.id);
+        await ddm(dt, true);
+      }
+      
+      scrollToBottom();
+    } else {
+      for (let i = 0; i < changes.length; i++) {
+        const change = changes[i];
         
-        if (!messageIds.has(dt.id)) {
-          messageIds.add(dt.id);
-          await ddm(dt);
+        if (change.type === 'added') {
+          const dt = change.doc.data();
+          dt.id = change.doc.id;
+          
+          if (!messageIds.has(dt.id)) {
+            messageIds.add(dt.id);
+            await ddm(dt, false);
+            scrollToBottom();
+          }
         }
       }
     }
-    
-    if (isInitialLoad) {
-      const md = document.getElementById('ms');
-      if (md.innerHTML === '') {
-        md.innerHTML = '<div class="q">\uD83D\uDCAC Rozpocznij rozmow\u0119!</div>';
-      }
-    }
-    
-    scrollToBottom();
   });
 }
 
-async function ddm(dt) {
+async function ddm(dt, isInitial) {
   const md = document.getElementById('ms');
   
   const existingMsg = document.querySelector('[data-msg-id="' + dt.id + '"]');
-  if (existingMsg) return;
+  if (existingMsg) {
+    console.log('Wiadomosc juz istnieje:', dt.id);
+    return;
+  }
   
   const qElement = md.querySelector('.q');
   if (qElement) {
@@ -818,7 +834,7 @@ async function ddm(dt) {
     const dct = await dc(dt.text);
     content = '<div class="m cc">' + escapeHtml(dct) + '</div>';
     
-    if (!io && (sc !== dt.sender || document.hidden || !document.hasFocus())) {
+    if (!io && !isInitial && (sc !== dt.sender || document.hidden || !document.hasFocus())) {
       if (!unread[dt.sender]) unread[dt.sender] = 0;
       unread[dt.sender]++;
       uur();
@@ -829,6 +845,7 @@ async function ddm(dt) {
   mdv.innerHTML = '<div class="l">' + escapeHtml(io ? 'Ty' : dt.sender.split('@')[0]) + ' &bull; ' + tm + '</div>' + content;
   
   md.appendChild(mdv);
+  console.log('Dodano wiadomosc:', dt.id, 'isInitial:', isInitial);
 }
 
 function cci(e1, e2) {
@@ -1003,11 +1020,20 @@ document.getElementById('pw').addEventListener('keypress', function(e) {
   }
 });
 
+// Obs?uga przycisku emoji
+document.addEventListener('DOMContentLoaded', function() {
+  const emojiBtn = document.getElementById('emojiBtn');
+  if (emojiBtn) {
+    emojiBtn.addEventListener('click', te);
+  }
+});
+
+// Zamknij panel emoji po klikni?ciu poza nim
 document.addEventListener('click', function(e) {
   const ep = document.getElementById('ep');
-  const emojiBtn = document.querySelectorAll('.dd')[0];
+  const emojiBtn = document.getElementById('emojiBtn');
   
-  if (es && ep && !ep.contains(e.target) && e.target !== emojiBtn) {
+  if (es && ep && emojiBtn && !ep.contains(e.target) && e.target !== emojiBtn) {
     ep.classList.add('p');
     es = false;
   }
@@ -1059,7 +1085,7 @@ document.addEventListener('visibilitychange', function() {
   }
 });
 
-console.log('\uD83D\uDCAC Chat zaladowany - Dark Mode');
+console.log('\uD83D\uDCAC Chat zaladowany - Dark Mode v2');
 </script>
 
 </body>
