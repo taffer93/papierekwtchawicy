@@ -3,21 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0f0f0f">
+<meta name="theme-color" content="#000000">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.png">
 <title>Terminal Chat</title>
 <style>
-* {margin:0;padding:0;box-sizing:border-box}
+* { margin:0; padding:0; box-sizing:border-box }
 body {
-  font-family: Consolas,"Courier New",monospace;
-  background:#000;
-  color:#00ff66;
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
+  font-family: Consolas, "Courier New", monospace;
+  background:#000; color:#00ff66;
+  min-height:100vh; display:flex; align-items:center; justify-content:center; overflow:hidden;
 }
 
 /* Palette */
@@ -32,93 +27,133 @@ body {
   --my-chat-color:#00ff66;
 }
 
-/* PWA info */
-.install-prompt{position:fixed;bottom:20px;left:20px;right:20px;background:var(--term-bg);color:var(--term-fg);padding:14px 16px;border:1px dashed var(--term-border);z-index:10003;display:none}
-.install-prompt button{background:transparent;color:var(--term-fg);border:1px dashed var(--term-border);padding:8px 12px;font-weight:700;cursor:pointer;margin-top:10px;width:100%}
-
 /* App shell */
-.a{background:var(--term-bg);width:min(1000px,calc(100vw - 24px));height:min(700px,calc(100vh - 24px));display:flex;border:1px dashed var(--term-border)}
-.b{flex:0 0 280px;padding:12px;border-right:1px dashed var(--term-border);overflow:auto}
-.c{flex:1;display:flex;flex-direction:column;min-width:0}
-.d{padding:10px 12px;border-bottom:1px dashed var(--term-border);display:flex;justify-content:space-between;align-items:center}
-.e{flex:1;padding:12px;overflow:auto;position:relative}
+.a{
+  background:#000;
+  width:min(1000px, calc(100vw - 24px));
+  height:min(700px, calc(100vh - 24px));
+  display:flex; border:1px dashed var(--term-border);
+}
+.b{
+  flex:0 0 300px; padding:12px; border-right:1px dashed var(--term-border);
+  overflow:auto; color:var(--term-fg);
+}
+.c{ flex:1; display:flex; flex-direction:column; min-width:0; }
+.d{
+  padding:8px 10px; border-bottom:1px dashed var(--term-border);
+  display:flex; justify-content:space-between; align-items:center; gap:8px;
+}
+.e{
+  flex:1; padding:6px 10px; overflow:auto; position:relative; /* mniejszy top padding, header bliżej góry */
+}
 
 /* Users list */
-.bb{padding:12px;border:1px dashed var(--term-border);margin-bottom:12px}
-.z{background:transparent;color:var(--term-fg);padding:8px 12px;border:1px dashed var(--term-border);cursor:pointer;width:100%;margin-top:10px}
-.user-section{margin-top:12px}
-.user-section h3{padding:6px;border:1px dashed var(--term-border);display:flex;justify-content:space-between;cursor:pointer;color:var(--term-fg-dim)}
-.user-list{transition:max-height .3s ease;overflow:hidden}
-.user-list.collapsed{max-height:0}
-.g{padding:8px 10px;margin:6px 0;border:1px dashed var(--term-border);cursor:pointer}
-.g.active{outline:2px solid var(--term-fg)}
-.h{display:flex;justify-content:space-between}
-.user-unread-badge{border:1px dashed var(--term-warning);color:var(--term-warning);padding:0 6px}
-
-/* Chat table */
-.chat-table{border:1px dashed var(--term-border)}
-.chat-header,.chat-row{display:grid;grid-template-columns:140px 140px 1fr;border-bottom:1px dashed var(--term-border)}
-.chat-header{position:sticky;top:0;background:#000}
-.cell{padding:8px 10px;white-space:pre-line}
-.cell:not(:last-child){border-right:1px dashed var(--term-border)}
-.msg-text{line-height:1.5}
-.img-in-msg{max-width:200px;border:1px dashed var(--term-border);cursor:pointer}
-
-/* Prompt (chat & login): responsive and focusable */
-.prompt-line,.term-prompt{
-  display:grid;
-  grid-template-columns:max-content 1fr max-content;
-  align-items:baseline;
-  gap:6px;
-  width:100%;
-  max-width:100%;
+.bb{ padding:10px; border:1px dashed var(--term-border); margin-bottom:10px }
+.z{ background:transparent; color:var(--term-fg); padding:8px 10px; border:1px dashed var(--term-border); cursor:pointer; width:100%; margin-top:10px }
+.user-section{ margin-top:10px }
+.user-section h3{
+  padding:6px; border:1px dashed var(--term-border);
+  display:flex; justify-content:space-between; align-items:center; cursor:pointer; color:var(--term-fg-dim); font-size:12px;
 }
-.prompt-input,.term-input{
-  width:100%;
-  min-width:0;           /* critical to prevent overflow */
-  outline:none;border:none;background:transparent;
-  color:var(--my-chat-color);
-  caret-color:transparent; /* hide native caret */
-  font: inherit;
-  font-size:16px;        /* avoid mobile zoom */
-  padding:0;
+.user-list{ transition:max-height .3s ease; overflow:hidden }
+.user-list.collapsed{ max-height:0 }
+.g{
+  padding:8px 10px; margin:6px 0; border:1px dashed var(--term-border); cursor:pointer; color:var(--term-fg)
 }
-.prompt-caret,.term-caret{
-  width:8px;height:1.2em;background:var(--my-chat-color);
-  animation:blockBlink 1s steps(1) infinite
-}
-@keyframes blockBlink{0%,50%{opacity:1}50.1%,100%{opacity:0}}
+.g.active{ outline:2px solid var(--term-fg) }
+.h{ display:flex; justify-content:space-between; align-items:center; gap:8px; font-weight:700; }
 
-/* Emoji panel (appears only with contact) */
-.ee{position:absolute;top:calc(100% + 8px);right:12px;border:1px dashed var(--term-border);padding:10px;background:#000;max-height:240px;overflow:auto;z-index:1000}
-.ff{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
-.gg{padding:6px;border:1px dashed var(--term-border);background:#000;color:var(--term-fg);cursor:pointer}
-.dd{background:transparent;color:var(--term-fg);padding:8px 10px;border:1px dashed var(--term-border);cursor:pointer}
-.p{display:none!important}
+/* Chat table (czytelniej) */
+.chat-table{ border:1px dashed var(--term-border) }
+.chat-header, .chat-row{
+  display:grid; grid-template-columns:120px 120px 1fr; border-bottom:1px dashed var(--term-border);
+}
+.chat-header{
+  position:sticky; top:0; z-index:2; background:#000;
+  font-size:12px; letter-spacing:0.5px;
+}
+.cell{ padding:6px 8px; white-space:pre-line; font-size:13px; }
+.cell:not(:last-child){ border-right:1px dashed var(--term-border) }
+.cell.msg b{ color:var(--my-chat-color) }
+.msg-text{ line-height:1.5 }
+.img-in-msg{ max-width:200px; border:1px dashed var(--term-border); cursor:pointer }
+
+/* Prompt – caret tuż za wpisem */
+.prompt-line{ display:flex; align-items:baseline; gap:6px; width:100% }
+.input-wrap{
+  display:inline-flex; align-items:baseline; flex-wrap:wrap; min-width:10px;
+  max-width:100%; /* nie wychodź poza ekran */
+}
+#promptInput{
+  display:inline-block; min-width:1ch; max-width:100%;
+  outline:none; border:none; background:transparent;
+  color:var(--my-chat-color); caret-color:transparent; /* ukryj natywny caret */
+  font: inherit; font-size:16px; line-height:1.2; /* 16px -> brak zoomu na mobile */
+  white-space:pre-wrap; word-break:break-word;
+}
+.prompt-caret{
+  display:inline-block; width:8px; height:1.15em; background:var(--my-chat-color);
+  animation:blockBlink 1s steps(1) infinite; margin-left:2px;
+}
+@keyframes blockBlink{ 0%,50%{opacity:1} 50.1%,100%{opacity:0} }
+
+/* Top controls (pokazuj po wyborze kontaktu) */
+.top-controls{ display:flex; gap:6px; align-items:center }
+.dd{ background:transparent; color:var(--term-fg); padding:6px 10px; border:1px dashed var(--term-border); cursor:pointer }
+
+/* Emoji panel */
+.ee{ position:absolute; top:36px; right:10px; border:1px dashed var(--term-border); background:#000; padding:8px; max-height:240px; overflow:auto; z-index:5 }
+.ff{ display:grid; grid-template-columns:repeat(6,1fr); gap:6px }
+.gg{ padding:6px; border:1px dashed var(--term-border); background:#000; color:var(--term-fg); cursor:pointer }
+
+/* Image preview nad promptem */
+.image-preview-container{ display:flex; flex-wrap:wrap; gap:6px; width:100% }
+.hh{ max-width:200px; border:1px dashed var(--term-border); cursor:pointer }
+.ii{ position:relative; display:inline-block }
+.jj{ position:absolute; top:4px; right:4px; background:#000; color:#ff4545; border:1px dashed #ff4545; width:22px; height:22px; cursor:pointer }
 
 /* Login terminal */
 .terminal-login{
-  width:min(680px,calc(100vw - 24px));
+  width:min(680px, calc(100vw - 24px));
   border:1px dashed var(--term-border);
 }
-.term-body{padding:12px;max-height:min(60vh, calc(100vh - 48px));overflow:auto}
+.term-body{ padding:12px; max-height:min(60vh, calc(100vh - 48px)); overflow:auto }
+.term-prompt{ display:flex; align-items:baseline; gap:6px; width:100% }
+.term-label{ font-weight:700 }
+.term-input{
+  width:100%; min-width:0; outline:none; border:none; background:transparent;
+  color:var(--my-chat-color); caret-color:transparent; font:inherit; font-size:16px;
+}
+.term-caret{ width:8px; height:1.15em; background:var(--my-chat-color); animation:blockBlink 1s steps(1) infinite }
 
 /* Toast */
-.toast-notification{position:fixed;top:20px;left:50%;transform:translateX(-50%);border:1px dashed var(--term-border);padding:12px 14px;background:#000;z-index:10002}
+.toast-notification{ position:fixed; top:16px; left:50%; transform:translateX(-50%); border:1px dashed var(--term-border); background:#000; color:#00ff66; padding:10px 12px; z-index:10 }
 
-/* Scrollbars */
-.e::-webkit-scrollbar,.b::-webkit-scrollbar,.term-body::-webkit-scrollbar{width:6px}
-.e::-webkit-scrollbar-thumb,.b::-webkit-scrollbar-thumb,.term-body::-webkit-scrollbar-thumb{background:#004d26}
+/* Helpers */
+.p{ display:none!important }
+
+/* Mobile: czat pod listą użytkowników */
+@media (max-width: 768px){
+  body{ overflow:hidden; height:100vh; display:block }
+  .a{ flex-direction:column; width:100vw; height:100vh; border:none } /* kolumnowo */
+  .b{ flex:0 0 auto; border-right:none; border-bottom:1px dashed var(--term-border); width:100%; max-height:45vh } /* lista u góry */
+  .c{ flex:1; min-height:0; width:100% } /* czat pod spodem */
+  .d{ padding:8px 10px }
+  .e{ padding:6px 8px } /* header bliżej góry */
+  .chat-header{ font-size:11px }
+  .cell{ font-size:12px; padding:5px 6px }
+  .img-in-msg{ max-width:120px }
+}
 </style>
 </head>
 <body>
 
-<!-- Login terminal (default) -->
+<!-- Terminal login (start domyślnie) -->
 <div class="terminal-login" id="lf">
   <div class="term-body" id="loginTermBody"></div>
 </div>
 
-<!-- Main app -->
+<!-- Aplikacja -->
 <div class="a p" id="ma">
   <div class="b">
     <div class="bb">
@@ -135,6 +170,7 @@ body {
         </select>
       </div>
     </div>
+
     <button class="z" onclick="lo()">[ Log out ]</button>
 
     <div class="user-section">
@@ -158,8 +194,9 @@ body {
     <div class="d">
       <div>
         <h3 id="ct" style="margin:0">== Select a contact ==</h3>
-        <div id="cs" style="margin-top:4px;color:var(--term-fg-dim)"></div>
+        <div id="cs" style="margin-top:2px;color:var(--term-fg-dim)"></div>
       </div>
+      <!-- Pokaż dopiero po wyborze rozmówcy -->
       <div class="top-controls p" id="topControls">
         <button class="dd" id="emojiBtn" onclick="toggleEmoji()">:)</button>
         <button class="dd" onclick="document.getElementById('fi').click()">[IMG]</button>
@@ -167,7 +204,8 @@ body {
         <div class="ee p" id="ep"><div class="ff" id="eg"></div></div>
       </div>
     </div>
-    <div class="e" id="ms"></div>
+
+    <div class="e" id="ms"><!-- chat table wstawiany dynamicznie --></div>
   </div>
 </div>
 
@@ -175,7 +213,7 @@ body {
 <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
 <script>
-/* Firebase */
+/* Firebase init */
 const firebaseConfig={
   apiKey:"AIzaSyCJeQEnsEDDnGvKoVzKkjRmnOIsmv7HPJs",
   authDomain:"pensei-b3058.firebaseapp.com",
@@ -191,119 +229,59 @@ const d=firebase.firestore();
 a.setPersistence(firebase.auth.Auth.Persistence.NONE).catch(()=>{});
 
 /* State */
-let cu=null,sc=null,um=null,allUsersListener=null,ht=null,unread={},encryptionKey=null,unreadMessageIds=new Set(),messageIds=new Set();
-let es=false, nf=false, typedBuffer='';
+let cu=null, sc=null, um=null, allUsersListener=null, ht=null;
+let unread={}, encryptionKey=null, unreadMessageIds=new Set(), messageIds=new Set();
+let es=false, typedBuffer='';
 
 /* Utils */
 function escapeHtml(t){const div=document.createElement('div');div.textContent=t;return div.innerHTML}
 function showToast(title,msg,type){
   const t=document.createElement('div');t.className='toast-notification';
-  t.style.borderColor=(type==='error')?'#ff4545':(type==='success')?'#00ff99':'#00aa55';t.style.color=(type==='error')?'#ff4545':(type==='success')?'#00ff99':'#00ff66';
-  t.innerHTML='[ '+escapeHtml(title)+' ]<br>'+escapeHtml(msg);document.body.appendChild(t);
-  setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),300)},3000);
+  t.style.borderColor=(type==='error')?'#ff4545':(type==='success')?'#00ff99':'#00aa55';
+  t.style.color=(type==='error')?'#ff4545':(type==='success')?'#00ff99':'#00ff66';
+  t.innerHTML='[ '+escapeHtml(title)+' ]<br>'+escapeHtml(msg);
+  document.body.appendChild(t); setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),300)},3000);
 }
 
-/* ===== Login terminal (fixed) ===== */
-let activePrompt=null; // {input, caret}
-function termFreezeActive(){
-  if(!activePrompt) return;
-  try{
-    activePrompt.input.setAttribute('readonly','readonly'); // keep visible but inactive
-    activePrompt.input.style.opacity='0.8';
-    if(activePrompt.caret && activePrompt.caret.parentNode){activePrompt.caret.remove()}
-  }catch(e){}
-  activePrompt=null;
-}
-function termNewPrompt(label,isPassword,onSubmit){
-  const body=document.getElementById('loginTermBody');
-  termFreezeActive();
-
-  const row=document.createElement('div');row.className='term-prompt';
-  const lab=document.createElement('span');lab.textContent=label;
-  const inp=document.createElement('input');inp.className='term-input';inp.type=isPassword?'password':'text';
-  inp.autocomplete='off';inp.autocapitalize='off';inp.autocorrect='off';inp.spellcheck=false;inp.inputMode='text';inp.setAttribute('enterkeyhint','done');
-  const caret=document.createElement('span');caret.className='term-caret';
-  row.appendChild(lab);row.appendChild(inp);row.appendChild(caret);
-  body.appendChild(row);
-  body.scrollTop=body.scrollHeight;
-
-  activePrompt={input:inp,caret:caret};
-
-  inp.addEventListener('keydown',e=>{
-    if(e.key==='Enter'){e.preventDefault();onSubmit(inp.value)}
-  });
-  setTimeout(()=>{inp.focus();},0);
-}
-function initLoginTerminal(){
-  const body=document.getElementById('loginTermBody');
-  body.innerHTML=''; activePrompt=null;
-  termNewPrompt('> ',false,onCommandEntered);
-}
-function onCommandEntered(cmd){
-  if(!cmd){termNewPrompt('> ',false,onCommandEntered);return}
-  const c=cmd.toLowerCase().trim();
-  if(c==='sudo usr login'){
-    termNewPrompt('login: ',false,(email)=>{
-      termNewPrompt('password: ',true,async (pw)=>{
-        try{ await a.signInWithEmailAndPassword(email,pw); }
-        catch(e){ /* stay quiet */ }
-        if(!a.currentUser){ termNewPrompt('> ',false,onCommandEntered); }
-      });
-    });
-  }else if(c==='sudo usr register'){
-    termNewPrompt('login: ',false,(email)=>{
-      termNewPrompt('password: ',true,async (pw)=>{
-        try{ await a.createUserWithEmailAndPassword(email,pw); }
-        catch(e){}
-        if(!a.currentUser){ termNewPrompt('> ',false,onCommandEntered); }
-      });
-    });
-  }else{
-    termNewPrompt('> ',false,onCommandEntered);
-  }
-}
-document.addEventListener('DOMContentLoaded', initLoginTerminal);
-
-/* ===== Chat helpers ===== */
-function chatId(ae,be){return[String(ae).toLowerCase().trim(),String(be).toLowerCase().trim()].sort().join('_')}
+/* Crypto */
 async function generateKey(pw){const enc=new TextEncoder();const km=await crypto.subtle.importKey('raw',enc.encode(pw),'PBKDF2',false,['deriveBits','deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt:enc.encode('salt-2024'),iterations:100000,hash:'SHA-256'},km,{name:'AES-GCM',length:256},true,['encrypt','decrypt'])}
-async function ec(t){try{if(!encryptionKey)encryptionKey=await generateKey('key-2024');const enc=new TextEncoder();const data=enc.encode(t);const iv=crypto.getRandomValues(new Uint8Array(12));const out=await crypto.subtle.encrypt({name:'AES-GCM',iv},encryptionKey,data);const arr=new Uint8Array(out);const c=new Uint8Array(iv.length+arr.length);c.set(iv);c.set(arr,iv.length);return btoa(String.fromCharCode.apply(null,c))}catch(e){return t}}
+async function ec(t){try{if(!encryptionKey)encryptionKey=await generateKey('key-2024');const enc=new TextEncoder();const data=enc.encode(t);const iv=new Uint8Array(12);crypto.getRandomValues(iv);const out=await crypto.subtle.encrypt({name:'AES-GCM',iv},encryptionKey,data);const a8=new Uint8Array(out);const c=new Uint8Array(iv.length+a8.length);c.set(iv);c.set(a8,iv.length);return btoa(String.fromCharCode.apply(null,c))}catch(e){return t}}
 async function dc(t){try{if(!encryptionKey)encryptionKey=await generateKey('key-2024');const c=Uint8Array.from(atob(t),c=>c.charCodeAt(0));const iv=c.slice(0,12);const data=c.slice(12);const out=await crypto.subtle.decrypt({name:'AES-GCM',iv},encryptionKey,data);return new TextDecoder().decode(out)}catch(e){return t}}
-function formatTime(date){if(!date)return '—';const d=new Date(date);const ds=d.toLocaleDateString('en-GB');const ts=d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});return ds+'\n'+ts}
 
-/* Emoji */
+/* Emoji panel */
 const emoticons=[':)',':-)',':D',':-D',';)',';-)',':P',':-P','XD','xD',':(',':-(',":'(",':O',':-O',':/',':-/',':|',':-|',':[',':3','^^','^-^','^_^','-_-','T_T','>.<','>:)','>:(','8)','B)','8-)','B-)',':@',':-@','o_O','O_o',':^)',':-\\','=_=','o.O','O.o',':>','<3','</3',':]','[:',':*',':^)'];
 function toggleEmoji(){
-  const ep=document.getElementById('ep');if(!ep)return;
-  if(es){ep.classList.add('p');es=false}
+  const ep=document.getElementById('ep'); if(!ep) return;
+  if(es){ ep.classList.add('p'); es=false; }
   else{
-    const eg=document.getElementById('eg');
-    if(!eg.innerHTML){eg.innerHTML='';emoticons.forEach(e=>{const b=document.createElement('button');b.className='gg';b.textContent=e;b.onclick=function(ev){ev.stopPropagation();addEmoji(e)};eg.appendChild(b)})}
-    ep.classList.remove('p');es=true;
+    const eg=document.getElementById('eg'); if(!eg.innerHTML){
+      eg.innerHTML=''; emoticons.forEach(e=>{ const b=document.createElement('button'); b.className='gg'; b.textContent=e; b.onclick=(ev)=>{ev.stopPropagation(); addEmoji(e)}; eg.appendChild(b); })
+    }
+    ep.classList.remove('p'); es=true;
   }
 }
 function addEmoji(e){
   const pi=document.getElementById('promptInput'); if(!pi) return;
-  if(pi.value && !/\s$/.test(pi.value)) pi.value+=' ';
-  pi.value+=e+' '; typedBuffer=pi.value; pi.focus();
-  const ep=document.getElementById('ep'); if(ep){ep.classList.add('p');es=false}
+  if(pi.textContent && !/\s$/.test(pi.textContent)) pi.textContent+=' ';
+  pi.textContent+=e+' '; typedBuffer=pi.textContent; focusPrompt();
+  const ep=document.getElementById('ep'); if(ep){ep.classList.add('p'); es=false;}
 }
 
-/* Users list */
+/* Presence + users */
+async function suo(io){ if(!cu) return; try{ await d.collection('users').doc(cu.uid).set({email:cu.email,isOnline:io,lastSeen:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}); }catch(e){} }
 function toggleUserSection(section){
   const list=document.getElementById(section==='online'?'ulOnline':'ulOffline');
-  const header=list.previousElementSibling;
-  list.classList.toggle('collapsed'); header.classList.toggle('collapsed');
+  const head=list.previousElementSibling; list.classList.toggle('collapsed'); head.classList.toggle('collapsed');
 }
 function lu(){
   const ur=d.collection('users');
   allUsersListener=ur.onSnapshot(sn=>{
     const on=[], off=[];
     sn.forEach(dc=>{
-      const u=dc.data();
-      if(!cu || u.email===cu.email) return;
+      const u=dc.data(); if(!cu || u.email===cu.email) return;
       (u.isOnline?on:off).push(u);
     });
+
     const uo=document.getElementById('ulOnline'), uf=document.getElementById('ulOffline');
     document.getElementById('onlineCount').textContent=on.length;
     document.getElementById('offlineCount').textContent=off.length;
@@ -321,21 +299,25 @@ function lu(){
       const dv=document.createElement('div'); dv.className='g'; dv.setAttribute('data-email',u.email);
       dv.onclick=()=>selectUser(u.email,false);
       let last='A while ago';
-      if(u.lastSeen){const dts=u.lastSeen.toDate();const now=new Date();const m=Math.floor((now-dts)/60000);if(m<1)last='Just now';else if(m<60)last=m+' min ago';else if(m<1440)last=Math.floor(m/60)+' hrs ago';else last=Math.floor(m/1440)+' days ago'}
-      dv.innerHTML='<div class="h">&gt;&gt; '+escapeHtml(u.email.split("@")[0])+'</div><div style="font-size:12px;color:#00cc52">[ '+last+' ]</div>';
+      if(u.lastSeen){
+        const dts=u.lastSeen.toDate(), now=new Date();
+        const m=Math.floor((now - dts)/60000);
+        if(m<1) last='Just now'; else if(m<60) last=m+' min ago'; else if(m<1440) last=Math.floor(m/60)+' hrs ago'; else last=Math.floor(m/1440)+' days ago';
+      }
+      dv.innerHTML='<div class="h">&gt;&gt; '+escapeHtml(u.email.split("@")[0])+'</div><div style="font-size:12px;color:#00cc52">[ '+escapeHtml(last)+' ]</div>';
       uf.appendChild(dv);
     });
   });
 }
 
-/* Chat UI */
+/* Chat scaffold */
 function ensureChatScaffold(reset){
   const ms=document.getElementById('ms');
   let grid=document.getElementById('chatGrid');
   const uname=sc ? sc.split('@')[0] : 'username';
   if(!grid){
     const wrap=document.createElement('div'); wrap.className='chat-table'; wrap.id='chatGrid';
-    wrap.innerHTML = ''
+    wrap.innerHTML=''
       +'<div class="chat-header"><div class="cell">READ</div><div class="cell">SENT</div><div class="cell"><span id="chatHeaderUser">'+escapeHtml(uname)+'</span></div></div>'
       +'<div class="chat-body" id="chatBody"></div>'
       +'<div class="chat-row" id="previewRow"><div class="cell"></div><div class="cell"></div><div class="cell"><div id="imagePreviewContainer" class="image-preview-container"></div></div></div>'
@@ -344,31 +326,38 @@ function ensureChatScaffold(reset){
       +'  <div class="cell">'
       +'    <div class="prompt-line">'
       +'      <b id="promptUserLabel">'+escapeHtml((cu?cu.email.split("@")[0]:"me"))+':</b>'
-      +'      <input id="promptInput" class="prompt-input" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"/>'
-      +'      <span class="prompt-caret"></span>'
+      +'      <span class="input-wrap"><span id="promptInput" contenteditable="true" spellcheck="false" inputmode="text"></span><span class="prompt-caret"></span></span>'
       +'    </div>'
       +'  </div>'
       +'</div>';
     ms.innerHTML=''; ms.appendChild(wrap);
 
     const pi=document.getElementById('promptInput');
-    pi.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage()}});
-    pi.addEventListener('input',function(){typedBuffer=this.value});
-    ms.addEventListener('click',ev=>{if(!ev.target.closest('#promptInput')&&!ev.target.closest('.dd')&&!ev.target.closest('#ep')){const el=document.getElementById('promptInput');if(el)el.focus()}});
+    pi.addEventListener('keydown', e=>{
+      if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendMessage(); }
+    });
+    pi.addEventListener('input', ()=>{ typedBuffer=pi.textContent; });
+    ms.addEventListener('click', ev=>{
+      if(!ev.target.closest('#promptInput') && !ev.target.closest('.dd') && !ev.target.closest('#ep')) focusPrompt();
+    });
   }else{
     const hdr=document.getElementById('chatHeaderUser'); if(hdr) hdr.textContent=uname;
     const pl=document.getElementById('promptUserLabel'); if(pl&&cu) pl.textContent=cu.email.split('@')[0]+':';
     if(reset){
       const body=document.getElementById('chatBody'); if(body) body.innerHTML='';
       const prev=document.getElementById('imagePreviewContainer'); if(prev) prev.innerHTML='';
-      const pi=document.getElementById('promptInput'); if(pi) pi.value='';
+      const pi=document.getElementById('promptInput'); if(pi) pi.textContent='';
       typedBuffer='';
     }
   }
-  setTimeout(()=>{const el=document.getElementById('promptInput'); if(el) el.focus()},0);
+  focusPrompt();
 }
-function formatTime(date){if(!date)return '—';const d=new Date(date);return d.toLocaleDateString('en-GB')+'\n'+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}
+function focusPrompt(){ const el=document.getElementById('promptInput'); if(!el) return;
+  const r=document.createRange(); r.selectNodeContents(el); r.collapse(false);
+  const s=window.getSelection(); s.removeAllRanges(); s.addRange(r);
+}
 
+/* Render message row */
 async function ddm(dt){
   ensureChatScaffold();
   const body=document.getElementById('chatBody'); if(!body) return;
@@ -376,17 +365,21 @@ async function ddm(dt){
 
   const row=document.createElement('div'); row.className='chat-row'; row.setAttribute('data-msg-id',dt.id);
 
-  const readCell=document.createElement('div'); readCell.className='cell'; readCell.textContent=(dt.sender===cu?.email && dt.readAt)?formatTime(dt.readAt.toDate()):'—';
-  const sentCell=document.createElement('div'); sentCell.className='cell'; sentCell.textContent=dt.timestamp?formatTime(dt.timestamp.toDate()):'Now';
-  const msgCell=document.createElement('div'); msgCell.className='cell';
+  const readCell=document.createElement('div'); readCell.className='cell';
+  readCell.textContent = (dt.sender===(cu?cu.email:'') && dt.readAt) ? formatTime(dt.readAt.toDate()) : '—';
 
-  const own = dt.sender===(cu?cu.email:''); const who = own ? (cu?cu.email.split('@')[0]:'me') : dt.sender.split('@')[0];
+  const sentCell=document.createElement('div'); sentCell.className='cell';
+  sentCell.textContent = dt.timestamp ? formatTime(dt.timestamp.toDate()) : 'Now';
+
+  const msgCell=document.createElement('div'); msgCell.className='cell msg';
+  const who = (dt.sender===(cu?cu.email:'')) ? (cu?cu.email.split('@')[0]:'me') : dt.sender.split('@')[0];
+
   let inner = '<b>'+escapeHtml(who)+':</b> ';
-  if(dt.image){
-    inner += '<br><img src="'+dt.image+'" class="img-in-msg" onclick="oi(\''+dt.image+'\')">';
+  const url = dt.imageUrl || dt.image; /* obsłuż oba klucze */
+  if(url){
+    inner += '<br><img src="'+url+'" class="img-in-msg" onclick="oi(\''+url+'\')">';
   }else{
-    const txt = await dc(dt.text||'');
-    inner += '<span class="msg-text">'+escapeHtml(txt)+'</span>';
+    const txt = await dc(dt.text||''); inner += '<span class="msg-text">'+escapeHtml(txt)+'</span>';
   }
   msgCell.innerHTML = inner;
 
@@ -394,80 +387,135 @@ async function ddm(dt){
   body.appendChild(row);
 }
 
-/* Messaging */
+/* Time format */
+function formatTime(date){
+  if(!date) return '—';
+  const d=new Date(date);
+  const ds=d.toLocaleDateString('en-GB');
+  const ts=d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+  return ds+'\n'+ts;
+}
+
+/* Chat mechanics */
+function chatId(ae,be){return[String(ae).toLowerCase().trim(), String(be).toLowerCase().trim()].sort().join('_')}
 function selectUser(ue,isOnline){
   document.querySelectorAll('.g').forEach(i=>i.classList.remove('active'));
-  const userEl=document.querySelector('[data-email="'+ue+'"]'); if(userEl) userEl.classList.add('active');
+  const el=document.querySelector('[data-email="'+ue+'"]'); if(el) el.classList.add('active');
   sc=ue;
   document.getElementById('ct').textContent='== '+ue.split('@')[0]+' ==';
   const cs=document.getElementById('cs'); cs.textContent=isOnline?'[ ONLINE ]':'[ OFFLINE ]'; cs.style.color=isOnline?'#00ff99':'#00cc52';
   document.getElementById('topControls').classList.remove('p');
+  ensureChatScaffold(true);
   loadMessages(ue);
 }
-function sendMessage(){
-  ensureChatScaffold();
-  const pi=document.getElementById('promptInput');
-  const msg=(typedBuffer||pi.value||'').trim();
-  const imgs=document.querySelectorAll('#imagePreviewContainer .ii img');
-  if(!sc){showToast('Error','Select a contact first','error');return}
-  if(!msg && imgs.length===0) return;
-  const ci=chatId(cu.email,sc);
-  (async()=>{
-    try{
-      if(msg){
-        const enc=await ec(msg);
-        await d.collection('messages').add({chatId:ci,sender:cu.email,text:enc,timestamp:firebase.firestore.FieldValue.serverTimestamp(),readAt:null,readBy:null});
-      }
-      for(let i=0;i<imgs.length;i++){
-        await d.collection('messages').add({chatId:ci,sender:cu.email,image:imgs[i].src,timestamp:firebase.firestore.FieldValue.serverTimestamp(),readAt:null,readBy:null});
-      }
-      if(pi){pi.value=''}; typedBuffer='';
-      const prev=document.getElementById('imagePreviewContainer'); if(prev) prev.innerHTML='';
-    }catch(e){showToast('Error','Failed to send','error')}
-  })();
-}
+
+let isFirstSnapshot=true;
 function loadMessages(oue){
   if(um) um();
-  messageIds.clear(); unreadMessageIds.clear();
+  messageIds.clear(); unreadMessageIds.clear(); isFirstSnapshot=true;
   ensureChatScaffold(true);
   const ci=chatId(cu.email,oue);
   const q=d.collection('messages').where('chatId','==',ci);
-  const body=document.getElementById('chatBody'); if(body) body.innerHTML='';
 
-  um=q.onSnapshot(sn=>{
+  um = q.onSnapshot(sn=>{
     const changes=sn.docChanges();
-    const arr=[];
-    changes.forEach(ch=>{
-      if(ch.type==='added'){
-        const dt=ch.doc.data(); dt.id=ch.doc.id;
-        if(!messageIds.has(dt.id)){ messageIds.add(dt.id); arr.push(dt); }
-      }else if(ch.type==='removed'){
-        const row=document.querySelector('.chat-row[data-msg-id="'+ch.doc.id+'"]'); if(row) row.remove();
-        messageIds.delete(ch.doc.id);
-      }else if(ch.type==='modified'){
-        const dt=ch.doc.data(); dt.id=ch.doc.id;
-        const row=document.querySelector('.chat-row[data-msg-id="'+dt.id+'"]');
-        if(row && dt.readAt && dt.readBy && dt.sender===cu.email){
-          const cell=row.querySelector('.cell'); if(cell) cell.textContent=formatTime(dt.readAt.toDate());
+    if(isFirstSnapshot){
+      const arr=[];
+      changes.forEach(ch=>{
+        if(ch.type==='added'){
+          const dt=ch.doc.data(); dt.id=ch.doc.id;
+          messageIds.add(dt.id); arr.push(dt);
         }
-      }
-    });
-    if(arr.length){
-      arr.sort((a,b)=>{if(!a.timestamp||!b.timestamp)return 0;return a.timestamp.toDate()-b.timestamp.toDate()});
+      });
+      arr.sort((a,b)=>{if(!a.timestamp||!b.timestamp) return 0; return a.timestamp.toDate()-b.timestamp.toDate()});
       (async()=>{for(const m of arr){await ddm(m)}})();
-    }else if(!body?.children.length){
-      const empty=document.createElement('div'); empty.className='chat-row';
-      empty.innerHTML='<div class="cell"></div><div class="cell"></div><div class="cell" style="color:#00cc52">[ Start the conversation ]</div>';
-      body?.appendChild(empty);
+      isFirstSnapshot=false;
+    }else{
+      changes.forEach(ch=>{
+        if(ch.type==='added'){
+          const dt=ch.doc.data(); dt.id=ch.doc.id;
+          if(!messageIds.has(dt.id)){ messageIds.add(dt.id); ddm(dt); }
+        }else if(ch.type==='modified'){
+          const dt=ch.doc.data(); dt.id=ch.doc.id;
+          const row=document.querySelector('.chat-row[data-msg-id="'+dt.id+'"]');
+          if(row && dt.readAt && dt.readBy && dt.sender===cu.email){
+            const cell=row.querySelector('.cell'); if(cell) cell.textContent=formatTime(dt.readAt.toDate());
+          }
+        }else if(ch.type==='removed'){
+          const row=document.querySelector('.chat-row[data-msg-id="'+ch.doc.id+'"]'); if(row) row.remove();
+          messageIds.delete(ch.doc.id);
+        }
+      });
     }
   });
 }
 
-/* Presence & colors */
-async function suo(io){ if(!cu) return; try{ await d.collection('users').doc(cu.uid).set({email:cu.email,isOnline:io,lastSeen:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}); }catch(e){} }
-function updateTextColor(color){
-  document.documentElement.style.setProperty('--my-chat-color',color);
-  if(cu) d.collection('users').doc(cu.uid).set({textColor:color},{merge:true}).catch(()=>{});
+/* Send message */
+async function sendMessage(){
+  ensureChatScaffold();
+  const pi=document.getElementById('promptInput');
+  const msg=(typedBuffer || pi.textContent || '').trim();
+  const imgs=document.querySelectorAll('#imagePreviewContainer .ii img');
+  if(!sc){showToast('Error','Select a contact first','error');return}
+  if(!msg && imgs.length===0) return;
+
+  try{
+    const ci=chatId(cu.email,sc);
+    if(msg){
+      const enc=await ec(msg);
+      await d.collection('messages').add({chatId:ci,sender:cu.email,text:enc,timestamp:firebase.firestore.FieldValue.serverTimestamp(),readAt:null,readBy:null});
+    }
+    for(let i=0;i<imgs.length;i++){
+      const src=imgs[i].getAttribute('src');
+      await d.collection('messages').add({chatId:ci,sender:cu.email,image:src,timestamp:firebase.firestore.FieldValue.serverTimestamp(),readAt:null,readBy:null});
+    }
+    pi.textContent=''; typedBuffer='';
+    const prev=document.getElementById('imagePreviewContainer'); if(prev) prev.innerHTML='';
+    focusPrompt();
+  }catch(e){ showToast('Error','Failed to send','error') }
+}
+
+/* Image preview (działa na mobile) */
+function resizeImg(file,maxWidth,quality){
+  maxWidth=maxWidth||800; quality=quality||0.8;
+  return new Promise((resolve)=>{
+    const canvas=document.createElement('canvas'); const ctx=canvas.getContext('2d'); const img=new Image();
+    img.onload=function(){
+      let w=img.width,h=img.height;
+      if(w>h){ if(w>maxWidth){h*=maxWidth/w; w=maxWidth} } else { if(h>maxWidth){w*=maxWidth/h; h=maxWidth} }
+      canvas.width=w; canvas.height=h; ctx.drawImage(img,0,0,w,h);
+      canvas.toBlob(resolve,'image/jpeg',quality);
+    };
+    img.src=URL.createObjectURL(file);
+  });
+}
+async function hu(input){
+  const file=input.files[0]; input.value='';
+  if(!file){return}
+  if(!file.type.startsWith('image/')){ showToast('Error','Select an image file','error'); return }
+  try{
+    let blob=file;
+    if(file.size>1024*1024) blob=await resizeImg(file,800,0.8);
+    const reader=new FileReader();
+    reader.onload=function(e){
+      ensureChatScaffold();
+      const base64=e.target.result;
+      const img=document.createElement('img'); img.src=base64; img.className='hh img-in-msg';
+      img.onclick=()=>oi(base64);
+      const wrap=document.createElement('div'); wrap.className='ii';
+      const btn=document.createElement('button'); btn.className='jj'; btn.textContent='X'; btn.onclick=(ev)=>{ev.stopPropagation(); wrap.remove()};
+      wrap.appendChild(img); wrap.appendChild(btn);
+      const cont=document.getElementById('imagePreviewContainer'); cont.appendChild(wrap);
+      focusPrompt();
+    };
+    reader.readAsDataURL(blob);
+  }catch(e){ showToast('Error','Image processing failed','error') }
+}
+function oi(src){
+  const modal=document.createElement('div');
+  modal.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:#000;display:flex;align-items:center;justify-content:center;z-index:10000;cursor:pointer';
+  const img=document.createElement('img'); img.src=src; img.style.cssText='max-width:90%;max-height:90%;border:1px dashed var(--term-border)';
+  modal.appendChild(img); modal.onclick=()=>modal.remove(); document.body.appendChild(modal);
 }
 
 /* Auth */
@@ -477,6 +525,7 @@ a.onAuthStateChanged(async (u)=>{
     document.getElementById('lf').classList.add('p');
     document.getElementById('ma').classList.remove('p');
     document.getElementById('up').textContent=u.email;
+
     await suo(true);
     try{
       const me=await d.collection('users').doc(u.uid).get();
@@ -490,20 +539,74 @@ a.onAuthStateChanged(async (u)=>{
     window.addEventListener('beforeunload',()=>suo(false));
   }else{
     cu=null; sc=null;
-    if(um){um();um=null}
-    if(allUsersListener){allUsersListener();allUsersListener=null}
+    if(um){um();um=null} if(allUsersListener){allUsersListener();allUsersListener=null}
     if(ht){clearInterval(ht);ht=null}
     document.getElementById('ma').classList.add('p');
     document.getElementById('lf').classList.remove('p');
     initLoginTerminal();
-    document.getElementById('topControls').classList.add('p');
+    const tc=document.getElementById('topControls'); if(tc) tc.classList.add('p');
   }
 });
 async function lo(){ try{ await suo(false); await a.signOut(); }catch(e){} }
 
-/* Emoji outside click */
-document.addEventListener('click',e=>{
-  if(!e.target.closest('.dd')&&!e.target.closest('.ee')){
+/* ====== Login terminal (mobile-friendly, caret OK) ====== */
+let activePrompt=null; // { input, caret }
+function termFreezeActive(){
+  if(!activePrompt) return;
+  try{
+    activePrompt.input.setAttribute('readonly','readonly');
+    activePrompt.input.style.opacity='0.85';
+    if(activePrompt.caret && activePrompt.caret.parentNode) activePrompt.caret.remove();
+  }catch(e){}
+  activePrompt=null;
+}
+function termNewPrompt(label,isPassword,onSubmit){
+  const body=document.getElementById('loginTermBody');
+  termFreezeActive();
+
+  const row=document.createElement('div'); row.className='term-prompt';
+  const lab=document.createElement('span'); lab.className='term-label'; lab.textContent=label;
+  const inp=document.createElement('input'); inp.className='term-input'; inp.type=isPassword?'password':'text';
+  inp.autocomplete='off'; inp.autocapitalize='off'; inp.autocorrect='off'; inp.spellcheck=false; inp.inputMode='text'; inp.setAttribute('enterkeyhint','done');
+  const caret=document.createElement('span'); caret.className='term-caret';
+  row.appendChild(lab); row.appendChild(inp); row.appendChild(caret);
+  body.appendChild(row);
+  body.scrollTop=body.scrollHeight;
+
+  activePrompt={input:inp, caret:caret};
+  inp.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); onSubmit(inp.value) } });
+  setTimeout(()=>{ inp.focus() }, 0);
+}
+function initLoginTerminal(){
+  const body=document.getElementById('loginTermBody'); body.innerHTML=''; activePrompt=null;
+  termNewPrompt('> ', false, onCommandEntered);
+}
+function onCommandEntered(cmd){
+  if(!cmd){ termNewPrompt('> ', false, onCommandEntered); return }
+  const c=cmd.toLowerCase().trim();
+  if(c==='sudo usr login'){
+    termNewPrompt('login: ', false, (email)=>{
+      termNewPrompt('password: ', true, async (pw)=>{
+        try{ await a.signInWithEmailAndPassword(email, pw); }catch(e){}
+        if(!a.currentUser){ termNewPrompt('> ', false, onCommandEntered); }
+      });
+    });
+  }else if(c==='sudo usr register'){
+    termNewPrompt('login: ', false, (email)=>{
+      termNewPrompt('password: ', true, async (pw)=>{
+        try{ await a.createUserWithEmailAndPassword(email, pw); }catch(e){}
+        if(!a.currentUser){ termNewPrompt('> ', false, onCommandEntered); }
+      });
+    });
+  }else{
+    termNewPrompt('> ', false, onCommandEntered);
+  }
+}
+document.addEventListener('DOMContentLoaded', initLoginTerminal);
+
+/* Klik poza emoji zamyka panel */
+document.addEventListener('click', e=>{
+  if(!e.target.closest('.dd') && !e.target.closest('.ee')){
     const ep=document.getElementById('ep'); if(ep && !ep.classList.contains('p')) ep.classList.add('p');
   }
 });
