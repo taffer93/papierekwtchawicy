@@ -75,7 +75,7 @@ body {
 .a {background:var(--term-bg);border-radius:0;box-shadow:none;overflow:hidden;width:100%;max-width:1000px;height:700px;display:flex;border:1px dashed var(--term-border)}
 .b {flex:0 0 280px;background:#000;padding:12px;border-right:1px dashed var(--term-border);display:flex;flex-direction:column;overflow-y:auto;min-width:0;font-family:Consolas,"Courier New",monospace;color:var(--term-fg)}
 .c {flex:1;display:flex;flex-direction:column;min-width:0;background:#000;color:var(--term-fg);font-family:Consolas,"Courier New",monospace}
-.d {background:#000;padding:10px 12px;border-bottom:1px dashed var(--term-border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;color:var(--term-fg);font-weight:700}
+.d {background:#000;padding:10px 12px;border-bottom:1px dashed var(--term-border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;color:var(--term-fg);font-weight:700;position:relative}
 .d h3 {font-family:Consolas,"Courier New",monospace}
 .d .bar-left {display:flex;flex-direction:column}
 .top-controls {display:flex;gap:6px;align-items:center;margin-left:12px}
@@ -129,12 +129,11 @@ body {
 .img-in-msg { max-width:200px; border:1px dashed var(--term-border); cursor:pointer }
 .read-receipt-inline { color:var(--term-success); font-size:10px; margin-left:6px }
 
-/* Prompt wewnątrz tabeli */
+/* Prompt w wierszu tabeli */
 .prompt-line { display:inline-flex; align-items:baseline; gap:6px }
 .prompt-input {
   min-width:10px; outline:none; border:none; background:transparent;
-  color:var(--my-chat-color); caret-color:transparent; /* ukryj natywny caret */
-  white-space:pre-wrap; word-break:break-word;
+  color:var(--my-chat-color); caret-color:transparent; white-space:pre-wrap; word-break:break-word;
 }
 .prompt-caret {
   display:inline-block; width:8px; height:1.2em; background:var(--my-chat-color);
@@ -148,7 +147,7 @@ body {
 .gg {padding:6px;border:1px dashed var(--term-border);background:#000;cursor:pointer;border-radius:0;font-size:14px;color:var(--term-fg);font-family:Consolas,"Courier New",monospace}
 .gg:hover {background:#001b11}
 
-/* Podgląd obrazów w wierszu nad promptem */
+/* Podgląd obrazów */
 .image-preview-container {display:flex;flex-wrap:wrap;gap:6px;width:100%}
 .hh {max-width:200px;border:1px dashed var(--term-border);border-radius:0;cursor:pointer}
 .ii {position:relative;display:inline-block}
@@ -163,28 +162,23 @@ body {
   font-family:Consolas,"Courier New",monospace
 }
 
-/* Login (retro) */
-.r {background:#000;padding:30px;border-radius:0;box-shadow:none;width:100%;max-width:420px;margin:20px;border:1px dashed var(--term-border);color:var(--term-fg);font-family:Consolas,"Courier New",monospace}
-.s {text-align:center;margin-bottom:20px;color:var(--term-fg);font-size:20px;font-weight:700}
-.t {margin-bottom:16px}
-.t label {display:block;margin-bottom:6px;font-weight:700;color:var(--term-fg-dim);font-size:12px}
-.t input {width:100%;padding:10px 12px;border:1px dashed var(--term-border);border-radius:0;font-size:15px;background:#000;color:var(--term-fg);font-family:Consolas,"Courier New",monospace}
-.t input::placeholder {color:var(--term-fg-dim)}
-.u {background:#000;color:var(--term-fg);padding:12px;border:1px dashed var(--term-border);border-radius:0;cursor:pointer;font-weight:700;width:100%;margin:8px 0;font-size:14px}
-.u:hover {background:#001b11}
-.u:disabled {opacity:0.6;cursor:not-allowed}
-.v {border-color:var(--term-success);color:var(--term-success)}
-.w {text-align:center;margin-top:12px;color:var(--term-fg-dim);font-size:12px}
-.x {color:var(--term-danger);margin-top:12px;text-align:center;font-size:13px;padding:10px;background:#1a0000;border:1px dashed var(--term-danger)}
-.y {color:var(--term-success);margin-top:12px;text-align:center;font-size:13px;padding:10px;background:#001b11;border:1px dashed var(--term-success)}
+/* LOGIN: okno terminala */
+.terminal-login {background:#000;padding:0;border-radius:0;box-shadow:none;width:100%;max-width:680px;margin:20px;border:1px dashed var(--term-border);color:var(--term-fg);font-family:Consolas,"Courier New",monospace}
+.term-body {padding:12px; max-height:60vh; overflow:auto}
+.term-line {white-space:pre-wrap; line-height:1.5; color:var(--term-fg)}
+.term-prompt {display:flex; gap:8px; align-items:baseline}
+.term-label {font-weight:700; color:var(--term-fg)}
+.term-input {min-width:10px; outline:none; border:none; background:transparent; color:var(--my-chat-color); caret-color:transparent; white-space:pre-wrap}
+.term-caret {display:inline-block; width:8px; height:1.2em; background:var(--my-chat-color); animation:blockBlink 1s steps(1) infinite}
 
+/* Ukrywacz */
 .p {display:none!important}
 
 /* Scrollbary */
-.ee::-webkit-scrollbar,.aa::-webkit-scrollbar,.b::-webkit-scrollbar,.e::-webkit-scrollbar{width:6px;height:6px}
-.ee::-webkit-scrollbar-track,.aa::-webkit-scrollbar-track,.b::-webkit-scrollbar-track,.e::-webkit-scrollbar-track{background:#000}
-.ee::-webkit-scrollbar-thumb,.aa::-webkit-scrollbar-thumb,.b::-webkit-scrollbar-thumb,.e::-webkit-scrollbar-thumb{background:#00331a}
-.ee::-webkit-scrollbar-thumb:hover,.aa::-webkit-scrollbar-thumb:hover,.b::-webkit-scrollbar-thumb:hover,.e::-webkit-scrollbar-thumb:hover{background:#004d26}
+.ee::-webkit-scrollbar,.aa::-webkit-scrollbar,.b::-webkit-scrollbar,.e::-webkit-scrollbar,.term-body::-webkit-scrollbar{width:6px;height:6px}
+.ee::-webkit-scrollbar-track,.aa::-webkit-scrollbar-track,.b::-webkit-scrollbar-track,.e::-webkit-scrollbar-track,.term-body::-webkit-scrollbar-track{background:#000}
+.ee::-webkit-scrollbar-thumb,.aa::-webkit-scrollbar-thumb,.b::-webkit-scrollbar-thumb,.e::-webkit-scrollbar-thumb,.term-body::-webkit-scrollbar-thumb{background:#00331a}
+.ee::-webkit-scrollbar-thumb:hover,.aa::-webkit-scrollbar-thumb:hover,.b::-webkit-scrollbar-thumb:hover,.e::-webkit-scrollbar-thumb:hover,.term-body::-webkit-scrollbar-thumb:hover{background:#004d26}
 
 /* Mobile */
 @media(max-width:768px){
@@ -193,7 +187,7 @@ body {
   .b{flex:none;height:35%;border-right:none;border-bottom:1px dashed var(--term-border);padding:10px;overflow-y:auto}
   .c{flex:1;min-height:0;display:flex;flex-direction:column}
   .d{padding:10px 12px}
-  .e{flex:1;min-height:0;padding:10px;overflow-y:auto;-webkit-overflow-scrolling:touch; padding-bottom:160px} /* miejsce na prompt */
+  .e{flex:1;min-height:0;padding:10px;overflow-y:auto;-webkit-overflow-scrolling:touch; padding-bottom:160px} /* miejsce na wiersz promptu */
   .ee{position:fixed;top:64px;right:12px;left:12px;width:auto;max-height:200px}
   .toast-notification{left:12px;right:12px;transform:none}
 }
@@ -234,29 +228,12 @@ body {
   <div id="calcMessage"></div>
 </div>
 
-<!-- Logowanie -->
-<div class="r p" id="lf">
-  <h2 class="s">== Logowanie ==</h2>
-  <div class="t">
-    <label>Email</label>
-    <input type="email" id="em" placeholder="twoj@email.com" autocomplete="email">
-  </div>
-  <div class="t">
-    <label>Haslo</label>
-    <input type="password" id="pw" placeholder="........" autocomplete="current-password">
-  </div>
-  <button class="u" id="loginBtn" onclick="lg()">[ Zaloguj ]</button>
-  <button class="u v" id="registerBtn" onclick="rg()">[ Utworz konto ]</button>
-  <div id="am"></div>
-  <div class="w">[ Bezpieczne polaczenie ]</div>
-  <div style="margin-top:15px;text-align:center">
-    <small style="color:#666;font-size:11px">
-      Status: <span id="firebaseStatus" style="color:#ef4444">X Ladowanie...</span>
-    </small>
-  </div>
+<!-- Login terminal -->
+<div class="terminal-login p" id="lf">
+  <div class="term-body" id="loginTermBody"></div>
 </div>
 
-<!-- Aplikacja -->
+<!-- Aplikacja (czat) -->
 <div class="a p" id="ma">
   <div class="b">
     <div class="bb">
@@ -304,9 +281,7 @@ body {
         <div class="ee p" id="ep"><div class="ff" id="eg"></div></div>
       </div>
     </div>
-    <div class="e" id="ms">
-      <!-- Struktura tabeli będzie wstawiana dynamicznie -->
-    </div>
+    <div class="e" id="ms"><!-- chat tabela dynamicznie --></div>
   </div>
 </div>
 
@@ -354,9 +329,8 @@ window.dismissInstall = function(){
   if(p)p.style.display='none'
 };
 
-/* Kalkulator (bez zmian) */
-let calcExpression='';
-let calcDisplay=null;
+/* Kalkulator (bez zmian funkcjonalnie) */
+let calcExpression=''; let calcDisplay=null;
 window.appendCalc = function(value){
   if(!calcDisplay)calcDisplay=document.getElementById('calcDisplay');
   if(calcExpression==='0'||calcExpression==='')calcExpression='';
@@ -381,6 +355,7 @@ window.calculateCalc = function(){
       setTimeout(function(){
         document.getElementById('calcScreen').classList.add('p');
         document.getElementById('lf').classList.remove('p');
+        initLoginTerminal(); // uruchom terminal logowania
       },3000);
     }
     calcExpression=result.toString();
@@ -419,20 +394,8 @@ try {
 }
 
 /* --------- CZAT --------- */
-let cu=null,sc=null,um=null,ht=null,es=false,unread={},ot='Kalkulator',nf=false,lastMessage=null,encryptionKey=null,messageIds=new Set(),audioContext=null,scrollTimeout=null,shouldAutoScroll=true,renderQueue=[],isRendering=false,isFirstSnapshot=true,allUsersListener=null,unreadMessageIds=new Set();
+let cu=null,sc=null,um=null,ht=null,unread={},ot='Kalkulator',nf=false,lastMessage=null,encryptionKey=null,messageIds=new Set(),audioContext=null,scrollTimeout=null,shouldAutoScroll=true,renderQueue=[],isRendering=false,isFirstSnapshot=true,allUsersListener=null,unreadMessageIds=new Set();
 let typedBuffer=''; /* tekst promptu */
-
-const userColors = {}; // email -> color
-const DEFAULT_USER_COLOR = '#00ff66';
-const COLOR_OPTIONS = ['#00ff66','#ffbf00','#00ffff','#ff00ff','#e0e0e0'];
-
-const emoticons = [
-  ':)', ':-)', ':D', ':-D', ';)', ';-)', ':P', ':-P', 'XD', 'xD',
-  ':(', ':-(', ":'(", ':O', ':-O', ':/', ':-/', ':|', ':-|', ':]',
-  ':[', ':3', '^^', '^-^', '^_^', '-_-', 'T_T', '>.<', '>:)', '>:(',
-  '8)', 'B)', '8-)', 'B-)', ':@', ':-@', 'o_O', 'O_o', ':^)', ':-\\',
-  '=_=', 'o.O', 'O.o', ':>', '<3', '</3', ':]', '[:', ':*', ':^)'
-];
 
 /* Dźwięk i toasty */
 function playNotificationSound(){
@@ -490,7 +453,7 @@ function snt(message,sender){
   if(lastMessage!==message){playNotificationSound();lastMessage=message}
 }
 
-/* Crypto (jak było) */
+/* Crypto */
 async function generateKey(password){
   const encoder=new TextEncoder();
   const keyMaterial=await crypto.subtle.importKey('raw',encoder.encode(password),'PBKDF2',false,['deriveBits','deriveKey']);
@@ -519,24 +482,14 @@ async function dc(encryptedText){
 }
 function escapeHtml(text){const div=document.createElement('div');div.textContent=text;return div.innerHTML}
 
-/* Scroll helpers */
-function isUserAtBottom(){
-  const md=document.getElementById('ms');
-  if(!md)return true;
-  return md.scrollHeight - md.scrollTop - md.clientHeight < 100;
-}
-function scrollToBottom(force){
-  if(scrollTimeout)clearTimeout(scrollTimeout);
-  scrollTimeout=setTimeout(function(){
-    const md=document.getElementById('ms');
-    if(!md)return;
-    if(force || shouldAutoScroll || isUserAtBottom()){
-      md.scrollTop=md.scrollHeight;
-    }
-  },50);
-}
-
-/* Emotki (ASCII) panel */
+/* Emotki (ASCII) */
+const emoticons = [
+  ':)', ':-)', ':D', ':-D', ';)', ';-)', ':P', ':-P', 'XD', 'xD',
+  ':(', ':-(', ":'(", ':O', ':-O', ':/', ':-/', ':|', ':-|', ':]',
+  ':[', ':3', '^^', '^-^', '^_^', '-_-', 'T_T', '>.<', '>:)', '>:(',
+  '8)', 'B)', '8-)', 'B-)', ':@', ':-@', 'o_O', 'O_o', ':^)', ':-\\',
+  '=_=', 'o.O', 'O.o', ':>', '<3', '</3', ':]', '[:', ':*', ':^)'
+];
 let es=false;
 window.toggleEmoji = function(){
   const ep=document.getElementById('ep');
@@ -639,87 +592,81 @@ window.oi = function(src){
   document.body.appendChild(modal)
 };
 
-/* Login */
-function sam(m,ie){const dv=document.getElementById('am');dv.innerHTML=ie?'<div class="x">'+escapeHtml(m)+'</div>':'<div class="y">'+escapeHtml(m)+'</div>';setTimeout(function(){dv.innerHTML=''},5000)}
-window.lg = async function(){
-  const e=document.getElementById('em').value.trim();
-  const p=document.getElementById('pw').value;
-  const loginBtn=document.getElementById('loginBtn');
-  if(!e||!p){ sam('Wypelnij wszystkie pola',true); return }
-  if(!a){ alert('Blad polaczenia. Odswiez strone.'); return }
-  loginBtn.disabled=true; loginBtn.textContent='Logowanie...';
+/* Kolory */
+const userColors = {}; // email -> color
+const DEFAULT_USER_COLOR = '#00ff66';
+const COLOR_OPTIONS = ['#00ff66','#ffbf00','#00ffff','#ff00ff','#e0e0e0'];
+function getMyColor(){
+  const val=getComputedStyle(document.documentElement).getPropertyValue('--my-chat-color').trim();
+  return val || DEFAULT_USER_COLOR;
+}
+window.updateTextColor = async function(colorCode){
   try{
-    await a.signInWithEmailAndPassword(e,p);
-    sam('Zalogowano'); showToast('OK','Zalogowano','success')
-  }catch(er){
-    let msg='Blad logowania';
-    if(er.code==='auth/user-not-found')msg='Nie znaleziono uzytkownika';
-    else if(er.code==='auth/wrong-password')msg='Nieprawidlowe haslo';
-    else if(er.code==='auth/invalid-email')msg='Nieprawidlowy email';
-    else if(er.code==='auth/invalid-credential')msg='Nieprawidlowe dane logowania';
-    else if(er.code==='auth/too-many-requests')msg='Zbyt wiele prob. Sprobuj pozniej';
-    else if(er.code==='auth/network-request-failed')msg='Brak polaczenia z internetem';
-    sam(msg,true); showToast('Blad',msg,'error')
-  }finally{
-    loginBtn.disabled=false; loginBtn.textContent='[ Zaloguj ]'
+    if(!cu)return;
+    if(!COLOR_OPTIONS.includes(colorCode)) colorCode = DEFAULT_USER_COLOR;
+    document.documentElement.style.setProperty('--my-chat-color', colorCode);
+    await d.collection('users').doc(cu.uid).set({ textColor: colorCode }, { merge:true });
+    showToast('OK','Kolor zaktualizowany','success');
+    const pi=document.getElementById('promptInput'); if(pi){ pi.style.color=colorCode; }
+  }catch(e){
+    showToast('Blad','Nie udalo sie zapisac koloru','error');
   }
-};
-window.rg = async function(){
-  const e=document.getElementById('em').value.trim();
-  const p=document.getElementById('pw').value;
-  const regBtn=document.getElementById('registerBtn');
-  if(!e||!p){ sam('Wypelnij wszystkie pola',true); return }
-  if(p.length<6){ sam('Haslo min. 6 znakow',true); return }
-  if(!a){ alert('Blad polaczenia. Odswiez strone.'); return }
-  regBtn.disabled=true; regBtn.textContent='Tworzenie...';
-  try{
-    await a.createUserWithEmailAndPassword(e,p);
-    sam('Konto utworzone'); showToast('OK','Konto utworzone','success')
-  }catch(er){
-    let msg='Blad rejestracji';
-    if(er.code==='auth/email-already-in-use')msg='Email juz uzywany';
-    else if(er.code==='auth/weak-password')msg='Haslo za slabe';
-    else if(er.code==='auth/invalid-email')msg='Nieprawidlowy email';
-    sam(msg,true); showToast('Blad',msg,'error')
-  }finally{
-    regBtn.disabled=false; regBtn.textContent='[ Utworz konto ]'
-  }
-};
-window.lo = async function(){
-  try{
-    if(ht)clearInterval(ht);
-    if(um)um();
-    if(allUsersListener)allUsersListener();
-    await suo(false);
-    await a.signOut();
-    cu=null; sc=null; unread={}; encryptionKey=null;
-    messageIds.clear(); unreadMessageIds.clear(); renderQueue=[]; isRendering=false; isFirstSnapshot=true;
-    typedBuffer='';
-    const md=document.getElementById('ms'); if(md) md.innerHTML='';
-    document.getElementById('ma').classList.add('p');
-    document.getElementById('lf').classList.add('p');
-    document.getElementById('calcScreen').classList.remove('p');
-    document.getElementById('em').value=''; document.getElementById('pw').value='';
-    showToast('Wylogowano','Do zobaczenia','success')
-  }catch(error){ showToast('Blad','Blad wylogowania','error') }
 };
 
-/* Użytkownik → wybór rozmówcy */
-function su(ue,io){
-  document.querySelectorAll('.g').forEach(function(i){i.classList.remove('active')});
-  const userEl=document.querySelector('[data-email="'+ue+'"]');
-  if(userEl)userEl.classList.add('active');
-  sc=ue; unread[ue]=0; uur();
-  const un=ue.split('@')[0];
-  document.getElementById('ct').textContent='== '+un+' ==';
-  const cs=document.getElementById('cs');
-  cs.textContent=io?'[ ONLINE ]':'[ OFFLINE ]';
-  cs.style.color = io ? 'var(--term-success)' : 'var(--term-fg-dim)';
-  lm(ue);
-  markAllAsRead();
+/* Użytkownicy */
+function lu(){
+  const ur=d.collection('users');
+  allUsersListener=ur.onSnapshot(function(sn){
+    const onlineUsers=[]; const offlineUsers=[];
+    sn.forEach(function(dc){
+      const dt=dc.data();
+      if(dt.email!==cu.email){
+        const item={email:dt.email,isOnline:dt.isOnline||false,lastSeen:dt.lastSeen,textColor:dt.textColor||DEFAULT_USER_COLOR};
+        userColors[item.email]=item.textColor;
+        if(item.isOnline)onlineUsers.push(item); else offlineUsers.push(item)
+      }else{
+        if(dt.textColor){ document.documentElement.style.setProperty('--my-chat-color', dt.textColor); const sel=document.getElementById('textColorSelect'); if(sel) sel.value=dt.textColor; }
+      }
+    });
+    document.getElementById('onlineCount').textContent=onlineUsers.length;
+    document.getElementById('offlineCount').textContent=offlineUsers.length;
+
+    const ulOnline=document.getElementById('ulOnline'); ulOnline.innerHTML='';
+    if(onlineUsers.length===0){ ulOnline.innerHTML='<div style="text-align:center;color:var(--term-fg-dim);font-size:12px;padding:10px">Brak uzytkownikow online</div>' }
+    else{
+      onlineUsers.forEach(function(user){
+        const dv=document.createElement('div'); dv.className='g'; dv.setAttribute('data-email',user.email);
+        dv.onclick=function(){su(user.email,user.isOnline)};
+        const badgeHtml=unread[user.email]>0?'<span class="user-unread-badge">'+(unread[user.email]>9?'9+':unread[user.email])+'</span>':'';
+        dv.innerHTML='<div class="h" style="color:'+user.textColor+'">&gt;&gt; '+escapeHtml(user.email.split('@')[0])+badgeHtml+'</div><div class="i">[ ONLINE ]</div>';
+        ulOnline.appendChild(dv)
+      })
+    }
+    const ulOffline=document.getElementById('ulOffline'); ulOffline.innerHTML='';
+    if(offlineUsers.length===0){ ulOffline.innerHTML='<div style="text-align:center;color:var(--term-fg-dim);font-size:12px;padding:10px">Wszyscy online!</div>' }
+    else{
+      offlineUsers.forEach(function(user){
+        const dv=document.createElement('div'); dv.className='g'; dv.setAttribute('data-email',user.email);
+        dv.onclick=function(){su(user.email,user.isOnline)};
+        let lastSeenText='Dawno temu';
+        if(user.lastSeen){
+          const dts=user.lastSeen.toDate(); const now=new Date();
+          const diffMs=now-dts; const diffMins=Math.floor(diffMs/60000);
+          if(diffMins<1)lastSeenText='Przed chwila';
+          else if(diffMins<60)lastSeenText=diffMins+' min temu';
+          else if(diffMins<1440)lastSeenText=Math.floor(diffMins/60)+' godz. temu';
+          else lastSeenText=Math.floor(diffMins/1440)+' dni temu'
+        }
+        const badgeHtml=unread[user.email]>0?'<span class="user-unread-badge">'+(unread[user.email]>9?'9+':unread[user.email])+'</span>':'';
+        dv.innerHTML='<div class="h" style="color:'+user.textColor+'">&gt;&gt; '+escapeHtml(user.email.split('@')[0])+badgeHtml+'</div><div class="i">[ '+escapeHtml(lastSeenText)+' ]</div>';
+        ulOffline.appendChild(dv)
+      })
+    }
+    uur()
+  });
+  countUnreadMessages();
 }
 
-/* Badge nieprzeczytanych */
 function uur(){
   Object.keys(unread).forEach(function(email){
     const userEl=document.querySelector('[data-email="'+email+'"]');
@@ -739,8 +686,6 @@ function uur(){
   });
   ut();
 }
-
-/* Zliczanie nieprzeczytanych (prosty wariant) */
 async function countUnreadMessages(){
   if(!cu)return;
   try{
@@ -759,7 +704,7 @@ async function countUnreadMessages(){
   }catch(e){}
 }
 
-/* Chat tabela — scaffold zawsze utrzymany (nie wraca do starych "bubbles") */
+/* Chat tabela — scaffold */
 function ensureChatScaffold(reset){
   const ms=document.getElementById('ms');
   let grid=document.getElementById('chatGrid');
@@ -792,24 +737,18 @@ function ensureChatScaffold(reset){
 
     const pi=document.getElementById('promptInput');
     pi.addEventListener('keydown', function(e){
-      if(e.key==='Enter' && !e.shiftKey){
-        e.preventDefault(); sm();
-      }
+      if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sm(); }
     });
     pi.addEventListener('input', function(){ typedBuffer=this.textContent; });
 
-    // focus do prompt po kliknięciu okna czatu
     ms.addEventListener('click', function(ev){
       if(!ev.target.closest('#promptInput') && !ev.target.closest('.dd') && !ev.target.closest('#ep')){
         const el=document.getElementById('promptInput'); if(el) el.focus();
       }
     });
   }else{
-    // aktualizacja nagłówków i czyszczenie
-    const hdr=document.getElementById('chatHeaderUser');
-    if(hdr) hdr.textContent = uname;
-    const pl=document.getElementById('promptUserLabel');
-    if(pl && cu) pl.textContent = cu.email.split('@')[0]+':';
+    const hdr=document.getElementById('chatHeaderUser'); if(hdr) hdr.textContent = uname;
+    const pl=document.getElementById('promptUserLabel'); if(pl && cu) pl.textContent = cu.email.split('@')[0]+':';
     if(reset){
       const body=document.getElementById('chatBody'); if(body) body.innerHTML='';
       const prev=document.getElementById('imagePreviewContainer'); if(prev) prev.innerHTML='';
@@ -819,7 +758,6 @@ function ensureChatScaffold(reset){
   }
   scrollToBottom(true);
 }
-
 function formatTime(date){
   if(!date) return '—';
   const d=new Date(date);
@@ -877,113 +815,21 @@ window.sm = async function(){
   }catch(error){ showToast('Blad','Blad wysylania','error') }
 };
 
-/* Presence i lista użytkowników */
-async function suo(io){ if(!cu)return; try{const ur=d.collection('users').doc(cu.uid);await ur.set({email:cu.email,isOnline:io,lastSeen:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})}catch(e){} }
-function lu(){
-  const ur=d.collection('users');
-  allUsersListener=ur.onSnapshot(function(sn){
-    const onlineUsers=[]; const offlineUsers=[];
-    sn.forEach(function(dc){
-      const dt=dc.data();
-      if(dt.email!==cu.email){
-        const item={email:dt.email,isOnline:dt.isOnline||false,lastSeen:dt.lastSeen,textColor:dt.textColor||DEFAULT_USER_COLOR};
-        userColors[item.email]=item.textColor;
-        if(item.isOnline)onlineUsers.push(item); else offlineUsers.push(item)
-      }else{
-        if(dt.textColor){ document.documentElement.style.setProperty('--my-chat-color', dt.textColor); const sel=document.getElementById('textColorSelect'); if(sel) sel.value=dt.textColor; }
-      }
-    });
-    document.getElementById('onlineCount').textContent=onlineUsers.length;
-    document.getElementById('offlineCount').textContent=offlineUsers.length;
-
-    const ulOnline=document.getElementById('ulOnline'); ulOnline.innerHTML='';
-    if(onlineUsers.length===0){ ulOnline.innerHTML='<div style="text-align:center;color:var(--term-fg-dim);font-size:12px;padding:10px">Brak uzytkownikow online</div>' }
-    else{
-      onlineUsers.forEach(function(user){
-        const dv=document.createElement('div'); dv.className='g'; dv.setAttribute('data-email',user.email);
-        dv.onclick=function(){su(user.email,user.isOnline)};
-        const badgeHtml=unread[user.email]>0?'<span class="user-unread-badge">'+(unread[user.email]>9?'9+':unread[user.email])+'</span>':'';
-        dv.innerHTML='<div class="h" style="color:'+user.textColor+'">&gt;&gt; '+escapeHtml(user.email.split('@')[0])+badgeHtml+'</div><div class="i">[ ONLINE ]</div>';
-        ulOnline.appendChild(dv)
-      })
-    }
-    const ulOffline=document.getElementById('ulOffline'); ulOffline.innerHTML='';
-    if(offlineUsers.length===0){ ulOffline.innerHTML='<div style="text-align:center;color:var(--term-fg-dim);font-size:12px;padding:10px">Wszyscy online!</div>' }
-    else{
-      offlineUsers.forEach(function(user){
-        const dv=document.createElement('div'); dv.className='g'; dv.setAttribute('data-email',user.email);
-        dv.onclick=function(){su(user.email,user.isOnline)};
-        let lastSeenText='Dawno temu';
-        if(user.lastSeen){
-          const dts=user.lastSeen.toDate(); const now=new Date();
-          const diffMs=now-dts; const diffMins=Math.floor(diffMs/60000);
-          if(diffMins<1)lastSeenText='Przed chwila';
-          else if(diffMins<60)lastSeenText=diffMins+' min temu';
-          else if(diffMins<1440)lastSeenText=Math.floor(diffMins/60)+' godz. temu';
-          else lastSeenText=Math.floor(diffMins/1440)+' dni temu'
-        }
-        const badgeHtml=unread[user.email]>0?'<span class="user-unread-badge">'+(unread[user.email]>9?'9+':unread[user.email])+'</span>':'';
-        dv.innerHTML='<div class="h" style="color:'+user.textColor+'">&gt;&gt; '+escapeHtml(user.email.split('@')[0])+badgeHtml+'</div><div class="i">[ '+escapeHtml(lastSeenText)+' ]</div>';
-        ulOffline.appendChild(dv)
-      })
-    }
-    uur()
-  });
-  countUnreadMessages();
+/* Użytkownik → wybór rozmówcy */
+function su(ue,io){
+  document.querySelectorAll('.g').forEach(function(i){i.classList.remove('active')});
+  const userEl=document.querySelector('[data-email="'+ue+'"]');
+  if(userEl)userEl.classList.add('active');
+  sc=ue; unread[ue]=0; uur();
+  const un=ue.split('@')[0];
+  document.getElementById('ct').textContent='== '+un+' ==';
+  const cs=document.getElementById('cs');
+  cs.textContent=io?'[ ONLINE ]':'[ OFFLINE ]';
+  cs.style.color = io ? 'var(--term-success)' : 'var(--term-fg-dim)';
+  lm(ue); markAllAsRead();
 }
 
-/* Auth state */
-if (a && typeof a.onAuthStateChanged === 'function') {
-a.onAuthStateChanged(async function(u){
-  if(u){
-    cu=u;
-    document.getElementById('calcScreen').classList.add('p');
-    document.getElementById('lf').classList.add('p');
-    document.getElementById('ma').classList.remove('p');
-
-    document.getElementById('up').textContent=u.email;
-    await suo(true);
-    // kolor użytkownika
-    try{
-      const me=await d.collection('users').doc(u.uid).get();
-      let color=DEFAULT_USER_COLOR;
-      if(me.exists && me.data().textColor){ color=me.data().textColor; }
-      else { await d.collection('users').doc(u.uid).set({ textColor: color }, { merge:true }); }
-      document.documentElement.style.setProperty('--my-chat-color', color);
-      const sel=document.getElementById('textColorSelect'); if(sel) sel.value=color;
-    }catch(e){}
-
-    ensureChatScaffold(true);
-    lu();
-    rn();
-    ht=setInterval(function(){suo(true)},30000);
-    window.addEventListener('beforeunload',function(){suo(false)})
-  }else{
-    cu=null;
-    document.getElementById('ma').classList.add('p');
-    document.getElementById('lf').classList.add('p');
-    document.getElementById('calcScreen').classList.remove('p');
-    if(ht){clearInterval(ht);ht=null}
-    if(um){um();um=null}
-    if(allUsersListener){allUsersListener();allUsersListener=null}
-  }
-});
-}
-
-/* Zmiana widoczności */
-document.addEventListener('click',function(e){
-  if(!e.target.closest('.dd')&&!e.target.closest('.ee')){
-    const ep=document.getElementById('ep');if(ep&&es){ep.classList.add('p');es=false}
-  }
-});
-document.addEventListener('visibilitychange',function(){
-  if(cu){
-    if(document.hidden){ suo(false) }
-    else { suo(true); if(sc){ markAllAsRead() } }
-  }
-});
-
-/* Ładowanie wiadomości (zachowuje tabelę – nie usuwa scaffoldu) */
+/* Ładowanie wiadomości (utrzymuje tabelę) */
 async function lm(oue){
   if(um)um();
   messageIds.clear(); unreadMessageIds.clear(); renderQueue=[]; isRendering=false; shouldAutoScroll=true; isFirstSnapshot=true;
@@ -1034,11 +880,10 @@ async function lm(oue){
     }
   });
 }
-
 function updateMessageReadStatus(messageId,data){
   const row=document.querySelector('.chat-row[data-msg-id="'+messageId+'"]');
   if(!row)return;
-  if(data.sender!==cu.email)return; // tylko dla moich wiadomości pokazuj READ
+  if(data.sender!==cu.email)return;
   const readCell=row.querySelector('.cell.read');
   if(!readCell)return;
   if(data.readAt&&data.readBy){
@@ -1048,7 +893,7 @@ function updateMessageReadStatus(messageId,data){
   }
 }
 
-/* Rysuj wiersz wiadomości w tabeli */
+/* Rysuj wiersz wiadomości */
 async function ddm(dt){
   ensureChatScaffold();
   const body=document.getElementById('chatBody');
@@ -1059,7 +904,6 @@ async function ddm(dt){
   row.className='chat-row';
   row.setAttribute('data-msg-id',dt.id);
 
-  // READ (tylko dla moich wiadomości sensownie pokazuje datę)
   const readCell=document.createElement('div');
   readCell.className='cell read';
   if(dt.sender=== (cu?cu.email:'' ) && dt.readAt){
@@ -1068,12 +912,10 @@ async function ddm(dt){
     readCell.textContent='—';
   }
 
-  // SENT
   const sentCell=document.createElement('div');
   sentCell.className='cell sent';
   sentCell.textContent=dt.timestamp?formatTime(dt.timestamp.toDate()):'Teraz';
 
-  // MSG
   const msgCell=document.createElement('div');
   msgCell.className='cell msg';
 
@@ -1092,7 +934,6 @@ async function ddm(dt){
 
   msgCell.innerHTML = inner;
 
-  // Wstaw do BODY (przed wierszem preview/prompt)
   body.appendChild(row);
   row.appendChild(readCell);
   row.appendChild(sentCell);
@@ -1101,26 +942,245 @@ async function ddm(dt){
   scrollToBottom(true);
 }
 
-/* Kolor czcionki użytkownika */
-function getMyColor(){
-  const val=getComputedStyle(document.documentElement).getPropertyValue('--my-chat-color').trim();
-  return val || DEFAULT_USER_COLOR;
-}
-window.updateTextColor = async function(colorCode){
-  try{
-    if(!cu)return;
-    if(!COLOR_OPTIONS.includes(colorCode)) colorCode = DEFAULT_USER_COLOR;
-    document.documentElement.style.setProperty('--my-chat-color', colorCode);
-    await d.collection('users').doc(cu.uid).set({ textColor: colorCode }, { merge:true });
-    showToast('OK','Kolor zaktualizowany','success');
-    // prompt na żywo
-    const pi=document.getElementById('promptInput'); if(pi){ pi.style.color=colorCode; }
-  }catch(e){
-    showToast('Blad','Nie udalo sie zapisac koloru','error');
+/* AUTH STATE */
+if (a && typeof a.onAuthStateChanged === 'function') {
+a.onAuthStateChanged(async function(u){
+  if(u){
+    cu=u;
+    document.getElementById('calcScreen').classList.add('p');
+    document.getElementById('lf').classList.add('p');
+    document.getElementById('ma').classList.remove('p');
+
+    document.getElementById('up').textContent=u.email;
+    await suo(true);
+    try{
+      const me=await d.collection('users').doc(u.uid).get();
+      let color=DEFAULT_USER_COLOR;
+      if(me.exists && me.data().textColor){ color=me.data().textColor; }
+      else { await d.collection('users').doc(u.uid).set({ textColor: color }, { merge:true }); }
+      document.documentElement.style.setProperty('--my-chat-color', color);
+      const sel=document.getElementById('textColorSelect'); if(sel) sel.value=color;
+    }catch(e){}
+
+    ensureChatScaffold(true);
+    lu();
+    rn();
+    ht=setInterval(function(){suo(true)},30000);
+    window.addEventListener('beforeunload',function(){suo(false)})
+  }else{
+    cu=null;
+    document.getElementById('ma').classList.add('p');
+    document.getElementById('lf').classList.add('p');
+    document.getElementById('calcScreen').classList.remove('p');
+    if(ht){clearInterval(ht);ht=null}
+    if(um){um();um=null}
+    if(allUsersListener){allUsersListener();allUsersListener=null}
   }
+});
+}
+
+/* Presence */
+async function suo(io){ if(!cu)return; try{const ur=d.collection('users').doc(cu.uid);await ur.set({email:cu.email,isOnline:io,lastSeen:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})}catch(e){} }
+
+/* Klik poza emotki */
+document.addEventListener('click',function(e){
+  if(!e.target.closest('.dd')&&!e.target.closest('.ee')){
+    const ep=document.getElementById('ep');if(ep&&es){ep.classList.add('p');es=false}
+  }
+});
+
+/* --------- LOGIN TERMINAL --------- */
+let loginTermState='await_command';
+let loginBuffer=''; let passwordBuffer=''; let registerMode=false;
+
+function initLoginTerminal(){
+  const lf=document.getElementById('lf');
+  if(!lf) return;
+  const body=document.getElementById('loginTermBody');
+  body.innerHTML='';
+  termPrint('retro-shell v1.0');
+  termPrint('Wpisz: sudo usr login  lub  sudo usr register');
+  termNewPrompt('> ', false, onCommandEntered);
+}
+
+function termPrint(text){
+  const body=document.getElementById('loginTermBody');
+  const line=document.createElement('div');
+  line.className='term-line';
+  line.textContent=text;
+  body.appendChild(line);
+  body.scrollTop = body.scrollHeight;
+}
+
+function termNewPrompt(label, isPassword, onSubmit){
+  const body=document.getElementById('loginTermBody');
+  const row=document.createElement('div'); row.className='term-prompt';
+  const lab=document.createElement('span'); lab.className='term-label'; lab.textContent=label;
+  const inp=document.createElement('span'); inp.className='term-input'; inp.contentEditable='true'; inp.spellcheck=false;
+  const caret=document.createElement('span'); caret.className='term-caret';
+  row.appendChild(lab); row.appendChild(inp); row.appendChild(caret);
+  body.appendChild(row);
+  body.scrollTop = body.scrollHeight;
+
+  let pwBuf='';
+  inp.addEventListener('keydown', function(e){
+    if(isPassword){
+      if(e.key==='Enter'){
+        e.preventDefault();
+        onSubmit(pwBuf);
+        return;
+      }
+      if(e.key==='Backspace'){
+        e.preventDefault();
+        pwBuf = pwBuf.slice(0,-1);
+        inp.textContent = '*'.repeat(pwBuf.length);
+        placeCaretAtEnd(inp);
+        return;
+      }
+      if(e.key.length===1 && !e.ctrlKey && !e.metaKey){
+        e.preventDefault();
+        pwBuf += e.key;
+        inp.textContent = '*'.repeat(pwBuf.length);
+        placeCaretAtEnd(inp);
+        return;
+      }
+      if(e.key==='v' && (e.ctrlKey||e.metaKey)){ e.preventDefault(); return; }
+    }else{
+      if(e.key==='Enter'){
+        e.preventDefault();
+        onSubmit(inp.textContent.trim());
+      }
+    }
+  });
+  // focus
+  setTimeout(()=>{ inp.focus(); placeCaretAtEnd(inp); }, 0);
+
+  // helper do caret
+  function placeCaretAtEnd(el){
+    const range=document.createRange(); range.selectNodeContents(el);
+    range.collapse(false); const sel=window.getSelection();
+    sel.removeAllRanges(); sel.addRange(range);
+  }
+
+  // zwróć funkcję do pobrania bufora hasła, gdy potrzeba
+  return { getPassword: ()=>pwBuf };
+}
+
+function onCommandEntered(cmd){
+  if(!cmd){ termNewPrompt('> ', false, onCommandEntered); return; }
+  const c = cmd.toLowerCase();
+  if(c==='sudo usr login'){
+    registerMode=false;
+    termPrint('');
+    termNewPrompt('login: ', false, function(loginVal){
+      loginBuffer=loginVal;
+      termNewPrompt('password: ', true, async function(pwVal){
+        passwordBuffer=pwVal;
+        await doLogin(loginBuffer, passwordBuffer);
+      });
+    });
+  }else if(c==='sudo usr register'){
+    registerMode=true;
+    termPrint('');
+    termNewPrompt('login: ', false, function(loginVal){
+      loginBuffer=loginVal;
+      termNewPrompt('password: ', true, async function(pwVal){
+        passwordBuffer=pwVal;
+        await doRegister(loginBuffer, passwordBuffer);
+      });
+    });
+  }else{
+    termPrint('Nieznana komenda. Uzyj: sudo usr login  lub  sudo usr register');
+    termNewPrompt('> ', false, onCommandEntered);
+  }
+}
+
+async function doLogin(email, password){
+  if(!a){ termPrint('Blad: brak polaczenia z auth'); termNewPrompt('> ', false, onCommandEntered); return; }
+  try{
+    await a.signInWithEmailAndPassword(email, password);
+    termPrint('OK: zalogowano'); // dalej przejmie onAuthStateChanged
+  }catch(er){
+    let msg='Blad logowania';
+    if(er.code==='auth/user-not-found')msg='Nie znaleziono uzytkownika';
+    else if(er.code==='auth/wrong-password')msg='Nieprawidlowe haslo';
+    else if(er.code==='auth/invalid-email')msg='Nieprawidlowy email';
+    else if(er.code==='auth/too-many-requests')msg='Zbyt wiele prob';
+    else if(er.code==='auth/network-request-failed')msg='Brak internetu';
+    termPrint('ERR: '+msg);
+    termNewPrompt('> ', false, onCommandEntered);
+  }
+}
+async function doRegister(email, password){
+  if(!a){ termPrint('Blad: brak polaczenia z auth'); termNewPrompt('> ', false, onCommandEntered); return; }
+  if(!email || !password){ termPrint('ERR: podaj login i haslo'); termNewPrompt('> ', false, onCommandEntered); return; }
+  try{
+    await a.createUserWithEmailAndPassword(email, password);
+    termPrint('OK: konto utworzone');
+  }catch(er){
+    let msg='Blad rejestracji';
+    if(er.code==='auth/email-already-in-use')msg='Email juz uzywany';
+    else if(er.code==='auth/weak-password')msg='Haslo za slabe';
+    else if(er.code==='auth/invalid-email')msg='Nieprawidlowy email';
+    termPrint('ERR: '+msg);
+    termNewPrompt('> ', false, onCommandEntered);
+  }
+}
+
+/* Presence i widoczność */
+document.addEventListener('visibilitychange',function(){
+  if(cu){
+    if(document.hidden){ suo(false) }
+    else { suo(true); if(sc){ markAllAsRead() } }
+  }
+});
+
+/* Render wiadomości — helpery */
+function updateMessageReadStatus(messageId,data){
+  const row=document.querySelector('.chat-row[data-msg-id="'+messageId+'"]');
+  if(!row)return;
+  if(data.sender!==cu.email)return;
+  const readCell=row.querySelector('.cell.read');
+  if(!readCell)return;
+  if(data.readAt&&data.readBy){
+    readCell.innerHTML=formatTime(data.readAt.toDate())+'';
+  }else{
+    readCell.textContent='—';
+  }
+}
+
+/* Otwieranie login terminala z kalkulatora – już wywoływane w calculateCalc */
+
+/* Logout */
+window.lo = async function(){
+  try{
+    if(ht)clearInterval(ht);
+    if(um)um();
+    if(allUsersListener)allUsersListener();
+    await suo(false);
+    await a.signOut();
+    cu=null; sc=null; unread={}; encryptionKey=null;
+    messageIds.clear(); unreadMessageIds.clear(); renderQueue=[]; isRendering=false; isFirstSnapshot=true;
+    typedBuffer='';
+    const ms=document.getElementById('ms'); if(ms) ms.innerHTML='';
+    document.getElementById('ma').classList.add('p');
+    document.getElementById('lf').classList.add('p');
+    document.getElementById('calcScreen').classList.remove('p');
+    showToast('Wylogowano','Do zobaczenia','success')
+  }catch(error){ showToast('Blad','Blad wylogowania','error') }
 };
 
-/* Auth resume audio po 1-szym kliknięciu */
+/* Narzędzia */
+function oi(src){
+  const modal=document.createElement('div');
+  modal.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:#000;display:flex;align-items:center;justify-content:center;z-index:10000;cursor:pointer';
+  const img=document.createElement('img'); img.src=src; img.style.cssText='max-width:90%;max-height:90%;border:1px dashed var(--term-border)';
+  modal.appendChild(img);
+  modal.onclick=function(){modal.remove()};
+  document.body.appendChild(modal)
+}
+
+/* Resume audio po pierwszym kliknięciu */
 document.addEventListener('click', () => {
   if (audioContext && audioContext.state === 'suspended') audioContext.resume();
 }, { once: true });
