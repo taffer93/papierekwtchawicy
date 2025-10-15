@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.png">
-<title>Kalkulator</title>
+<title>Terminal Chat</title>
 <style>
 * {margin:0;padding:0;box-sizing:border-box}
 body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0f0f0f;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;color:#e0e0e0}
@@ -32,21 +32,6 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 .install-prompt{position:fixed;bottom:20px;left:20px;right:20px;background:var(--term-bg);color:var(--term-fg);padding:14px 16px;border-radius:0;border:1px dashed var(--term-border);box-shadow:none;z-index:10003;display:none;font-family:Consolas,"Courier New",monospace}
 .install-prompt button{background:transparent;color:var(--term-fg);border:1px dashed var(--term-border);padding:8px 12px;font-weight:700;cursor:pointer;margin-top:10px;width:100%;font-family:Consolas,"Courier New",monospace}
 .install-prompt button:hover{background:#001b11}
-
-/* KALKULATOR – bez zmian */
-.calc-screen {background:#1e1e1e;padding:40px;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.5);width:100%;max-width:320px;margin:20px;border:1px solid #2d2d2d}
-.calc-display {background:#252525;padding:20px;border-radius:8px;font-size:32px;text-align:right;margin-bottom:20px;min-height:80px;color:#e0e0e0;font-family:monospace;border:1px solid #3a3a3a;overflow:hidden;word-wrap:break-word}
-.calc-buttons {display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.calc-btn {background:#374151;color:#e0e0e0;border:none;padding:20px;border-radius:8px;font-size:20px;cursor:pointer;transition:all 0.2s;font-weight:600;border:1px solid #4b5563}
-.calc-btn:hover {background:#4b5563;transform:scale(1.05)}
-.calc-btn:active {transform:scale(0.95)}
-.calc-btn.operator {background:#2563eb;color:#fff}
-.calc-btn.operator:hover {background:#3b82f6}
-.calc-btn.equals {background:#10b981;color:#fff}
-.calc-btn.equals:hover {background:#14c992}
-.calc-btn.clear {background:#ef4444;color:#fff}
-.calc-btn.clear:hover {background:#f87171}
-.calc-message {background:rgba(16,185,129,0.1);border:1px solid #10b981;padding:12px;border-radius:8px;margin-top:15px;text-align:center;font-size:14px;color:#10b981;animation:fadeIn 0.5s ease}
 
 /* App shell (retro) */
 .a{background:var(--term-bg);border-radius:0;box-shadow:none;overflow:hidden;width:100%;max-width:1000px;height:700px;display:flex;border:1px dashed var(--term-border)}
@@ -140,7 +125,7 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
   .b{flex:none;height:35%;border-right:none;border-bottom:1px dashed var(--term-border);padding:10px;overflow-y:auto}
   .c{flex:1;min-height:0;display:flex;flex-direction:column}
   .d{padding:10px 12px}
-  .e{flex:1;min-height:0;padding:10px;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:160px} /* space for prompt */
+  .e{flex:1;min-height:0;padding:10px;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:160px} /* space for prompt row */
   .ee{position:fixed;top:64px;right:12px;left:12px;width:auto;max-height:200px}
   .toast-notification{left:12px;right:12px;transform:none}
 }
@@ -151,38 +136,13 @@ body {font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
 <!-- PWA install prompt -->
 <div class="install-prompt" id="installPrompt">
   <strong>[ PWA ] Install app</strong>
-  <p style="margin-top:6px;font-size:12px">Add Calculator to your home screen.</p>
+  <p style="margin-top:6px;font-size:12px">Add to your home screen.</p>
   <button onclick="installApp()">Install</button>
   <button onclick="dismissInstall()" style="margin-top:8px">Later</button>
 </div>
 
-<!-- Calculator (unchanged) -->
-<div class="calc-screen" id="calcScreen">
-  <h2 class="s" style="text-align:center;margin-bottom:20px">&#128200; Kalkulator</h2>
-  <div class="calc-display" id="calcDisplay">0</div>
-  <div class="calc-buttons">
-    <button class="calc-btn" onclick="appendCalc('7')">7</button>
-    <button class="calc-btn" onclick="appendCalc('8')">8</button>
-    <button class="calc-btn" onclick="appendCalc('9')">9</button>
-    <button class="calc-btn operator" onclick="appendCalc('+')">+</button>
-    <button class="calc-btn" onclick="appendCalc('4')">4</button>
-    <button class="calc-btn" onclick="appendCalc('5')">5</button>
-    <button class="calc-btn" onclick="appendCalc('6')">6</button>
-    <button class="calc-btn operator" onclick="appendCalc('-')">-</button>
-    <button class="calc-btn" onclick="appendCalc('1')">1</button>
-    <button class="calc-btn" onclick="appendCalc('2')">2</button>
-    <button class="calc-btn" onclick="appendCalc('3')">3</button>
-    <button class="calc-btn operator" onclick="appendCalc('*')">×</button>
-    <button class="calc-btn clear" onclick="clearCalc()">C</button>
-    <button class="calc-btn" onclick="appendCalc('0')">0</button>
-    <button class="calc-btn equals" onclick="calculateCalc()">=</button>
-    <button class="calc-btn operator" onclick="appendCalc('/')">÷</button>
-  </div>
-  <div id="calcMessage"></div>
-</div>
-
-<!-- Login terminal -->
-<div class="terminal-login p" id="lf">
+<!-- Login terminal (default view) -->
+<div class="terminal-login" id="lf">
   <div class="term-body" id="loginTermBody"></div>
 </div>
 
@@ -249,7 +209,7 @@ const firebaseConfig={
   apiKey:"AIzaSyCJeQEnsEDDnGvKoVzKkjRmnOIsmv7HPJs",
   authDomain:"pensei-b3058.firebaseapp.com",
   projectId:"pensei-b3058",
-  storageBucket:"pensei-b3058.firebasestorage.app", /* jeśli użyjesz Storage, rozważ appspot.com */
+  storageBucket:"pensei-b3058.firebasestorage.app",
   messagingSenderId:"341036858535",
   appId:"1:341036858535:web:43d4f98625abd9ff406f82",
   measurementId:"G-MR8G2GNY5P"
@@ -264,36 +224,6 @@ window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPro
 window.installApp=function(){const p=document.getElementById('installPrompt');if(p)p.style.display='none';if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(()=>{deferredPrompt=null})}};
 window.dismissInstall=function(){const p=document.getElementById('installPrompt');if(p)p.style.display='none'};
 
-/* Calculator (unchanged) */
-let calcExpression='';let calcDisplay=null;
-window.appendCalc=function(value){if(!calcDisplay)calcDisplay=document.getElementById('calcDisplay');if(calcExpression==='0'||calcExpression==='')calcExpression='';calcExpression+=value;calcDisplay.textContent=calcExpression};
-window.clearCalc=function(){if(!calcDisplay)calcDisplay=document.getElementById('calcDisplay');calcExpression='';calcDisplay.textContent='0';const msg=document.getElementById('calcMessage');if(msg)msg.innerHTML=''};
-window.calculateCalc=function(){
-  if(!calcDisplay)calcDisplay=document.getElementById('calcDisplay');
-  try{
-    const result=eval(calcExpression);
-    calcDisplay.textContent=result;
-    if(calcExpression==='1488+2137'||calcExpression==='2137+1488'){
-      const msg=document.getElementById('calcMessage');
-      msg.innerHTML='<div class="calc-message">🎉 Brawo! Znalazłeś sekretny kod! 🎉<br>Za chwilę przejdziesz do logowania... 🔐</div>';
-      setTimeout(function(){
-        document.getElementById('calcScreen').classList.add('p');
-        document.getElementById('lf').classList.remove('p');
-        initLoginTerminal();
-      },3000);
-    }
-    calcExpression=result.toString();
-  }catch(e){calcDisplay.textContent='Błąd';calcExpression=''}
-};
-
-/* Toggle users list */
-window.toggleUserSection=function(section){
-  const list=document.getElementById(section==='online'?'ulOnline':'ulOffline');
-  const header=list.previousElementSibling;
-  if(list.classList.contains('collapsed')){list.classList.remove('collapsed');header.classList.remove('collapsed')}
-  else{list.classList.add('collapsed');header.classList.add('collapsed')}
-};
-
 /* Firebase init */
 let a,d;
 try{
@@ -305,9 +235,11 @@ try{
 }catch(err){}
 
 /* ===== Chat state ===== */
-let cu=null,sc=null,um=null,ht=null,unread={},ot='Calculator',nf=false,lastMessage=null,encryptionKey=null,messageIds=new Set(),audioContext=null,scrollTimeout=null,shouldAutoScroll=true,renderQueue=[],isRendering=false,isFirstSnapshot=true,allUsersListener=null,unreadMessageIds=new Set();
+let cu=null,sc=null,um=null,ht=null,unread={},nf=false,lastMessage=null,encryptionKey=null,messageIds=new Set(),audioContext=null,scrollTimeout=null,shouldAutoScroll=true,renderQueue=[],isRendering=false,isFirstSnapshot=true,allUsersListener=null,unreadMessageIds=new Set();
 let typedBuffer='';
 
+/* Utils */
+function escapeHtml(text){const div=document.createElement('div');div.textContent=text;return div.innerHTML}
 function showToast(title,message,type){
   type=type||'info';
   const t=document.createElement('div');t.className='toast-notification';
@@ -318,9 +250,8 @@ function showToast(title,message,type){
   document.body.appendChild(t);
   setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),300)},3500)
 }
-function escapeHtml(text){const div=document.createElement('div');div.textContent=text;return div.innerHTML}
 
-/* Crypto (same as before) */
+/* Crypto (same) */
 async function generateKey(password){const encoder=new TextEncoder();const keyMaterial=await crypto.subtle.importKey('raw',encoder.encode(password),'PBKDF2',false,['deriveBits','deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt:encoder.encode('salt-2024'),iterations:100000,hash:'SHA-256'},keyMaterial,{name:'AES-GCM',length:256},true,['encrypt','decrypt'])}
 async function ec(text){try{if(!encryptionKey)encryptionKey=await generateKey('key-2024');const encoder=new TextEncoder();const data=encoder.encode(text);const iv=crypto.getRandomValues(new Uint8Array(12));const encrypted=await crypto.subtle.encrypt({name:'AES-GCM',iv:iv},encryptionKey,data);const ea=new Uint8Array(encrypted);const combined=new Uint8Array(iv.length+ea.length);combined.set(iv);combined.set(ea,iv.length);return btoa(String.fromCharCode.apply(null,combined))}catch(e){return text}}
 async function dc(encryptedText){try{if(!encryptionKey)encryptionKey=await generateKey('key-2024');const combined=Uint8Array.from(atob(encryptedText),c=>c.charCodeAt(0));const iv=combined.slice(0,12);const data=combined.slice(12);const decrypted=await crypto.subtle.decrypt({name:'AES-GCM',iv:iv},encryptionKey,data);const decoder=new TextDecoder();return decoder.decode(decrypted)}catch(e){return encryptedText}}
@@ -348,7 +279,13 @@ function ae(emoji){
 /* Presence */
 async function suo(io){if(!cu)return;try{const ur=d.collection('users').doc(cu.uid);await ur.set({email:cu.email,isOnline:io,lastSeen:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})}catch(e){}}
 
-/* Users list + counts (English) */
+/* Users list */
+function toggleUserSection(section){
+  const list=document.getElementById(section==='online'?'ulOnline':'ulOffline');
+  const header=list.previousElementSibling;
+  if(list.classList.contains('collapsed')){list.classList.remove('collapsed');header.classList.remove('collapsed')}
+  else{list.classList.add('collapsed');header.classList.add('collapsed')}
+}
 function lu(){
   const ur=d.collection('users');
   allUsersListener=ur.onSnapshot(function(sn){
@@ -368,7 +305,7 @@ function lu(){
     }else{
       onlineUsers.forEach(function(user){
         const dv=document.createElement('div');dv.className='g';dv.setAttribute('data-email',user.email);
-        dv.onclick=function(){su(user.email,true)};
+        dv.onclick=function(){suUser(user.email,true)};
         const badgeHtml=(unread[user.email]>0?'<span class="user-unread-badge">'+(unread[user.email]>9?'9+':unread[user.email])+'</span>':'');
         dv.innerHTML='<div class="h">&gt;&gt; '+escapeHtml(user.email.split("@")[0])+badgeHtml+'</div><div class="i">[ ONLINE ]</div>';
         ulOnline.appendChild(dv);
@@ -381,7 +318,7 @@ function lu(){
     }else{
       offlineUsers.forEach(function(user){
         const dv=document.createElement('div');dv.className='g';dv.setAttribute('data-email',user.email);
-        dv.onclick=function(){su(user.email,false)};
+        dv.onclick=function(){suUser(user.email,false)};
         let lastSeenText='A while ago';
         if(user.lastSeen){
           const lastSeenDate=user.lastSeen.toDate();const now=new Date();
@@ -392,36 +329,19 @@ function lu(){
           else lastSeenText=Math.floor(diffM/1440)+' days ago';
         }
         const badgeHtml=(unread[user.email]>0?'<span class="user-unread-badge">'+(unread[user.email]>9?'9+':unread[user.email])+'</span>':'');
-        dv.innerHTML='<div class="h">&gt;&gt; '+escapeHtml(user.email.split("@")[0])+badgeHtml+'</div><div class="i">[ '+escapeHtml(lastSeenText)+' ]</div>';
+        dv.innerHTML='<div class="h">&gt;&gt; '+escapeHtml(user.email.split('@')[0])+badgeHtml+'</div><div class="i">[ '+escapeHtml(lastSeenText)+' ]</div>';
         ulOffline.appendChild(dv);
       });
     }
-    uur();
+    updateTitleWithUnread();
   });
 
   countUnreadMessages();
 }
-
-function uur(){
-  Object.keys(unread).forEach(function(email){
-    const userEl=document.querySelector('[data-email="'+email+'"]');
-    if(userEl){
-      const existing=userEl.querySelector('.user-unread-badge');if(existing)existing.remove();
-      if(unread[email]>0){
-        const nameEl=userEl.querySelector('.h');
-        if(nameEl){
-          const badge=document.createElement('span');
-          badge.className='user-unread-badge';
-          badge.textContent=unread[email]>9?'9+':unread[email];
-          nameEl.appendChild(badge);
-        }
-      }
-    }
-  });
+function updateTitleWithUnread(){
   const total=Object.values(unread).reduce((s,c)=>s+c,0);
-  document.title=total>0?'('+total+') '+ot:ot;
+  document.title=total>0?'('+total+') Terminal Chat':'Terminal Chat';
 }
-
 async function countUnreadMessages(){
   if(!cu)return;
   try{
@@ -430,17 +350,17 @@ async function countUnreadMessages(){
       for(const doc of sn.docs){
         const userData=doc.data();
         if(userData.email!==cu.email){
-          const ci=cci(cu.email,userData.email);
+          const ci=chatId(cu.email,userData.email);
           const q=await d.collection('messages').where('chatId','==',ci).where('sender','==',userData.email).where('readBy','==',null).get();
           unread[userData.email]=q.size;
         }
       }
-      uur();
+      updateTitleWithUnread();
     });
   }catch(e){}
 }
 
-/* Chat scaffold (table + prompt at bottom) */
+/* Chat scaffold */
 function ensureChatScaffold(reset){
   const ms=document.getElementById('ms');
   let grid=document.getElementById('chatGrid');
@@ -473,10 +393,10 @@ function ensureChatScaffold(reset){
     ms.appendChild(wrap);
 
     const pi=document.getElementById('promptInput');
-    pi.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sm()}});
+    pi.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage()}});
     pi.addEventListener('input',function(){typedBuffer=this.value});
 
-    // Focus prompt when clicking chat area
+    // focus prompt when clicking chat area
     ms.addEventListener('click',function(ev){
       if(!ev.target.closest('#promptInput')&&!ev.target.closest('.dd')&&!ev.target.closest('#ep')){const el=document.getElementById('promptInput');if(el)el.focus()}
     });
@@ -493,7 +413,6 @@ function ensureChatScaffold(reset){
   setTimeout(()=>{const el=document.getElementById('promptInput');if(el)el.focus()},0);
   scrollToBottom(true);
 }
-
 function formatTime(date){
   if(!date)return '—';
   const d=new Date(date);
@@ -502,71 +421,18 @@ function formatTime(date){
   return dateStr+'\n'+timeStr;
 }
 
-/* Load messages (keeps table layout) */
-let isFirstSnapshot=true, renderQueue=[], isRendering=false;
-async function lm(oue){
-  if(um)um();
-  messageIds.clear();unreadMessageIds.clear();renderQueue=[];isRendering=false;shouldAutoScroll=true;isFirstSnapshot=true;
-  ensureChatScaffold(true);
-  const ci=cci(cu.email,oue);
-  const mr=d.collection('messages');const q=mr.where('chatId','==',ci);
-  const md=document.getElementById('chatBody');
-  if(md){md.innerHTML='';}
-
-  um=q.onSnapshot(function(sn){
-    const changes=sn.docChanges();
-    if(isFirstSnapshot){
-      const arr=[];
-      changes.forEach(function(change){
-        if(change.type==='added'){
-          const dt=change.doc.data();dt.id=change.doc.id;messageIds.add(dt.id);
-          if(dt.sender===oue&&!dt.readBy){unreadMessageIds.add(dt.id)}
-          arr.push(dt);
-        }
-      });
-      if(arr.length===0){
-        const row=document.createElement('div');row.className='chat-row';
-        row.innerHTML='<div class="cell read"></div><div class="cell sent"></div><div class="cell msg" style="color:var(--term-fg-dim)">[ Start the conversation ]</div>';
-        if(md)md.appendChild(row);
-      }else{
-        arr.sort((a,b)=>{if(!a.timestamp||!b.timestamp)return 0;return a.timestamp.toDate()-b.timestamp.toDate()});
-        renderQueue=arr;processRenderQueue();
-        setTimeout(markAllAsRead,500);
-      }
-      isFirstSnapshot=false;
-      scrollToBottom(true);
-    }else{
-      changes.forEach(function(change){
-        if(change.type==='added'){
-          const dt=change.doc.data();dt.id=change.doc.id;
-          if(!messageIds.has(dt.id)){
-            messageIds.add(dt.id);renderQueue.push(dt);processRenderQueue();
-            if(dt.sender===sc){setTimeout(markAllAsRead,300)}
-          }
-        }else if(change.type==='modified'){
-          const dt=change.doc.data();dt.id=change.doc.id;updateMessageReadStatus(dt.id,dt);
-        }else if(change.type==='removed'){
-          const row=document.querySelector('.chat-row[data-msg-id="'+change.doc.id+'"]');if(row)row.remove();
-          messageIds.delete(change.doc.id);unreadMessageIds.delete(change.doc.id);
-        }
-      });
-    }
-  });
+/* Messaging */
+function chatId(e1,e2){return[String(e1).toLowerCase().trim(),String(e2).toLowerCase().trim()].sort().join('_')}
+async function markAllAsRead(){
+  if(!cu||!sc)return;
+  try{
+    const ci=chatId(cu.email,sc);
+    const q=await d.collection('messages').where('chatId','==',ci).where('sender','==',sc).where('readBy','==',null).get();
+    const batch=d.batch();
+    q.forEach(function(doc){batch.update(doc.ref,{readAt:firebase.firestore.FieldValue.serverTimestamp(),readBy:cu.email});unreadMessageIds.delete(doc.id)});
+    if(!q.empty){await batch.commit()}
+  }catch(e){}
 }
-
-async function processRenderQueue(){
-  if(isRendering||renderQueue.length===0)return;isRendering=true;
-  while(renderQueue.length>0){const msg=renderQueue.shift();await ddm(msg)}
-  isRendering=false;scrollToBottom(true);
-}
-
-function updateMessageReadStatus(messageId,data){
-  const row=document.querySelector('.chat-row[data-msg-id="'+messageId+'"]');if(!row)return;
-  if(data.sender!==cu.email)return;
-  const readCell=row.querySelector('.cell.read');if(!readCell)return;
-  if(data.readAt&&data.readBy){readCell.innerHTML=formatTime(data.readAt.toDate())}else{readCell.textContent='—'}
-}
-
 async function ddm(dt){
   ensureChatScaffold();
   const body=document.getElementById('chatBody');if(!body)return;
@@ -595,17 +461,75 @@ async function ddm(dt){
   body.appendChild(row);
   row.appendChild(readCell);row.appendChild(sentCell);row.appendChild(msgCell);
 }
+let isFirstSnapshot=true;
+async function loadMessages(oue){
+  if(um)um();
+  messageIds.clear();unreadMessageIds.clear();renderQueue=[];isRendering=false;shouldAutoScroll=true;isFirstSnapshot=true;
+  ensureChatScaffold(true);
+  const ci=chatId(cu.email,oue);
+  const mr=d.collection('messages');const q=mr.where('chatId','==',ci);
+  const md=document.getElementById('chatBody');if(md){md.innerHTML=''}
 
-/* Send message (from prompt) */
-function cci(e1,e2){return[String(e1).toLowerCase().trim(),String(e2).toLowerCase().trim()].sort().join('_')}
-window.sm=async function(){
+  um=q.onSnapshot(function(sn){
+    const changes=sn.docChanges();
+    if(isFirstSnapshot){
+      const arr=[];
+      changes.forEach(function(change){
+        if(change.type==='added'){
+          const dt=change.doc.data();dt.id=change.doc.id;messageIds.add(dt.id);
+          if(dt.sender===oue&&!dt.readBy){unreadMessageIds.add(dt.id)}
+          arr.push(dt);
+        }
+      });
+      if(arr.length===0){
+        const row=document.createElement('div');row.className='chat-row';
+        row.innerHTML='<div class="cell read"></div><div class="cell sent"></div><div class="cell msg" style="color:var(--term-fg-dim)">[ Start the conversation ]</div>';
+        if(md)md.appendChild(row);
+      }else{
+        arr.sort((a,b)=>{if(!a.timestamp||!b.timestamp)return 0;return a.timestamp.toDate()-b.timestamp.toDate()});
+        arr.forEach(m=>renderQueue.push(m));
+        processRenderQueue();
+        setTimeout(markAllAsRead,500);
+      }
+      isFirstSnapshot=false;
+      scrollToBottom(true);
+    }else{
+      changes.forEach(function(change){
+        if(change.type==='added'){
+          const dt=change.doc.data();dt.id=change.doc.id;
+          if(!messageIds.has(dt.id)){
+            messageIds.add(dt.id);renderQueue.push(dt);processRenderQueue();
+            if(dt.sender===sc){setTimeout(markAllAsRead,300)}
+          }
+        }else if(change.type==='modified'){
+          const dt=change.doc.data();dt.id=change.doc.id;updateMessageReadStatus(dt.id,dt);
+        }else if(change.type==='removed'){
+          const row=document.querySelector('.chat-row[data-msg-id="'+change.doc.id+'"]');if(row)row.remove();
+          messageIds.delete(change.doc.id);unreadMessageIds.delete(change.doc.id);
+        }
+      });
+    }
+  });
+}
+let isRendering=false;let renderQueue=[];
+async function processRenderQueue(){if(isRendering||renderQueue.length===0)return;isRendering=true;while(renderQueue.length>0){const msg=renderQueue.shift();await ddm(msg)}isRendering=false;scrollToBottom(true)}
+function updateMessageReadStatus(messageId,data){
+  const row=document.querySelector('.chat-row[data-msg-id="'+messageId+'"]');if(!row)return;
+  if(data.sender!==cu.email)return;
+  const readCell=row.querySelector('.cell.read');if(!readCell)return;
+  if(data.readAt&&data.readBy){readCell.innerHTML=formatTime(data.readAt.toDate())}else{readCell.textContent='—'}
+}
+function scrollToBottom(force){if(scrollTimeout)clearTimeout(scrollTimeout);scrollTimeout=setTimeout(function(){const md=document.getElementById('ms');if(!md)return;if(force || (md.scrollHeight-md.scrollTop-md.clientHeight<100)){md.scrollTop=md.scrollHeight}},50)}
+function oi(src){const modal=document.createElement('div');modal.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:#000;display:flex;align-items:center;justify-content:center;z-index:10000;cursor:pointer';const img=document.createElement('img');img.src=src;img.style.cssText='max-width:90%;max-height:90%;border:1px dashed var(--term-border)';modal.appendChild(img);modal.onclick=function(){modal.remove()};document.body.appendChild(modal)}
+
+async function sendMessage(){
   ensureChatScaffold();
   const pi=document.getElementById('promptInput');const msg=(typedBuffer||pi.value||'').trim();
   const imgs=document.querySelectorAll('#imagePreviewContainer .ii img');
   if(!msg&&imgs.length===0)return;
   if(!sc){showToast('Error','Select a contact first','error');return}
   try{
-    const ci=cci(cu.email,sc);
+    const ci=chatId(cu.email,sc);
     if(msg){
       const encrypted=await ec(msg);
       await d.collection('messages').add({chatId:ci,sender:cu.email,text:encrypted,timestamp:firebase.firestore.FieldValue.serverTimestamp(),readAt:null,readBy:null});
@@ -617,27 +541,15 @@ window.sm=async function(){
     const container=document.getElementById('imagePreviewContainer');if(container)container.innerHTML='';
     scrollToBottom(true);
   }catch(e){showToast('Error','Failed to send','error')}
-};
-
-/* Read all */
-async function markAllAsRead(){
-  if(!cu||!sc)return;
-  try{
-    const ci=cci(cu.email,sc);
-    const q=await d.collection('messages').where('chatId','==',ci).where('sender','==',sc).where('readBy','==',null).get();
-    const batch=d.batch();
-    q.forEach(function(doc){batch.update(doc.ref,{readAt:firebase.firestore.FieldValue.serverTimestamp(),readBy:cu.email});unreadMessageIds.delete(doc.id)});
-    if(!q.empty){await batch.commit()}
-  }catch(e){}
 }
 
-/* Image helpers */
-function ci(file,maxWidth,quality){maxWidth=maxWidth||800;quality=quality||0.8;return new Promise(function(resolve){const canvas=document.createElement('canvas');const ctx=canvas.getContext('2d');const img=new Image();img.onload=function(){let w=img.width,h=img.height;if(w>h){if(w>maxWidth){h*=maxWidth/w;w=maxWidth}}else{if(h>maxWidth){w*=maxWidth/h;h=maxWidth}}canvas.width=w;canvas.height=h;ctx.drawImage(img,0,0,w,h);canvas.toBlob(resolve,'image/jpeg',quality)};img.src=URL.createObjectURL(file)})}
+/* Image preview upload */
+function resizeImg(file,maxWidth,quality){maxWidth=maxWidth||800;quality=quality||0.8;return new Promise(function(resolve){const canvas=document.createElement('canvas');const ctx=canvas.getContext('2d');const img=new Image();img.onload=function(){let w=img.width,h=img.height;if(w>h){if(w>maxWidth){h*=maxWidth/w;w=maxWidth}}else{if(h>maxWidth){w*=maxWidth/h;h=maxWidth}}canvas.width=w;canvas.height=h;ctx.drawImage(img,0,0,w,h);canvas.toBlob(resolve,'image/jpeg',quality)};img.src=URL.createObjectURL(file)})}
 window.hu=async function(input){
   const file=input.files[0];if(!file)return;
   if(!file.type.startsWith('image/')){showToast('Error','Select an image file','error');return}
   try{
-    let compressedFile=file;if(file.size>1024*1024)compressedFile=await ci(file,600,0.7);
+    let compressedFile=file;if(file.size>1024*1024)compressedFile=await resizeImg(file,600,0.7);
     const reader=new FileReader();
     reader.onload=function(e){
       ensureChatScaffold();
@@ -653,26 +565,24 @@ window.hu=async function(input){
   }catch(e){showToast('Error','Image processing failed','error')}
   input.value='';
 };
-window.oi=function(src){const modal=document.createElement('div');modal.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:#000;display:flex;align-items:center;justify-content:center;z-index:10000;cursor:pointer';const img=document.createElement('img');img.src=src;img.style.cssText='max-width:90%;max-height:90%;border:1px dashed var(--term-border)';modal.appendChild(img);modal.onclick=function(){modal.remove()};document.body.appendChild(modal)};
 
 /* Select contact */
-function su(ue,isOnline){
+function suUser(ue,isOnline){
   document.querySelectorAll('.g').forEach(i=>i.classList.remove('active'));
   const userEl=document.querySelector('[data-email="'+ue+'"]');if(userEl)userEl.classList.add('active');
-  sc=ue;unread[ue]=0;uur();
+  sc=ue;unread[ue]=0;updateTitleWithUnread();
   document.getElementById('ct').textContent='== '+ue.split('@')[0]+' ==';
   const cs=document.getElementById('cs');cs.textContent=isOnline?'[ ONLINE ]':'[ OFFLINE ]';cs.style.color=isOnline?'var(--term-success)':'var(--term-fg-dim)';
   ensureChatScaffold(true);
-  lm(ue);markAllAsRead();
-  const tc=document.getElementById('topControls');if(tc)tc.classList.remove('p'); // show controls only after contact selected
+  loadMessages(ue);markAllAsRead();
+  const tc=document.getElementById('topControls');if(tc)tc.classList.remove('p'); // show controls
 }
 
-/* Auth */
+/* Auth state */
 if(a && typeof a.onAuthStateChanged==='function'){
 a.onAuthStateChanged(async function(u){
   if(u){
     cu=u;
-    document.getElementById('calcScreen').classList.add('p');
     document.getElementById('lf').classList.add('p');
     document.getElementById('ma').classList.remove('p');
     document.getElementById('up').textContent=u.email;
@@ -686,8 +596,8 @@ a.onAuthStateChanged(async function(u){
   }else{
     cu=null;sc=null;
     document.getElementById('ma').classList.add('p');
-    document.getElementById('lf').classList.add('p');
-    document.getElementById('calcScreen').classList.remove('p');
+    document.getElementById('lf').classList.remove('p');
+    initLoginTerminal(); // always show terminal login when signed out
     const tc=document.getElementById('topControls');if(tc)tc.classList.add('p');
     if(ht){clearInterval(ht);ht=null}
     if(um){um();um=null}
@@ -697,24 +607,24 @@ a.onAuthStateChanged(async function(u){
 }
 
 /* Logout */
-window.lo=async function(){
+async function lo(){
   try{
     if(ht)clearInterval(ht);
     if(um)um();
     if(allUsersListener)allUsersListener();
     await suo(false);
     await a.signOut();
-    cu=null;sc=null;unread={};encryptionKey=null;
-    messageIds.clear();unreadMessageIds.clear();renderQueue=[];isRendering=false;isFirstSnapshot=true;typedBuffer='';
-    document.getElementById('ma').classList.add('p');
-    document.getElementById('lf').classList.add('p');
-    document.getElementById('calcScreen').classList.remove('p');
   }catch(e){}
-};
+}
+
+/* Notifications */
+function rn(){if('Notification'in window&&Notification.permission==='default'){Notification.requestPermission().then(function(p){nf=p==='granted'})}}
+
+/* Click outside emoji */
+document.addEventListener('click',function(e){if(!e.target.closest('.dd')&&!e.target.closest('.ee')){const ep=document.getElementById('ep');if(ep&&es){ep.classList.add('p');es=false}}});
 
 /* ===== Login terminal (mobile-friendly) ===== */
 let activePrompt=null; // {input, caret}
-
 function termFreezeActive(){
   if(!activePrompt)return;
   try{
@@ -738,15 +648,10 @@ function termNewPrompt(label,isPassword,onSubmit){
   body.scrollTop=body.scrollHeight;
 
   activePrompt={input:inp,caret:caret};
-
-  inp.addEventListener('keydown',function(e){
-    if(e.key==='Enter'){e.preventDefault();onSubmit(inp.value)}
-  });
-
+  inp.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();onSubmit(inp.value)}});
   setTimeout(()=>{inp.focus()},0);
 }
 function initLoginTerminal(){
-  const lf=document.getElementById('lf');if(lf)lf.classList.remove('p');
   const body=document.getElementById('loginTermBody');body.innerHTML='';activePrompt=null;
   termNewPrompt('> ',false,onCommandEntered);
 }
@@ -758,7 +663,7 @@ function onCommandEntered(cmd){
       const email=loginVal;
       termNewPrompt('password: ',true,async function(pw){
         await doLogin(email,pw);
-        // on success onAuthStateChanged przełączy widok; na błąd dam nowy prompt:
+        // on success the view switches via onAuthStateChanged; on failure we return to >
         if(!a.currentUser){termNewPrompt('> ',false,onCommandEntered)}
       });
     });
@@ -777,15 +682,8 @@ function onCommandEntered(cmd){
 async function doLogin(email,password){if(!a)return;try{await a.signInWithEmailAndPassword(email,password)}catch(e){}}
 async function doRegister(email,password){if(!a)return;try{await a.createUserWithEmailAndPassword(email,password)}catch(e){}}
 
-/* Helpers */
-function scrollToBottom(force){if(scrollTimeout)clearTimeout(scrollTimeout);scrollTimeout=setTimeout(function(){const md=document.getElementById('ms');if(!md)return;if(force || (md.scrollHeight-md.scrollTop-md.clientHeight<100)){md.scrollTop=md.scrollHeight}},50)}
-function oi(src){const modal=document.createElement('div');modal.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:#000;display:flex;align-items:center;justify-content:center;z-index:10000;cursor:pointer';const img=document.createElement('img');img.src=src;img.style.cssText='max-width:90%;max-height:90%;border:1px dashed var(--term-border)';modal.appendChild(img);modal.onclick=function(){modal.remove()};document.body.appendChild(modal)}
-
-/* Notifications */
-function rn(){if('Notification'in window&&Notification.permission==='default'){Notification.requestPermission().then(function(p){nf=p==='granted'})}}
-
-/* Click outside emoji */
-document.addEventListener('click',function(e){if(!e.target.closest('.dd')&&!e.target.closest('.ee')){const ep=document.getElementById('ep');if(ep&&es){ep.classList.add('p');es=false}}});
+/* Start terminal immediately */
+document.addEventListener('DOMContentLoaded', initLoginTerminal);
 </script>
 </body>
 </html>
