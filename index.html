@@ -24,23 +24,21 @@ body {
   color:#e0e0e0;
 }
 
-/* Zmienna paleta terminalowa (retro) */
+/* Retro terminal palette */
 :root{
   --term-bg:#000000;
   --term-fg:#00ff66;
   --term-fg-dim:#00cc52;
-  --term-border:#00994a;
-  --term-muted:#006633;
+  --term-border:#00aa55;
+  --term-muted:#00773d;
   --term-danger:#ff4545;
   --term-warning:#ffbf00;
   --term-success:#00ff99;
-  --term-cyan:#00ffff;
-  --term-magenta:#ff00ff;
   --term-white:#e0e0e0;
-  --my-chat-color:#00ff66; /* domyślna barwa wiadomości użytkownika */
+  --my-chat-color:#00ff66; /* kolor moich wiadomości i promptu */
 }
 
-/* PROMPT instalacyjny (PWA) – retro */
+/* PWA prompt */
 .install-prompt {
   position:fixed;bottom:20px;left:20px;right:20px;
   background:var(--term-bg);
@@ -58,7 +56,7 @@ body {
 }
 .install-prompt button:hover {background:#001b11}
 
-/* KALKULATOR – bez zmian (kopiowane z wersji oryginalnej) */
+/* KALKULATOR – bez zmian */
 .calc-screen {background:#1e1e1e;padding:40px;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.5);width:100%;max-width:320px;margin:20px;border:1px solid #2d2d2d}
 .calc-display {background:#252525;padding:20px;border-radius:8px;font-size:32px;text-align:right;margin-bottom:20px;min-height:80px;color:#e0e0e0;font-family:monospace;border:1px solid #3a3a3a;overflow:hidden;word-wrap:break-word}
 .calc-buttons {display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
@@ -73,19 +71,22 @@ body {
 .calc-btn.clear:hover {background:#f87171}
 .calc-message {background:rgba(16,185,129,0.1);border:1px solid #10b981;padding:12px;border-radius:8px;margin-top:15px;text-align:center;font-size:14px;color:#10b981;animation:fadeIn 0.5s ease}
 
-/* RESZTA APLIKACJI – retro terminal look */
-/* Kontener główny (czat i logowanie) */
+/* Aplikacja (retro) */
 .a {background:var(--term-bg);border-radius:0;box-shadow:none;overflow:hidden;width:100%;max-width:1000px;height:700px;display:flex;border:1px dashed var(--term-border)}
 .b {flex:0 0 280px;background:#000;padding:12px;border-right:1px dashed var(--term-border);display:flex;flex-direction:column;overflow-y:auto;min-width:0;font-family:Consolas,"Courier New",monospace;color:var(--term-fg)}
 .c {flex:1;display:flex;flex-direction:column;min-width:0;background:#000;color:var(--term-fg);font-family:Consolas,"Courier New",monospace}
-.d {background:#000;padding:10px 12px;border-bottom:1px dashed var(--term-border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;color:var(--term-fg);font-weight:700;position:relative}
+.d {background:#000;padding:10px 12px;border-bottom:1px dashed var(--term-border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;color:var(--term-fg);font-weight:700}
 .d h3 {font-family:Consolas,"Courier New",monospace}
 .d .bar-left {display:flex;flex-direction:column}
 .top-controls {display:flex;gap:6px;align-items:center;margin-left:12px}
+.dd {
+  background:#000;color:var(--term-fg);padding:8px 10px;border:1px dashed var(--term-border);
+  border-radius:0;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center
+}
+.dd:hover {background:#001b11}
 .e {flex:1;padding:12px;overflow-y:auto;background:#000;min-height:0;position:relative}
-.q {text-align:center;color:var(--term-fg-dim);padding:20px 12px;font-style:normal;font-size:14px;font-family:Consolas,"Courier New",monospace}
 
-/* Lewa kolumna – profil i użytkownicy */
+/* Lista użytkowników (lewa kolumna) */
 .bb {background:#000;padding:12px;border-radius:0;margin-bottom:12px;text-align:left;border:1px dashed var(--term-border);color:var(--term-fg)}
 .bb h4 {color:var(--term-fg);margin-bottom:6px;font-size:14px;font-weight:700}
 .bb span {color:var(--term-fg);font-size:13px}
@@ -96,14 +97,12 @@ body {
   border:1px dashed var(--term-border);padding:6px;border-radius:0;
   font-family:Consolas,"Courier New",monospace
 }
-
 .z {background:#000;color:var(--term-fg);padding:8px 12px;border:1px dashed var(--term-border);border-radius:0;cursor:pointer;font-size:13px;width:100%;margin-top:10px;font-weight:700}
 .z:hover {background:#001b11}
 
 .user-section {margin-bottom:12px}
 .user-section h3 {color:var(--term-fg-dim);margin-bottom:6px;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;padding:6px;font-weight:700;cursor:pointer;background:#000;border:1px dashed var(--term-border);display:flex;align-items:center;justify-content:space-between}
 .user-section h3:hover {background:#001b11}
-.user-section h3 .toggle-icon {font-size:12px}
 .user-list {max-height:500px;overflow:hidden;transition:max-height 0.3s ease}
 .user-list.collapsed {max-height:0}
 .g {padding:8px 10px;margin:6px 0;background:#000;border-radius:0;cursor:pointer;transition:all 0.2s;border:1px dashed var(--term-border);position:relative;color:var(--term-fg);font-family:Consolas,"Courier New",monospace}
@@ -111,59 +110,27 @@ body {
 .g.active {outline:2px solid var(--term-fg)}
 .h {font-weight:700;margin-bottom:4px;font-size:13px;color:var(--term-fg);display:flex;align-items:center;justify-content:space-between}
 .i {font-size:12px;color:var(--term-fg-dim);display:flex;align-items:center}
+.user-unread-badge {background:#000;color:var(--term-warning);border:1px dashed var(--term-warning);border-radius:2px;padding:0 6px;height:18px;line-height:18px;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;margin-left:6px}
 
-/* Licznik nieprzeczytanych */
-.user-unread-badge {
-  background:#000;color:var(--term-warning);
-  border:1px dashed var(--term-warning);
-  border-radius:2px;padding:0 6px;height:18px;line-height:18px;
-  font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;margin-left:6px
+/* Chat: tabela 3-kolumnowa */
+.chat-table { border:1px dashed var(--term-border); }
+.chat-header, .chat-row {
+  display:grid; grid-template-columns: 140px 140px 1fr;
+  border-bottom:1px dashed var(--term-border);
 }
+.chat-header { background:#000; position:sticky; top:0; z-index:1 }
+.chat-header .cell { font-weight:700; color:var(--term-fg) }
+.chat-row .cell { color:var(--term-fg) }
+.cell { padding:8px 10px; white-space:pre-line }
+.cell:not(:last-child) { border-right:1px dashed var(--term-border) }
+.cell.msg b { color:var(--my-chat-color) } /* nazwa + prompt */
+.time { color:var(--term-fg-dim); font-size:12px; line-height:1.2 }
+.msg-text { font-size:15px; line-height:1.5 }
+.img-in-msg { max-width:200px; border:1px dashed var(--term-border); cursor:pointer }
+.read-receipt-inline { color:var(--term-success); font-size:10px; margin-left:6px }
 
-/* Wiadomości */
-.k {background:#000;padding:10px 12px;margin:10px 0;max-width:80%;word-wrap:break-word;position:relative;border:1px dashed var(--term-border);color:var(--term-fg)}
-.k.own {margin-left:auto;margin-right:0;border-color:var(--my-chat-color);color:var(--my-chat-color)}
-.k.other {margin-right:auto;margin-left:0}
-.k.unread {border-left:3px solid var(--term-warning)}
-
-.delete-msg {
-  position:absolute;top:6px;right:6px;background:#000;color:var(--term-danger);
-  border:1px dashed var(--term-danger);border-radius:0;width:22px;height:22px;
-  cursor:pointer;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;z-index:10
-}
-.delete-msg:hover {background:#1a0000}
-
-.l {font-size:10px;color:var(--term-fg-dim);margin-bottom:6px;font-weight:700}
-.m {font-size:15px;line-height:1.5}
-.read-receipt {font-size:10px;color:var(--term-fg-dim);margin-top:6px;text-align:right;font-style:normal}
-.read-receipt.read {color:var(--term-success)}
-.unread-separator {display:flex;align-items:center;margin:14px 0;color:var(--term-fg);font-size:12px;font-weight:700;text-align:center}
-.unread-separator::before, .unread-separator::after {content:'';flex:1;border-bottom:1px dashed var(--term-border);margin:0 8px}
-
-/* Emotikony panel (ASCII) – przeniesiony do nagłówka */
-.ee {position:absolute;top:calc(100% + 8px);right:0;background:#000;border:1px dashed var(--term-border);border-radius:0;padding:10px;box-shadow:none;width:320px;max-height:240px;overflow-y:auto;z-index:1000}
-.ff {display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
-.gg {padding:6px;border:1px dashed var(--term-border);background:#000;cursor:pointer;border-radius:0;font-size:14px;color:var(--term-fg);font-family:Consolas,"Courier New",monospace}
-.gg:hover {background:#001b11}
-
-/* Przycisk IMG i ASCII emotki */
-.dd, .o {
-  background:#000;color:var(--term-fg);padding:8px 10px;border:1px dashed var(--term-border);
-  border-radius:0;cursor:pointer;transition:all 0.2s;font-size:13px;display:flex;align-items:center;justify-content:center
-}
-.dd:hover, .o:hover {background:#001b11}
-.o:active, .dd:active {transform:translateY(1px)}
-
-/* Podgląd obrazów – w oknie czatu, nad promptem */
-.image-preview-container {display:flex;flex-wrap:wrap;gap:6px;width:100%;margin-top:6px}
-.hh {max-width:200px;border:1px dashed var(--term-border);border-radius:0;cursor:pointer}
-.ii {position:relative;display:inline-block;margin:4px}
-.jj {position:absolute;top:4px;right:4px;background:#000;color:var(--term-danger);border:1px dashed var(--term-danger);border-radius:0;width:22px;height:22px;cursor:pointer;font-size:12px;font-weight:700}
-.jj:hover {background:#1a0000}
-
-/* Terminalowy prompt w oknie czatu */
-.prompt-row { display:flex; align-items:baseline; gap:6px; margin-top:8px; font-family:Consolas,"Courier New",monospace; color:var(--my-chat-color) }
-.prompt-user { font-weight:700; }
+/* Prompt wewnątrz tabeli */
+.prompt-line { display:inline-flex; align-items:baseline; gap:6px }
 .prompt-input {
   min-width:10px; outline:none; border:none; background:transparent;
   color:var(--my-chat-color); caret-color:transparent; /* ukryj natywny caret */
@@ -175,7 +142,20 @@ body {
 }
 @keyframes blockBlink { 0%,50% {opacity:1} 50.1%,100% {opacity:0} }
 
-/* Toast (powiadomienia wewnętrzne) */
+/* Emotki panel (ASCII) */
+.ee {position:absolute;top:calc(100% + 8px);right:12px;background:#000;border:1px dashed var(--term-border);border-radius:0;padding:10px;box-shadow:none;width:320px;max-height:240px;overflow-y:auto;z-index:1000}
+.ff {display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.gg {padding:6px;border:1px dashed var(--term-border);background:#000;cursor:pointer;border-radius:0;font-size:14px;color:var(--term-fg);font-family:Consolas,"Courier New",monospace}
+.gg:hover {background:#001b11}
+
+/* Podgląd obrazów w wierszu nad promptem */
+.image-preview-container {display:flex;flex-wrap:wrap;gap:6px;width:100%}
+.hh {max-width:200px;border:1px dashed var(--term-border);border-radius:0;cursor:pointer}
+.ii {position:relative;display:inline-block}
+.jj {position:absolute;top:4px;right:4px;background:#000;color:var(--term-danger);border:1px dashed var(--term-danger);border-radius:0;width:22px;height:22px;cursor:pointer;font-size:12px;font-weight:700}
+.jj:hover {background:#1a0000}
+
+/* Toast */
 .toast-notification {
   position:fixed;top:20px;left:50%;transform:translateX(-50%);
   background:#000;color:var(--term-fg);padding:12px 14px;border-radius:0;border:1px dashed var(--term-border);
@@ -183,7 +163,7 @@ body {
   font-family:Consolas,"Courier New",monospace
 }
 
-/* Formularz logowania – retro */
+/* Login (retro) */
 .r {background:#000;padding:30px;border-radius:0;box-shadow:none;width:100%;max-width:420px;margin:20px;border:1px dashed var(--term-border);color:var(--term-fg);font-family:Consolas,"Courier New",monospace}
 .s {text-align:center;margin-bottom:20px;color:var(--term-fg);font-size:20px;font-weight:700}
 .t {margin-bottom:16px}
@@ -198,7 +178,6 @@ body {
 .x {color:var(--term-danger);margin-top:12px;text-align:center;font-size:13px;padding:10px;background:#1a0000;border:1px dashed var(--term-danger)}
 .y {color:var(--term-success);margin-top:12px;text-align:center;font-size:13px;padding:10px;background:#001b11;border:1px dashed var(--term-success)}
 
-/* Ukrywacz */
 .p {display:none!important}
 
 /* Scrollbary */
@@ -207,18 +186,14 @@ body {
 .ee::-webkit-scrollbar-thumb,.aa::-webkit-scrollbar-thumb,.b::-webkit-scrollbar-thumb,.e::-webkit-scrollbar-thumb{background:#00331a}
 .ee::-webkit-scrollbar-thumb:hover,.aa::-webkit-scrollbar-thumb:hover,.b::-webkit-scrollbar-thumb:hover,.e::-webkit-scrollbar-thumb:hover{background:#004d26}
 
-/* Animacje */
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-
-/* Mobile – drobne dostosowanie */
+/* Mobile */
 @media(max-width:768px){
   body{overflow:hidden;height:100vh;display:block}
   .a{flex-direction:column;height:100vh;max-width:100%;border-radius:0;position:fixed;top:0;left:0;right:0;bottom:0}
   .b{flex:none;height:35%;border-right:none;border-bottom:1px dashed var(--term-border);padding:10px;overflow-y:auto}
   .c{flex:1;min-height:0;display:flex;flex-direction:column}
   .d{padding:10px 12px}
-  .e{flex:1;min-height:0;padding:10px;overflow-y:auto;-webkit-overflow-scrolling:touch}
-  .hh{max-width:100px;max-height:100px}
+  .e{flex:1;min-height:0;padding:10px;overflow-y:auto;-webkit-overflow-scrolling:touch; padding-bottom:160px} /* miejsce na prompt */
   .ee{position:fixed;top:64px;right:12px;left:12px;width:auto;max-height:200px}
   .toast-notification{left:12px;right:12px;transform:none}
 }
@@ -226,7 +201,7 @@ body {
 </head>
 <body>
 
-<!-- PWA install prompt (ASCII) -->
+<!-- PWA install prompt -->
 <div class="install-prompt" id="installPrompt">
   <strong>[ PWA ] Zainstaluj aplikacje</strong>
   <p style="margin-top:6px;font-size:12px">Dodaj Kalkulator do ekranu glownego.</p>
@@ -234,7 +209,7 @@ body {
   <button onclick="dismissInstall()" style="margin-top:8px">Pozniej</button>
 </div>
 
-<!-- Kalkulator (BEZ ZMIAN) -->
+<!-- Kalkulator (bez zmian) -->
 <div class="calc-screen" id="calcScreen">
   <h2 class="s" style="text-align:center;margin-bottom:20px">&#128200; Kalkulator</h2>
   <div class="calc-display" id="calcDisplay">0</div>
@@ -259,7 +234,7 @@ body {
   <div id="calcMessage"></div>
 </div>
 
-<!-- Logowanie (retro) -->
+<!-- Logowanie -->
 <div class="r p" id="lf">
   <h2 class="s">== Logowanie ==</h2>
   <div class="t">
@@ -281,7 +256,7 @@ body {
   </div>
 </div>
 
-<!-- Glowna aplikacja (retro) -->
+<!-- Aplikacja -->
 <div class="a p" id="ma">
   <div class="b">
     <div class="bb">
@@ -326,14 +301,11 @@ body {
         <button class="dd" id="emojiBtn" onclick="toggleEmoji()">:)</button>
         <button class="dd" onclick="document.getElementById('fi').click()">[IMG]</button>
         <input type="file" id="fi" accept="image/*" style="display:none" onchange="hu(this)">
-        <div class="ee p" id="ep">
-          <div class="ff" id="eg"></div>
-        </div>
+        <div class="ee p" id="ep"><div class="ff" id="eg"></div></div>
       </div>
     </div>
     <div class="e" id="ms">
-      <div class="q">[ Wybierz osobe aby rozpoczac rozmowe ]</div>
-      <!-- composer (image preview + prompt) będzie dodany dynamicznie na dole okna czatu -->
+      <!-- Struktura tabeli będzie wstawiana dynamicznie -->
     </div>
   </div>
 </div>
@@ -343,7 +315,7 @@ body {
 <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
 <script>
-/* Firebase config (jak w Twojej wersji) */
+/* Firebase config (jak u Ciebie) */
 const firebaseConfig={
   apiKey:"AIzaSyCJeQEnsEDDnGvKoVzKkjRmnOIsmv7HPJs",
   authDomain:"pensei-b3058.firebaseapp.com",
@@ -446,10 +418,9 @@ try {
   if(statusEl){ statusEl.innerHTML = 'X Blad'; statusEl.style.color = '#ff4545'; }
 }
 
-/* --------- CZAT (retro) --------- */
+/* --------- CZAT --------- */
 let cu=null,sc=null,um=null,ht=null,es=false,unread={},ot='Kalkulator',nf=false,lastMessage=null,encryptionKey=null,messageIds=new Set(),audioContext=null,scrollTimeout=null,shouldAutoScroll=true,renderQueue=[],isRendering=false,isFirstSnapshot=true,allUsersListener=null,unreadMessageIds=new Set();
-let typedBuffer=''; // aktualny tekst w prompt
-let composerAttached=false;
+let typedBuffer=''; /* tekst promptu */
 
 const userColors = {}; // email -> color
 const DEFAULT_USER_COLOR = '#00ff66';
@@ -463,7 +434,7 @@ const emoticons = [
   '=_=', 'o.O', 'O.o', ':>', '<3', '</3', ':]', '[:', ':*', ':^)'
 ];
 
-/* Dzwiek */
+/* Dźwięk i toasty */
 function playNotificationSound(){
   try{
     if(!audioContext)audioContext=new(window.AudioContext||window.webkitAudioContext)();
@@ -478,8 +449,6 @@ function playNotificationSound(){
     o.start(now); o.stop(now+0.35);
   }catch(e){}
 }
-
-/* Toast (ASCII) */
 function showToast(title,message,type){
   type=type||'info';
   const toast=document.createElement('div');
@@ -493,8 +462,6 @@ function showToast(title,message,type){
   if(navigator.vibrate)navigator.vibrate([80,40,80]);
   setTimeout(function(){ toast.style.opacity='0'; setTimeout(function(){toast.remove()},300); },3500);
 }
-
-/* Powiadomienia push */
 function rn(){
   if('Notification'in window&&Notification.permission==='default'){
     Notification.requestPermission().then(function(permission){
@@ -511,14 +478,10 @@ function sn(title,body){
     }catch(e){}
   }
 }
-
-/* Tytul z licznikiem */
 function ut(){
-  const total=Object.values(unread).reduce(function(sum,count){return sum+count},0);
+  const total=Object.values(unread).reduce((s,c)=>s+c,0);
   document.title=total>0?'('+total+') '+ot:ot
 }
-
-/* Notyfikacja nowej wiadomosci */
 function snt(message,sender){
   const senderName=sender.split('@')[0];
   const shortMsg=message.length>50?message.substring(0,50)+'...':message;
@@ -527,7 +490,7 @@ function snt(message,sender){
   if(lastMessage!==message){playNotificationSound();lastMessage=message}
 }
 
-/* Szyfrowanie (jak bylo) */
+/* Crypto (jak było) */
 async function generateKey(password){
   const encoder=new TextEncoder();
   const keyMaterial=await crypto.subtle.importKey('raw',encoder.encode(password),'PBKDF2',false,['deriveBits','deriveKey']);
@@ -548,25 +511,19 @@ async function ec(text){
 async function dc(encryptedText){
   try{
     if(!encryptionKey)encryptionKey=await generateKey('key-2024');
-    const combined=Uint8Array.from(atob(encryptedText),function(c){return c.charCodeAt(0)});
+    const combined=Uint8Array.from(atob(encryptedText),c=>c.charCodeAt(0));
     const iv=combined.slice(0,12);const data=combined.slice(12);
     const decrypted=await crypto.subtle.decrypt({name:'AES-GCM',iv:iv},encryptionKey,data);
     const decoder=new TextDecoder();return decoder.decode(decrypted)
   }catch(e){return encryptedText}
 }
-
 function escapeHtml(text){const div=document.createElement('div');div.textContent=text;return div.innerHTML}
 
-/* Scroll */
+/* Scroll helpers */
 function isUserAtBottom(){
   const md=document.getElementById('ms');
   if(!md)return true;
   return md.scrollHeight - md.scrollTop - md.clientHeight < 100;
-}
-function scrollToBottomInstant(){
-  const md=document.getElementById('ms');
-  if(!md)return;
-  md.scrollTop=md.scrollHeight;
 }
 function scrollToBottom(force){
   if(scrollTimeout)clearTimeout(scrollTimeout);
@@ -579,27 +536,18 @@ function scrollToBottom(force){
   },50);
 }
 
-/* Emotki ASCII (panel w nagłówku) */
+/* Emotki (ASCII) panel */
+let es=false;
 window.toggleEmoji = function(){
   const ep=document.getElementById('ep');
   if(!ep)return;
   if(es){ep.classList.add('p');es=false}
   else{
     const eg=document.getElementById('eg');
-    if(!eg.innerHTML)ie();
+    if(!eg.innerHTML){ eg.innerHTML=''; emoticons.forEach(function(e){ const b=document.createElement('button'); b.className='gg'; b.textContent=e; b.onclick=function(ev){ev.stopPropagation();ae(e)}; eg.appendChild(b) }); }
     ep.classList.remove('p');es=true
   }
 };
-function ie(){
-  const eg=document.getElementById('eg');if(!eg)return;
-  eg.innerHTML='';
-  emoticons.forEach(function(e){
-    const btn=document.createElement('button');
-    btn.className='gg'; btn.textContent=e;
-    btn.onclick=function(ev){ev.stopPropagation();ae(e)};
-    eg.appendChild(btn)
-  })
-}
 function ae(emoji){
   const pi=document.getElementById('promptInput');
   if(!pi)return;
@@ -610,7 +558,7 @@ function ae(emoji){
   const ep=document.getElementById('ep');if(ep){ep.classList.add('p');es=false}
 }
 
-/* Oznacz jako przeczytane */
+/* READ/UNREAD */
 async function markAllAsRead(){
   if(!cu||!sc)return;
   try{
@@ -620,27 +568,29 @@ async function markAllAsRead(){
     q.forEach(function(doc){
       batch.update(doc.ref,{readAt:firebase.firestore.FieldValue.serverTimestamp(),readBy:cu.email});
       unreadMessageIds.delete(doc.id);
+      const row=document.querySelector('.chat-row[data-msg-id="'+doc.id+'"] .cell.read');
+      if(row) row.innerHTML=formatTime(new Date());
     });
     if(!q.empty){ await batch.commit(); }
   }catch(e){}
 }
 
-/* Kasowanie */
+/* Usuwanie */
 window.deleteMessage = async function(messageId){
   if(!messageId)return;
   if(!confirm('Usunac te wiadomosc?'))return;
   try{
-    const msgEl=document.querySelector('[data-msg-id="'+messageId+'"]');
-    if(msgEl)msgEl.style.opacity='0.5';
+    const row=document.querySelector('.chat-row[data-msg-id="'+messageId+'"]');
+    if(row)row.style.opacity='0.5';
     await d.collection('messages').doc(messageId).delete();
-    setTimeout(function(){if(msgEl&&msgEl.parentNode)msgEl.remove();messageIds.delete(messageId)},200);
+    setTimeout(function(){if(row&&row.parentNode)row.remove();messageIds.delete(messageId)},200);
     showToast('OK','Wiadomosc usunieta','success')
   }catch(error){
     showToast('Blad','Nie udalo sie usunac','error')
   }
 };
 
-/* Kompresja obrazka (bez zmian) */
+/* Kompresja obrazka → podgląd */
 function ci(file,maxWidth,quality){
   maxWidth=maxWidth||800;quality=quality||0.8;
   return new Promise(function(resolve){
@@ -655,8 +605,6 @@ function ci(file,maxWidth,quality){
     img.src=URL.createObjectURL(file)
   })
 }
-
-/* Upload obrazka do podgladu */
 window.hu = async function(input){
   const file=input.files[0];
   if(!file)return;
@@ -666,10 +614,10 @@ window.hu = async function(input){
     if(file.size>1024*1024)compressedFile=await ci(file,600,0.7);
     const reader=new FileReader();
     reader.onload=function(e){
+      ensureChatScaffold();
       const base64=e.target.result;
-      ensureComposer(); // upewnij się, że podgląd i prompt istnieją
       const img=document.createElement('img');
-      img.src=base64; img.className='hh'; img.onclick=function(){oi(base64)};
+      img.src=base64; img.className='hh img-in-msg'; img.onclick=function(){oi(base64)};
       const wrapper=document.createElement('div'); wrapper.className='ii';
       const removeBtn=document.createElement('button'); removeBtn.className='jj'; removeBtn.textContent='X';
       removeBtn.onclick=function(ev){ev.stopPropagation();wrapper.remove()};
@@ -682,8 +630,6 @@ window.hu = async function(input){
   }catch(error){ showToast('Blad','Blad przetwarzania','error') }
   input.value=''
 };
-
-/* Otworz obraz w modalu */
 window.oi = function(src){
   const modal=document.createElement('div');
   modal.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:#000;display:flex;align-items:center;justify-content:center;z-index:10000;cursor:pointer';
@@ -693,14 +639,8 @@ window.oi = function(src){
   document.body.appendChild(modal)
 };
 
-/* Alert message (login) */
-function sam(m,ie){
-  const dv=document.getElementById('am');
-  dv.innerHTML=ie?'<div class="x">'+escapeHtml(m)+'</div>':'<div class="y">'+escapeHtml(m)+'</div>';
-  setTimeout(function(){dv.innerHTML=''},5000)
-}
-
-/* Logowanie / Rejestracja */
+/* Login */
+function sam(m,ie){const dv=document.getElementById('am');dv.innerHTML=ie?'<div class="x">'+escapeHtml(m)+'</div>':'<div class="y">'+escapeHtml(m)+'</div>';setTimeout(function(){dv.innerHTML=''},5000)}
 window.lg = async function(){
   const e=document.getElementById('em').value.trim();
   const p=document.getElementById('pw').value;
@@ -724,7 +664,6 @@ window.lg = async function(){
     loginBtn.disabled=false; loginBtn.textContent='[ Zaloguj ]'
   }
 };
-
 window.rg = async function(){
   const e=document.getElementById('em').value.trim();
   const p=document.getElementById('pw').value;
@@ -746,7 +685,6 @@ window.rg = async function(){
     regBtn.disabled=false; regBtn.textContent='[ Utworz konto ]'
   }
 };
-
 window.lo = async function(){
   try{
     if(ht)clearInterval(ht);
@@ -756,8 +694,8 @@ window.lo = async function(){
     await a.signOut();
     cu=null; sc=null; unread={}; encryptionKey=null;
     messageIds.clear(); unreadMessageIds.clear(); renderQueue=[]; isRendering=false; isFirstSnapshot=true;
-    typedBuffer=''; composerAttached=false;
-    const md=document.getElementById('ms'); if(md) md.innerHTML='<div class="q">[ Wybierz osobe aby rozpoczac rozmowe ]</div>';
+    typedBuffer='';
+    const md=document.getElementById('ms'); if(md) md.innerHTML='';
     document.getElementById('ma').classList.add('p');
     document.getElementById('lf').classList.add('p');
     document.getElementById('calcScreen').classList.remove('p');
@@ -766,7 +704,7 @@ window.lo = async function(){
   }catch(error){ showToast('Blad','Blad wylogowania','error') }
 };
 
-/* Wybór rozmowcy */
+/* Użytkownik → wybór rozmówcy */
 function su(ue,io){
   document.querySelectorAll('.g').forEach(function(i){i.classList.remove('active')});
   const userEl=document.querySelector('[data-email="'+ue+'"]');
@@ -779,7 +717,6 @@ function su(ue,io){
   cs.style.color = io ? 'var(--term-success)' : 'var(--term-fg-dim)';
   lm(ue);
   markAllAsRead();
-  ensureComposer(true);
 }
 
 /* Badge nieprzeczytanych */
@@ -803,7 +740,7 @@ function uur(){
   ut();
 }
 
-/* Zliczanie nieprzeczytanych (jak bylo) */
+/* Zliczanie nieprzeczytanych (prosty wariant) */
 async function countUnreadMessages(){
   if(!cu)return;
   try{
@@ -822,41 +759,99 @@ async function countUnreadMessages(){
   }catch(e){}
 }
 
+/* Chat tabela — scaffold zawsze utrzymany (nie wraca do starych "bubbles") */
+function ensureChatScaffold(reset){
+  const ms=document.getElementById('ms');
+  let grid=document.getElementById('chatGrid');
+  const uname=sc ? sc.split('@')[0] : 'nazwa uzytkownika';
+  if(!grid){
+    const wrap=document.createElement('div');
+    wrap.className='chat-table';
+    wrap.id='chatGrid';
+    wrap.innerHTML = ''
+      + '<div class="chat-header">'
+      + '  <div class="cell">READ</div>'
+      + '  <div class="cell">SENT</div>'
+      + '  <div class="cell"><span id="chatHeaderUser">'+escapeHtml(uname)+'</span></div>'
+      + '</div>'
+      + '<div class="chat-body" id="chatBody"></div>'
+      + '<div class="chat-row" id="previewRow">'
+      + '  <div class="cell read"></div>'
+      + '  <div class="cell sent"></div>'
+      + '  <div class="cell msg"><div id="imagePreviewContainer" class="image-preview-container"></div></div>'
+      + '</div>'
+      + '<div class="chat-row" id="promptRow">'
+      + '  <div class="cell read"></div>'
+      + '  <div class="cell sent"></div>'
+      + '  <div class="cell msg">'
+      + '    <span class="prompt-line"><b id="promptUserLabel">'+escapeHtml((cu?cu.email.split("@")[0]:"me"))+':</b> <span id="promptInput" class="prompt-input" contenteditable="true" spellcheck="false"></span><span class="prompt-caret"></span></span>'
+      + '  </div>'
+      + '</div>';
+    ms.innerHTML='';
+    ms.appendChild(wrap);
+
+    const pi=document.getElementById('promptInput');
+    pi.addEventListener('keydown', function(e){
+      if(e.key==='Enter' && !e.shiftKey){
+        e.preventDefault(); sm();
+      }
+    });
+    pi.addEventListener('input', function(){ typedBuffer=this.textContent; });
+
+    // focus do prompt po kliknięciu okna czatu
+    ms.addEventListener('click', function(ev){
+      if(!ev.target.closest('#promptInput') && !ev.target.closest('.dd') && !ev.target.closest('#ep')){
+        const el=document.getElementById('promptInput'); if(el) el.focus();
+      }
+    });
+  }else{
+    // aktualizacja nagłówków i czyszczenie
+    const hdr=document.getElementById('chatHeaderUser');
+    if(hdr) hdr.textContent = uname;
+    const pl=document.getElementById('promptUserLabel');
+    if(pl && cu) pl.textContent = cu.email.split('@')[0]+':';
+    if(reset){
+      const body=document.getElementById('chatBody'); if(body) body.innerHTML='';
+      const prev=document.getElementById('imagePreviewContainer'); if(prev) prev.innerHTML='';
+      const pi=document.getElementById('promptInput'); if(pi) pi.textContent='';
+      typedBuffer='';
+    }
+  }
+  scrollToBottom(true);
+}
+
+function formatTime(date){
+  if(!date) return '—';
+  const d=new Date(date);
+  const dateStr=d.toLocaleDateString('pl-PL');
+  const timeStr=d.toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'});
+  return dateStr+'\n'+timeStr;
+}
+
 /* Kolejka renderu */
 async function processRenderQueue(){
   if(isRendering||renderQueue.length===0)return;
   isRendering=true;
-  let separatorAdded=false;
   while(renderQueue.length>0){
     const msg=renderQueue.shift();
-    if(!separatorAdded && unreadMessageIds.has(msg.id) && msg.sender===sc){
-      const md=document.getElementById('ms');
-      const sep=document.createElement('div');
-      sep.className='unread-separator';
-      sep.innerHTML='---- Nowe wiadomosci ----';
-      const composer=document.getElementById('composer');
-      if(composer) md.insertBefore(sep, composer);
-      else md.appendChild(sep);
-      separatorAdded=true;
-    }
     await ddm(msg);
   }
   isRendering=false;
-  scrollToBottomInstant();
+  scrollToBottom(true);
 }
 
-/* Generowanie chatId */
+/* ChatId */
 function cci(e1,e2){
   return [String(e1).toLowerCase().trim(), String(e2).toLowerCase().trim()].sort().join('_')
 }
 
-/* Wysylanie wiadomosci (z prompt) */
-window.sm = async function(msgOverride){
-  ensureComposer();
+/* Wyślij (z promptu) */
+window.sm = async function(){
+  ensureChatScaffold();
   const pi=document.getElementById('promptInput');
-  const msg=(typeof msgOverride==='string'?msgOverride:typedBuffer).trim();
+  const msg=(typedBuffer||'').trim();
   const imgs=document.querySelectorAll('#imagePreviewContainer .ii img');
-  if(!msg && imgs.length===0)return;
+  if(!msg && imgs.length===0) return;
   if(!sc){showToast('Blad','Wybierz rozmowce','error');return}
   shouldAutoScroll=true;
   try{
@@ -876,25 +871,14 @@ window.sm = async function(msgOverride){
         readAt:null, readBy:null
       })
     }
-    // wyczysc prompt i podglad
-    typedBuffer='';
-    if(pi) pi.textContent='';
-    const container=document.getElementById('imagePreviewContainer');
-    if(container) container.innerHTML='';
-    scrollToBottom(true)
+    typedBuffer=''; if(pi) pi.textContent='';
+    const container=document.getElementById('imagePreviewContainer'); if(container) container.innerHTML='';
+    scrollToBottom(true);
   }catch(error){ showToast('Blad','Blad wysylania','error') }
 };
 
-/* Presence */
-async function suo(io){
-  if(!cu)return;
-  try{
-    const ur=d.collection('users').doc(cu.uid);
-    await ur.set({email:cu.email,isOnline:io,lastSeen:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})
-  }catch(error){}
-}
-
-/* Lista uzytkownikow + kolory */
+/* Presence i lista użytkowników */
+async function suo(io){ if(!cu)return; try{const ur=d.collection('users').doc(cu.uid);await ur.set({email:cu.email,isOnline:io,lastSeen:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})}catch(e){} }
 function lu(){
   const ur=d.collection('users');
   allUsersListener=ur.onSnapshot(function(sn){
@@ -902,22 +886,19 @@ function lu(){
     sn.forEach(function(dc){
       const dt=dc.data();
       if(dt.email!==cu.email){
-        const userItem={email:dt.email,isOnline:dt.isOnline||false,lastSeen:dt.lastSeen,textColor:dt.textColor||DEFAULT_USER_COLOR};
-        userColors[userItem.email]=userItem.textColor;
-        if(userItem.isOnline)onlineUsers.push(userItem); else offlineUsers.push(userItem)
+        const item={email:dt.email,isOnline:dt.isOnline||false,lastSeen:dt.lastSeen,textColor:dt.textColor||DEFAULT_USER_COLOR};
+        userColors[item.email]=item.textColor;
+        if(item.isOnline)onlineUsers.push(item); else offlineUsers.push(item)
       }else{
-        // moje ustawienia koloru
         if(dt.textColor){ document.documentElement.style.setProperty('--my-chat-color', dt.textColor); const sel=document.getElementById('textColorSelect'); if(sel) sel.value=dt.textColor; }
       }
     });
-
     document.getElementById('onlineCount').textContent=onlineUsers.length;
     document.getElementById('offlineCount').textContent=offlineUsers.length;
 
     const ulOnline=document.getElementById('ulOnline'); ulOnline.innerHTML='';
-    if(onlineUsers.length===0){
-      ulOnline.innerHTML='<div style="text-align:center;color:var(--term-fg-dim);font-size:12px;padding:10px">Brak uzytkownikow online</div>'
-    }else{
+    if(onlineUsers.length===0){ ulOnline.innerHTML='<div style="text-align:center;color:var(--term-fg-dim);font-size:12px;padding:10px">Brak uzytkownikow online</div>' }
+    else{
       onlineUsers.forEach(function(user){
         const dv=document.createElement('div'); dv.className='g'; dv.setAttribute('data-email',user.email);
         dv.onclick=function(){su(user.email,user.isOnline)};
@@ -926,18 +907,16 @@ function lu(){
         ulOnline.appendChild(dv)
       })
     }
-
     const ulOffline=document.getElementById('ulOffline'); ulOffline.innerHTML='';
-    if(offlineUsers.length===0){
-      ulOffline.innerHTML='<div style="text-align:center;color:var(--term-fg-dim);font-size:12px;padding:10px">Wszyscy online!</div>'
-    }else{
+    if(offlineUsers.length===0){ ulOffline.innerHTML='<div style="text-align:center;color:var(--term-fg-dim);font-size:12px;padding:10px">Wszyscy online!</div>' }
+    else{
       offlineUsers.forEach(function(user){
         const dv=document.createElement('div'); dv.className='g'; dv.setAttribute('data-email',user.email);
         dv.onclick=function(){su(user.email,user.isOnline)};
         let lastSeenText='Dawno temu';
         if(user.lastSeen){
-          const lastSeenDate=user.lastSeen.toDate(); const now=new Date();
-          const diffMs=now-lastSeenDate; const diffMins=Math.floor(diffMs/60000);
+          const dts=user.lastSeen.toDate(); const now=new Date();
+          const diffMs=now-dts; const diffMins=Math.floor(diffMs/60000);
           if(diffMins<1)lastSeenText='Przed chwila';
           else if(diffMins<60)lastSeenText=diffMins+' min temu';
           else if(diffMins<1440)lastSeenText=Math.floor(diffMins/60)+' godz. temu';
@@ -950,34 +929,21 @@ function lu(){
     }
     uur()
   });
-
   countUnreadMessages();
 }
-
-/* Scroll listener */
-const msEl=document.getElementById('ms');
-if(msEl){ msEl.addEventListener('scroll',function(){ shouldAutoScroll=isUserAtBottom() }) }
-
-/* Ukrywanie panelu emotek kliknięciem poza */
-document.addEventListener('click',function(e){
-  if(!e.target.closest('.dd')&&!e.target.closest('.ee')){
-    const ep=document.getElementById('ep');if(ep&&es){ep.classList.add('p');es=false}
-  }
-});
 
 /* Auth state */
 if (a && typeof a.onAuthStateChanged === 'function') {
 a.onAuthStateChanged(async function(u){
   if(u){
     cu=u;
-    // Pokaż główną aplikację (retro)
     document.getElementById('calcScreen').classList.add('p');
     document.getElementById('lf').classList.add('p');
     document.getElementById('ma').classList.remove('p');
 
     document.getElementById('up').textContent=u.email;
     await suo(true);
-    // Pobierz kolor uzytkownika (jesli brak – ustaw domyslny)
+    // kolor użytkownika
     try{
       const me=await d.collection('users').doc(u.uid).get();
       let color=DEFAULT_USER_COLOR;
@@ -987,6 +953,7 @@ a.onAuthStateChanged(async function(u){
       const sel=document.getElementById('textColorSelect'); if(sel) sel.value=color;
     }catch(e){}
 
+    ensureChatScaffold(true);
     lu();
     rn();
     ht=setInterval(function(){suo(true)},30000);
@@ -1003,7 +970,12 @@ a.onAuthStateChanged(async function(u){
 });
 }
 
-/* Zmiana widocznosci */
+/* Zmiana widoczności */
+document.addEventListener('click',function(e){
+  if(!e.target.closest('.dd')&&!e.target.closest('.ee')){
+    const ep=document.getElementById('ep');if(ep&&es){ep.classList.add('p');es=false}
+  }
+});
 document.addEventListener('visibilitychange',function(){
   if(cu){
     if(document.hidden){ suo(false) }
@@ -1011,120 +983,122 @@ document.addEventListener('visibilitychange',function(){
   }
 });
 
-/* Render wiadomosci */
+/* Ładowanie wiadomości (zachowuje tabelę – nie usuwa scaffoldu) */
 async function lm(oue){
   if(um)um();
   messageIds.clear(); unreadMessageIds.clear(); renderQueue=[]; isRendering=false; shouldAutoScroll=true; isFirstSnapshot=true;
-  const md=document.getElementById('ms');
-  md.innerHTML='<div class="q">[ Ladowanie... ]</div>';
+  ensureChatScaffold(true);
   const ci=cci(cu.email,oue);
-  const mr=d.collection('messages'); const q=mr.where('chatId','==',ci); // (opcjonalnie .orderBy('timestamp'))
+  const mr=d.collection('messages'); const q=mr.where('chatId','==',ci);
   um=q.onSnapshot(function(sn){
     const changes=sn.docChanges();
     if(isFirstSnapshot){
-      const newMessages=[];
+      const arr=[];
       changes.forEach(function(change){
         if(change.type==='added'){
           const dt=change.doc.data(); dt.id=change.doc.id; messageIds.add(dt.id);
           if(dt.sender===oue && !dt.readBy){ unreadMessageIds.add(dt.id); }
-          newMessages.push(dt);
+          arr.push(dt);
         }
       });
-      if(newMessages.length>0){
-        newMessages.sort(function(a,b){
+      if(arr.length>0){
+        arr.sort(function(a,b){
           if(!a.timestamp||!b.timestamp)return 0;
           return a.timestamp.toDate()-b.timestamp.toDate()
         });
-        md.innerHTML='';
-        renderQueue=newMessages;
+        renderQueue=arr;
         processRenderQueue();
         setTimeout(markAllAsRead,500);
-      }else{
-        md.innerHTML='<div class="q">[ Rozpocznij rozmowe ]</div>';
       }
       isFirstSnapshot=false;
-      ensureComposer(true);
+      scrollToBottom(true);
     }else{
       changes.forEach(function(change){
         if(change.type==='added'){
           const dt=change.doc.data(); dt.id=change.doc.id;
           if(!messageIds.has(dt.id)){
-            messageIds.add(dt.id); renderQueue.push(dt); processRenderQueue();
+            messageIds.add(dt.id);
+            renderQueue.push(dt);
+            processRenderQueue();
             if(dt.sender===sc){ setTimeout(markAllAsRead,300); }
           }
         }else if(change.type==='modified'){
           const dt=change.doc.data(); dt.id=change.doc.id;
           updateMessageReadStatus(dt.id,dt);
-          if(dt.readBy){ unreadMessageIds.delete(dt.id);
-            const msgEl=document.querySelector('[data-msg-id="'+dt.id+'"]');
-            if(msgEl)msgEl.classList.remove('unread');
-          }
         }else if(change.type==='removed'){
-          const msgEl=document.querySelector('[data-msg-id="'+change.doc.id+'"]');
-          if(msgEl)msgEl.remove();
+          const row=document.querySelector('.chat-row[data-msg-id="'+change.doc.id+'"]');
+          if(row)row.remove();
           messageIds.delete(change.doc.id); unreadMessageIds.delete(change.doc.id);
         }
       });
     }
-  })
+  });
 }
 
 function updateMessageReadStatus(messageId,data){
-  const msgEl=document.querySelector('[data-msg-id="'+messageId+'"]');
-  if(!msgEl)return;
-  const receiptEl=msgEl.querySelector('.read-receipt'); if(!receiptEl)return;
-  if(data.sender!==cu.email)return;
+  const row=document.querySelector('.chat-row[data-msg-id="'+messageId+'"]');
+  if(!row)return;
+  if(data.sender!==cu.email)return; // tylko dla moich wiadomości pokazuj READ
+  const readCell=row.querySelector('.cell.read');
+  if(!readCell)return;
   if(data.readAt&&data.readBy){
-    const readDate=data.readAt.toDate(); const readTime=readDate.toLocaleString('pl-PL',{hour:'2-digit',minute:'2-digit'});
-    receiptEl.textContent='[ READ '+readTime+' ]'; receiptEl.classList.add('read');
+    readCell.innerHTML=formatTime(data.readAt.toDate())+'';
   }else{
-    receiptEl.textContent='[ SENT ]'; receiptEl.classList.remove('read');
+    readCell.textContent='—';
   }
 }
 
-/* Dorysuj pojedyncza wiadomosc */
+/* Rysuj wiersz wiadomości w tabeli */
 async function ddm(dt){
-  const md=document.getElementById('ms');
-  if(document.querySelector('[data-msg-id="'+dt.id+'"]'))return;
-  const qElement=md.querySelector('.q'); if(qElement)qElement.remove();
-  const mdv=document.createElement('div'); mdv.setAttribute('data-msg-id',dt.id);
-  const io=dt.sender===cu.email;
-  mdv.className='k '+(io?'own':'other');
+  ensureChatScaffold();
+  const body=document.getElementById('chatBody');
+  if(!body) return;
+  if(document.querySelector('.chat-row[data-msg-id="'+dt.id+'"]')) return;
 
-  // Ustaw kolor nadawcy
-  const senderColor = io ? getMyColor() : (userColors[dt.sender] || DEFAULT_USER_COLOR);
-  mdv.style.color = senderColor;
-  if(io){ mdv.style.borderColor = senderColor; }
+  const row=document.createElement('div');
+  row.className='chat-row';
+  row.setAttribute('data-msg-id',dt.id);
 
-  if(!io && unreadMessageIds.has(dt.id)){ mdv.classList.add('unread'); }
+  // READ (tylko dla moich wiadomości sensownie pokazuje datę)
+  const readCell=document.createElement('div');
+  readCell.className='cell read';
+  if(dt.sender=== (cu?cu.email:'' ) && dt.readAt){
+    readCell.textContent=formatTime(dt.readAt.toDate());
+  }else{
+    readCell.textContent='—';
+  }
 
-  const tm=dt.timestamp?new Date(dt.timestamp.toDate()).toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'}):'Teraz';
+  // SENT
+  const sentCell=document.createElement('div');
+  sentCell.className='cell sent';
+  sentCell.textContent=dt.timestamp?formatTime(dt.timestamp.toDate()):'Teraz';
 
-  let content;
+  // MSG
+  const msgCell=document.createElement('div');
+  msgCell.className='cell msg';
+
+  const isOwn = dt.sender === (cu?cu.email:'');
+  const senderColor = isOwn ? getMyColor() : (userColors[dt.sender] || DEFAULT_USER_COLOR);
+  const senderName = isOwn ? (cu?cu.email.split('@')[0]:'ja') : dt.sender.split('@')[0];
+
+  let inner = '<div class="msg-line"><b style="color:'+senderColor+'">'+escapeHtml(senderName)+':</b> ';
   if(dt.image){
-    content='<img src="'+dt.image+'" class="hh" onclick="oi(\''+dt.image+'\')" style="cursor:pointer">'
+    inner += '<br><img src="'+dt.image+'" class="img-in-msg" onclick="oi(\''+dt.image+'\')">';
   }else{
     const dct=await dc(dt.text||'');
-    content='<div class="m">'+escapeHtml(dct)+'</div>';
+    inner += '<span class="msg-text">'+escapeHtml(dct)+'</span>';
   }
+  inner += '</div>';
 
-  let readReceipt='';
-  if(io){
-    if(dt.readAt&&dt.readBy){
-      const readDate=dt.readAt.toDate();
-      const readTime=readDate.toLocaleString('pl-PL',{hour:'2-digit',minute:'2-digit'});
-      readReceipt='<div class="read-receipt read">[ READ '+readTime+' ]</div>'
-    }else{
-      readReceipt='<div class="read-receipt">[ SENT ]</div>'
-    }
-  }
+  msgCell.innerHTML = inner;
 
-  const deleteBtn='<button class="delete-msg" onclick="deleteMessage(\''+dt.id+'\')" title="Usun">X</button>';
-  mdv.innerHTML=deleteBtn+'<div class="l">'+escapeHtml(io?'TY':dt.sender.split('@')[0])+' • '+tm+'</div>'+content+readReceipt;
+  // Wstaw do BODY (przed wierszem preview/prompt)
+  body.appendChild(row);
+  row.appendChild(readCell);
+  row.appendChild(sentCell);
+  row.appendChild(msgCell);
 
-  const composer=document.getElementById('composer');
-  if(composer){ md.insertBefore(mdv, composer); }
-  else { md.appendChild(mdv); }
+  scrollToBottom(true);
 }
 
 /* Kolor czcionki użytkownika */
@@ -1139,66 +1113,14 @@ window.updateTextColor = async function(colorCode){
     document.documentElement.style.setProperty('--my-chat-color', colorCode);
     await d.collection('users').doc(cu.uid).set({ textColor: colorCode }, { merge:true });
     showToast('OK','Kolor zaktualizowany','success');
-    // aktualizuj prompt jeśli istnieje
-    const pi=document.getElementById('promptInput');
-    if(pi){ pi.style.color=colorCode; }
+    // prompt na żywo
+    const pi=document.getElementById('promptInput'); if(pi){ pi.style.color=colorCode; }
   }catch(e){
     showToast('Blad','Nie udalo sie zapisac koloru','error');
   }
 };
 
-/* Composer (preview + prompt) */
-function ensureComposer(reset){
-  const md=document.getElementById('ms');
-  if(!md)return;
-  let composer=document.getElementById('composer');
-  const username = cu ? cu.email.split('@')[0] : 'user';
-  if(!composer){
-    composer=document.createElement('div');
-    composer.id='composer';
-    composer.innerHTML = ''
-      + '<div id="imagePreviewContainer" class="image-preview-container"></div>'
-      + '<div class="prompt-row">'
-      + '  <span class="prompt-user">'+escapeHtml(username)+':</span>'
-      + '  <span id="promptInput" class="prompt-input" contenteditable="true" spellcheck="false"></span>'
-      + '  <span class="prompt-caret"></span>'
-      + '</div>';
-    md.appendChild(composer);
-
-    const pi=document.getElementById('promptInput');
-    pi.addEventListener('keydown', function(e){
-      if(e.key==='Enter' && !e.shiftKey){
-        e.preventDefault();
-        window.sm(); // wyślij
-      }
-    });
-    pi.addEventListener('input', function(){
-      typedBuffer = this.textContent;
-    });
-    // fokus w prompt po kliknięciu w okno czatu
-    md.addEventListener('click', function(ev){
-      if(!ev.target.closest('#promptInput') && !ev.target.closest('.dd') && !ev.target.closest('#ep')){
-        const el=document.getElementById('promptInput');
-        if(el){ el.focus(); }
-      }
-    });
-    composerAttached=true;
-    scrollToBottom(true);
-  }else{
-    // uaktualnij nazwę i wyczyść w razie potrzeby
-    const label = composer.querySelector('.prompt-user');
-    if(label) label.textContent = username+':';
-    if(reset){
-      typedBuffer='';
-      const pi=document.getElementById('promptInput');
-      if(pi) pi.textContent='';
-      const container=document.getElementById('imagePreviewContainer');
-      if(container) container.innerHTML='';
-    }
-  }
-}
-
-/* Inicjalne resume AudioContext po pierwszym kliknieciu (dla przegladarek) */
+/* Auth resume audio po 1-szym kliknięciu */
 document.addEventListener('click', () => {
   if (audioContext && audioContext.state === 'suspended') audioContext.resume();
 }, { once: true });
