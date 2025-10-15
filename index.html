@@ -52,7 +52,7 @@ body {
 }
 .install-prompt button {
   background:transparent;color:var(--term-fg);
-  border:1px solid var(--term-border);
+  border:1px dashed var(--term-border);
   padding:8px 12px;font-weight:700;cursor:pointer;margin-top:10px;width:100%;
   font-family: Consolas, "Courier New", monospace;
 }
@@ -78,11 +78,12 @@ body {
 .a {background:var(--term-bg);border-radius:0;box-shadow:none;overflow:hidden;width:100%;max-width:1000px;height:700px;display:flex;border:1px dashed var(--term-border)}
 .b {flex:0 0 280px;background:#000;padding:12px;border-right:1px dashed var(--term-border);display:flex;flex-direction:column;overflow-y:auto;min-width:0;font-family:Consolas,"Courier New",monospace;color:var(--term-fg)}
 .c {flex:1;display:flex;flex-direction:column;min-width:0;background:#000;color:var(--term-fg);font-family:Consolas,"Courier New",monospace}
-.d {background:#000;padding:10px 12px;border-bottom:1px dashed var(--term-border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;color:var(--term-fg);font-weight:700}
+.d {background:#000;padding:10px 12px;border-bottom:1px dashed var(--term-border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;color:var(--term-fg);font-weight:700;position:relative}
 .d h3 {font-family:Consolas,"Courier New",monospace}
+.d .bar-left {display:flex;flex-direction:column}
+.top-controls {display:flex;gap:6px;align-items:center;margin-left:12px}
 .e {flex:1;padding:12px;overflow-y:auto;background:#000;min-height:0;position:relative}
-.f {background:#000;padding:12px;border-top:1px dashed var(--term-border);flex-shrink:0;position:relative}
-.q {text-align:center;color:var(--term-muted);padding:20px 12px;font-style:normal;font-size:14px;font-family:Consolas,"Courier New",monospace}
+.q {text-align:center;color:var(--term-fg-dim);padding:20px 12px;font-style:normal;font-size:14px;font-family:Consolas,"Courier New",monospace}
 
 /* Lewa kolumna – profil i użytkownicy */
 .bb {background:#000;padding:12px;border-radius:0;margin-bottom:12px;text-align:left;border:1px dashed var(--term-border);color:var(--term-fg)}
@@ -139,15 +140,13 @@ body {
 .unread-separator {display:flex;align-items:center;margin:14px 0;color:var(--term-fg);font-size:12px;font-weight:700;text-align:center}
 .unread-separator::before, .unread-separator::after {content:'';flex:1;border-bottom:1px dashed var(--term-border);margin:0 8px}
 
-/* Pole wpisywania i przyciski */
-.n {display:flex;gap:8px;align-items:center;position:relative;flex-wrap:wrap}
-.n input {
-  flex:1;padding:10px 12px;border:1px dashed var(--term-border);border-radius:0;
-  font-size:15px;outline:none;background:#000;color:var(--term-fg);min-width:200px;
-  font-family:Consolas,"Courier New",monospace
-}
-.n input::placeholder {color:var(--term-fg-dim)}
-.button-group {display:flex;gap:6px;flex-shrink:0}
+/* Emotikony panel (ASCII) – przeniesiony do nagłówka */
+.ee {position:absolute;top:calc(100% + 8px);right:0;background:#000;border:1px dashed var(--term-border);border-radius:0;padding:10px;box-shadow:none;width:320px;max-height:240px;overflow-y:auto;z-index:1000}
+.ff {display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.gg {padding:6px;border:1px dashed var(--term-border);background:#000;cursor:pointer;border-radius:0;font-size:14px;color:var(--term-fg);font-family:Consolas,"Courier New",monospace}
+.gg:hover {background:#001b11}
+
+/* Przycisk IMG i ASCII emotki */
 .dd, .o {
   background:#000;color:var(--term-fg);padding:8px 10px;border:1px dashed var(--term-border);
   border-radius:0;cursor:pointer;transition:all 0.2s;font-size:13px;display:flex;align-items:center;justify-content:center
@@ -155,21 +154,26 @@ body {
 .dd:hover, .o:hover {background:#001b11}
 .o:active, .dd:active {transform:translateY(1px)}
 
-/* Panel emotek (ASCII) */
-.ee {position:absolute;bottom:calc(100% + 8px);right:0;background:#000;border:1px dashed var(--term-border);border-radius:0;padding:10px;box-shadow:none;width:320px;max-height:240px;overflow-y:auto;z-index:1000}
-.ff {display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
-.gg {padding:6px;border:1px dashed var(--term-border);background:#000;cursor:pointer;border-radius:0;font-size:14px;color:var(--term-fg);font-family:Consolas,"Courier New",monospace}
-.gg:hover {background:#001b11}
-
-/* Podgląd obrazów */
-.image-preview-container {display:flex;flex-wrap:wrap;gap:6px;width:100%;margin-bottom:8px}
+/* Podgląd obrazów – w oknie czatu, nad promptem */
+.image-preview-container {display:flex;flex-wrap:wrap;gap:6px;width:100%;margin-top:6px}
 .hh {max-width:200px;border:1px dashed var(--term-border);border-radius:0;cursor:pointer}
 .ii {position:relative;display:inline-block;margin:4px}
 .jj {position:absolute;top:4px;right:4px;background:#000;color:var(--term-danger);border:1px dashed var(--term-danger);border-radius:0;width:22px;height:22px;cursor:pointer;font-size:12px;font-weight:700}
 .jj:hover {background:#1a0000}
 
-/* Pasek informacyjny nad inputem */
-.kk {background:#000;border:1px dashed var(--term-border);padding:8px 10px;margin:8px 0;font-size:12px;color:var(--term-fg-dim);text-align:left}
+/* Terminalowy prompt w oknie czatu */
+.prompt-row { display:flex; align-items:baseline; gap:6px; margin-top:8px; font-family:Consolas,"Courier New",monospace; color:var(--my-chat-color) }
+.prompt-user { font-weight:700; }
+.prompt-input {
+  min-width:10px; outline:none; border:none; background:transparent;
+  color:var(--my-chat-color); caret-color:transparent; /* ukryj natywny caret */
+  white-space:pre-wrap; word-break:break-word;
+}
+.prompt-caret {
+  display:inline-block; width:8px; height:1.2em; background:var(--my-chat-color);
+  vertical-align:text-bottom; animation:blockBlink 1s steps(1) infinite
+}
+@keyframes blockBlink { 0%,50% {opacity:1} 50.1%,100% {opacity:0} }
 
 /* Toast (powiadomienia wewnętrzne) */
 .toast-notification {
@@ -213,10 +217,9 @@ body {
   .b{flex:none;height:35%;border-right:none;border-bottom:1px dashed var(--term-border);padding:10px;overflow-y:auto}
   .c{flex:1;min-height:0;display:flex;flex-direction:column}
   .d{padding:10px 12px}
-  .e{flex:1;min-height:0;padding:10px;padding-bottom:240px;overflow-y:auto;-webkit-overflow-scrolling:touch}
-  .f{position:fixed;bottom:0;left:0;right:0;padding:10px;border-top:1px dashed var(--term-border);background:#000;z-index:999}
+  .e{flex:1;min-height:0;padding:10px;overflow-y:auto;-webkit-overflow-scrolling:touch}
   .hh{max-width:100px;max-height:100px}
-  .ee{position:fixed;bottom:200px;right:12px;left:12px;width:auto;max-height:200px}
+  .ee{position:fixed;top:64px;right:12px;left:12px;width:auto;max-height:200px}
   .toast-notification{left:12px;right:12px;transform:none}
 }
 </style>
@@ -315,29 +318,22 @@ body {
   </div>
   <div class="c">
     <div class="d">
-      <div>
+      <div class="bar-left">
         <h3 id="ct" style="margin:0;font-size:16px">== Wybierz rozmowce ==</h3>
         <div id="cs" style="margin-top:4px;font-size:11px;color:var(--term-fg-dim)"></div>
+      </div>
+      <div class="top-controls">
+        <button class="dd" id="emojiBtn" onclick="toggleEmoji()">:)</button>
+        <button class="dd" onclick="document.getElementById('fi').click()">[IMG]</button>
+        <input type="file" id="fi" accept="image/*" style="display:none" onchange="hu(this)">
+        <div class="ee p" id="ep">
+          <div class="ff" id="eg"></div>
+        </div>
       </div>
     </div>
     <div class="e" id="ms">
       <div class="q">[ Wybierz osobe aby rozpoczac rozmowe ]</div>
-    </div>
-    <div class="f p" id="mis">
-      <div class="kk">* Wiadomosci, zdjecia i klasyczne emotki ASCII</div>
-      <div class="image-preview-container" id="imagePreviewContainer"></div>
-      <div class="n">
-        <input type="text" id="mi" placeholder="Wiadomosc..." autocomplete="off">
-        <div class="button-group">
-          <button class="dd" onclick="toggleEmoji()">:)</button>
-          <button class="dd" onclick="document.getElementById('fi').click()">[IMG]</button>
-          <button class="o" onclick="sm()">-&gt;</button>
-        </div>
-        <input type="file" id="fi" accept="image/*" style="display:none" onchange="hu(this)">
-      </div>
-      <div class="ee p" id="ep">
-        <div class="ff" id="eg"></div>
-      </div>
+      <!-- composer (image preview + prompt) będzie dodany dynamicznie na dole okna czatu -->
     </div>
   </div>
 </div>
@@ -452,6 +448,8 @@ try {
 
 /* --------- CZAT (retro) --------- */
 let cu=null,sc=null,um=null,ht=null,es=false,unread={},ot='Kalkulator',nf=false,lastMessage=null,encryptionKey=null,messageIds=new Set(),audioContext=null,scrollTimeout=null,shouldAutoScroll=true,renderQueue=[],isRendering=false,isFirstSnapshot=true,allUsersListener=null,unreadMessageIds=new Set();
+let typedBuffer=''; // aktualny tekst w prompt
+let composerAttached=false;
 
 const userColors = {}; // email -> color
 const DEFAULT_USER_COLOR = '#00ff66';
@@ -459,9 +457,10 @@ const COLOR_OPTIONS = ['#00ff66','#ffbf00','#00ffff','#ff00ff','#e0e0e0'];
 
 const emoticons = [
   ':)', ':-)', ':D', ':-D', ';)', ';-)', ':P', ':-P', 'XD', 'xD',
-  ':(', ':-(', ':\'(', ':O', ':-O', ':/', ':-/', ':|', ':-|', ':]',
-  ':[', ':]', ':3', '^^', '^-^', '^_^', '-_-', 'T_T', '>.<', '>:)','>:(',
-  '8)', 'B)', '8-)', 'B-)', ':@', ':-@', 'o_O', 'O_o', ':^)', ':-\\'
+  ':(', ':-(', ":'(", ':O', ':-O', ':/', ':-/', ':|', ':-|', ':]',
+  ':[', ':3', '^^', '^-^', '^_^', '-_-', 'T_T', '>.<', '>:)', '>:(',
+  '8)', 'B)', '8-)', 'B-)', ':@', ':-@', 'o_O', 'O_o', ':^)', ':-\\',
+  '=_=', 'o.O', 'O.o', ':>', '<3', '</3', ':]', '[:', ':*', ':^)'
 ];
 
 /* Dzwiek */
@@ -580,7 +579,7 @@ function scrollToBottom(force){
   },50);
 }
 
-/* Emotki ASCII */
+/* Emotki ASCII (panel w nagłówku) */
 window.toggleEmoji = function(){
   const ep=document.getElementById('ep');
   if(!ep)return;
@@ -602,10 +601,13 @@ function ie(){
   })
 }
 function ae(emoji){
-  const mi=document.getElementById('mi');if(!mi)return;
-  mi.value+=(mi.value && !/\s$/.test(mi.value)?' ':'')+emoji+' ';
-  mi.focus();
-  const ep=document.getElementById('ep');if(ep)ep.classList.add('p');es=false
+  const pi=document.getElementById('promptInput');
+  if(!pi)return;
+  if(pi.textContent && !/\s$/.test(pi.textContent)) pi.textContent+=' ';
+  pi.textContent+=emoji+' ';
+  typedBuffer=pi.textContent;
+  pi.focus();
+  const ep=document.getElementById('ep');if(ep){ep.classList.add('p');es=false}
 }
 
 /* Oznacz jako przeczytane */
@@ -665,6 +667,7 @@ window.hu = async function(input){
     const reader=new FileReader();
     reader.onload=function(e){
       const base64=e.target.result;
+      ensureComposer(); // upewnij się, że podgląd i prompt istnieją
       const img=document.createElement('img');
       img.src=base64; img.className='hh'; img.onclick=function(){oi(base64)};
       const wrapper=document.createElement('div'); wrapper.className='ii';
@@ -672,7 +675,8 @@ window.hu = async function(input){
       removeBtn.onclick=function(ev){ev.stopPropagation();wrapper.remove()};
       wrapper.appendChild(img); wrapper.appendChild(removeBtn);
       const container=document.getElementById('imagePreviewContainer');
-      container.appendChild(wrapper)
+      container.appendChild(wrapper);
+      scrollToBottom(true);
     };
     reader.readAsDataURL(compressedFile)
   }catch(error){ showToast('Blad','Blad przetwarzania','error') }
@@ -752,6 +756,8 @@ window.lo = async function(){
     await a.signOut();
     cu=null; sc=null; unread={}; encryptionKey=null;
     messageIds.clear(); unreadMessageIds.clear(); renderQueue=[]; isRendering=false; isFirstSnapshot=true;
+    typedBuffer=''; composerAttached=false;
+    const md=document.getElementById('ms'); if(md) md.innerHTML='<div class="q">[ Wybierz osobe aby rozpoczac rozmowe ]</div>';
     document.getElementById('ma').classList.add('p');
     document.getElementById('lf').classList.add('p');
     document.getElementById('calcScreen').classList.remove('p');
@@ -771,11 +777,9 @@ function su(ue,io){
   const cs=document.getElementById('cs');
   cs.textContent=io?'[ ONLINE ]':'[ OFFLINE ]';
   cs.style.color = io ? 'var(--term-success)' : 'var(--term-fg-dim)';
-  document.getElementById('mis').classList.remove('p');
-  const kkElements=document.querySelectorAll('.kk');
-  if(kkElements.length>0)kkElements[0].classList.remove('p');
   lm(ue);
   markAllAsRead();
+  ensureComposer(true);
 }
 
 /* Badge nieprzeczytanych */
@@ -827,10 +831,12 @@ async function processRenderQueue(){
     const msg=renderQueue.shift();
     if(!separatorAdded && unreadMessageIds.has(msg.id) && msg.sender===sc){
       const md=document.getElementById('ms');
-      const separator=document.createElement('div');
-      separator.className='unread-separator';
-      separator.innerHTML='---- Nowe wiadomosci ----';
-      md.appendChild(separator);
+      const sep=document.createElement('div');
+      sep.className='unread-separator';
+      sep.innerHTML='---- Nowe wiadomosci ----';
+      const composer=document.getElementById('composer');
+      if(composer) md.insertBefore(sep, composer);
+      else md.appendChild(sep);
       separatorAdded=true;
     }
     await ddm(msg);
@@ -844,12 +850,13 @@ function cci(e1,e2){
   return [String(e1).toLowerCase().trim(), String(e2).toLowerCase().trim()].sort().join('_')
 }
 
-/* Wysylanie wiadomosci */
-window.sm = async function(){
-  const mi=document.getElementById('mi');
-  const msg=mi.value.trim();
-  const imgs=document.querySelectorAll('.ii img');
-  if(!msg&&imgs.length===0)return;
+/* Wysylanie wiadomosci (z prompt) */
+window.sm = async function(msgOverride){
+  ensureComposer();
+  const pi=document.getElementById('promptInput');
+  const msg=(typeof msgOverride==='string'?msgOverride:typedBuffer).trim();
+  const imgs=document.querySelectorAll('#imagePreviewContainer .ii img');
+  if(!msg && imgs.length===0)return;
   if(!sc){showToast('Blad','Wybierz rozmowce','error');return}
   shouldAutoScroll=true;
   try{
@@ -869,7 +876,11 @@ window.sm = async function(){
         readAt:null, readBy:null
       })
     }
-    mi.value=''; document.getElementById('imagePreviewContainer').innerHTML='';
+    // wyczysc prompt i podglad
+    typedBuffer='';
+    if(pi) pi.textContent='';
+    const container=document.getElementById('imagePreviewContainer');
+    if(container) container.innerHTML='';
     scrollToBottom(true)
   }catch(error){ showToast('Blad','Blad wysylania','error') }
 };
@@ -947,11 +958,12 @@ function lu(){
 const msEl=document.getElementById('ms');
 if(msEl){ msEl.addEventListener('scroll',function(){ shouldAutoScroll=isUserAtBottom() }) }
 
-/* Entery */
-document.getElementById('mi').addEventListener('keypress',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sm()}});
-document.getElementById('em').addEventListener('keypress',function(e){if(e.key==='Enter'){e.preventDefault();lg()}});
-document.getElementById('pw').addEventListener('keypress',function(e){if(e.key==='Enter'){e.preventDefault();lg()}});
-document.addEventListener('click',function(e){if(!e.target.closest('.dd')&&!e.target.closest('.ee')){const ep=document.getElementById('ep');if(ep&&es){ep.classList.add('p');es=false}}});
+/* Ukrywanie panelu emotek kliknięciem poza */
+document.addEventListener('click',function(e){
+  if(!e.target.closest('.dd')&&!e.target.closest('.ee')){
+    const ep=document.getElementById('ep');if(ep&&es){ep.classList.add('p');es=false}
+  }
+});
 
 /* Auth state */
 if (a && typeof a.onAuthStateChanged === 'function') {
@@ -1031,6 +1043,7 @@ async function lm(oue){
         md.innerHTML='<div class="q">[ Rozpocznij rozmowe ]</div>';
       }
       isFirstSnapshot=false;
+      ensureComposer(true);
     }else{
       changes.forEach(function(change){
         if(change.type==='added'){
@@ -1108,7 +1121,10 @@ async function ddm(dt){
 
   const deleteBtn='<button class="delete-msg" onclick="deleteMessage(\''+dt.id+'\')" title="Usun">X</button>';
   mdv.innerHTML=deleteBtn+'<div class="l">'+escapeHtml(io?'TY':dt.sender.split('@')[0])+' • '+tm+'</div>'+content+readReceipt;
-  md.appendChild(mdv)
+
+  const composer=document.getElementById('composer');
+  if(composer){ md.insertBefore(mdv, composer); }
+  else { md.appendChild(mdv); }
 }
 
 /* Kolor czcionki użytkownika */
@@ -1123,10 +1139,64 @@ window.updateTextColor = async function(colorCode){
     document.documentElement.style.setProperty('--my-chat-color', colorCode);
     await d.collection('users').doc(cu.uid).set({ textColor: colorCode }, { merge:true });
     showToast('OK','Kolor zaktualizowany','success');
+    // aktualizuj prompt jeśli istnieje
+    const pi=document.getElementById('promptInput');
+    if(pi){ pi.style.color=colorCode; }
   }catch(e){
     showToast('Blad','Nie udalo sie zapisac koloru','error');
   }
 };
+
+/* Composer (preview + prompt) */
+function ensureComposer(reset){
+  const md=document.getElementById('ms');
+  if(!md)return;
+  let composer=document.getElementById('composer');
+  const username = cu ? cu.email.split('@')[0] : 'user';
+  if(!composer){
+    composer=document.createElement('div');
+    composer.id='composer';
+    composer.innerHTML = ''
+      + '<div id="imagePreviewContainer" class="image-preview-container"></div>'
+      + '<div class="prompt-row">'
+      + '  <span class="prompt-user">'+escapeHtml(username)+':</span>'
+      + '  <span id="promptInput" class="prompt-input" contenteditable="true" spellcheck="false"></span>'
+      + '  <span class="prompt-caret"></span>'
+      + '</div>';
+    md.appendChild(composer);
+
+    const pi=document.getElementById('promptInput');
+    pi.addEventListener('keydown', function(e){
+      if(e.key==='Enter' && !e.shiftKey){
+        e.preventDefault();
+        window.sm(); // wyślij
+      }
+    });
+    pi.addEventListener('input', function(){
+      typedBuffer = this.textContent;
+    });
+    // fokus w prompt po kliknięciu w okno czatu
+    md.addEventListener('click', function(ev){
+      if(!ev.target.closest('#promptInput') && !ev.target.closest('.dd') && !ev.target.closest('#ep')){
+        const el=document.getElementById('promptInput');
+        if(el){ el.focus(); }
+      }
+    });
+    composerAttached=true;
+    scrollToBottom(true);
+  }else{
+    // uaktualnij nazwę i wyczyść w razie potrzeby
+    const label = composer.querySelector('.prompt-user');
+    if(label) label.textContent = username+':';
+    if(reset){
+      typedBuffer='';
+      const pi=document.getElementById('promptInput');
+      if(pi) pi.textContent='';
+      const container=document.getElementById('imagePreviewContainer');
+      if(container) container.innerHTML='';
+    }
+  }
+}
 
 /* Inicjalne resume AudioContext po pierwszym kliknieciu (dla przegladarek) */
 document.addEventListener('click', () => {
